@@ -1,7 +1,7 @@
 #pragma once
 
 class h_block :
-	public h_extended_type
+	public h_enumerable
 {
 public:
 	BCS_SHARED h_block(h_prototype* parent, unsigned char _global_vftable_index, unsigned short _local_vftable_index);
@@ -18,9 +18,12 @@ public:
 	BCS_SHARED h_prototype* const* get_elements(unsigned int& num_elements) const;
 	BCS_SHARED bool erase(h_prototype* element_to_remove);
 	BCS_SHARED void clear();
-	BCS_SHARED unsigned int size() const;
-	BCS_SHARED h_prototype& get(unsigned int index) const;
-	BCS_SHARED h_prototype& operator[](unsigned int index) const;
+	BCS_SHARED virtual h_prototype& operator[](unsigned int index) override;
+	BCS_SHARED virtual h_prototype const& operator[](unsigned int index) const override;
+	BCS_SHARED virtual h_prototype& get(unsigned int index) override;
+	BCS_SHARED virtual h_prototype const& get(unsigned int index) const override;
+	BCS_SHARED virtual unsigned int size() const override;
+	BCS_SHARED virtual unsigned int data_size() const override;
 	BCS_SHARED void remove(unsigned int index);
 	BCS_SHARED h_prototype* insert_hole(unsigned int index, unsigned int count = 1);
 };
@@ -91,14 +94,24 @@ public:
 		h_block::clear();
 	}
 
-	t_type& get(unsigned int index) const
+	t_type& get(unsigned int index)
 	{
 		return reinterpret_cast<t_type&>(h_block::get(index));
 	}
 
-	t_type& operator[](unsigned int index) const
+	t_type const& get(unsigned int index) const
+	{
+		return reinterpret_cast<t_type const&>(h_block::get(index));
+	}
+
+	t_type& operator[](unsigned int index)
 	{
 		return reinterpret_cast<t_type&>(h_block::operator[](index));
+	}
+
+	t_type const& operator[](unsigned int index) const
+	{
+		return reinterpret_cast<t_type const&>(h_block::operator[](index));
 	}
 };
 

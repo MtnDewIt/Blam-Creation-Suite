@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+import shutil
 from task_manager import VisualCPPBuildTask
 import library_util as util
 
@@ -86,3 +87,4 @@ class ZlibBuildTask(VisualCPPBuildTask):
         if process.returncode:
             print(ninja_args)
             raise Exception("Ninja Failed")
+        

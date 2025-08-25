@@ -18,6 +18,8 @@ bcs_executable("mandrill")
     "//thirdparty/imgui",
     "//tags/tagframework",
     "//tags/tagdefinitions",
+    "//tags/tagreflection",
+    "//tags/tagregistry",
     "//tags/mandrillui",
     "//debugfiletools/symbolsruntime",
     "//resources" ]

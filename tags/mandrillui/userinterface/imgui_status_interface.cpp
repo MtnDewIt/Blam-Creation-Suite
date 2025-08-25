@@ -15,6 +15,7 @@ c_imgui_status_interface::c_imgui_status_interface() :
 
 float c_imgui_status_interface::get_status_bar_percentage()
 {
+	return 1.0f;
 	if (percentage_status_bar_state == 2 && atomic_cmpxchgu32(&percentage_status_bar_state, 1, 2) == 2)
 	{
 		percentage_copy = percentage;
@@ -25,6 +26,7 @@ float c_imgui_status_interface::get_status_bar_percentage()
 
 const char* c_imgui_status_interface::get_status_bar_text()
 {
+	return "Ready";
 	double remaining_time = end_time - ImGui::GetTime();
 	if (remaining_time < 0)
 	{
@@ -46,6 +48,7 @@ const char* c_imgui_status_interface::get_status_bar_text()
 
 void c_imgui_status_interface::set_status_bar_status(e_status_interface_priority target_priority, float time, const char* _status, ...)
 {
+	return;
 	if (target_priority <= priority)
 	{
 		if (text_status_bar_state == 0 && atomic_cmpxchgu32(&text_status_bar_state, 1, 0) == 0)
@@ -63,6 +66,7 @@ void c_imgui_status_interface::set_status_bar_status(e_status_interface_priority
 
 void c_imgui_status_interface::set_status_bar_load_percentage(float _percentage)
 {
+	return;
 	if (percentage_status_bar_state == 0 && atomic_cmpxchgu32(&percentage_status_bar_state, 1, 0) == 0)
 	{
 		percentage = _percentage;
@@ -72,11 +76,13 @@ void c_imgui_status_interface::set_status_bar_load_percentage(float _percentage)
 
 void c_imgui_status_interface::clear_status_bar_load_percentage()
 {
+	return;
 	set_status_bar_load_percentage(-1.0f);
 }
 
 void c_imgui_status_interface::wait_status_bar_idle()
 {
+	return;
 	while (text_status_bar_state != 0);
 	while (percentage_status_bar_state != 0);
 }

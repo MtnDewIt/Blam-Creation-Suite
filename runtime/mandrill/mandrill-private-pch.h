@@ -10,6 +10,7 @@
 #include <shared/blam/blamlib-public-pch.h>
 #include <tagframework/tagframework-public-pch.h>
 #include <tagdefinitions/tagdefinitions-public-pch.h>
+#include <tagregistry/tagregistry-public-pch.h>
 #include <tagreflection/tagreflection-public-pch.h>
 #include <tagvalidate/tagvalidate-public-pch.h>
 #include <tagfileserialization/tagfileserialization-public-pch.h>

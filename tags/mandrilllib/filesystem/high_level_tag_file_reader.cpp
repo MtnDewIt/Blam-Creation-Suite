@@ -394,7 +394,7 @@ BCS_RESULT c_high_level_tag_file_reader::read_tag_struct_to_high_level_object_re
 					break;
 					case blofeld::_field_string:
 					{
-						h_typed_field<c_fixed_string_256>* field_string = high_level_cast<h_typed_field<c_fixed_string_256>*>(field_type);
+						h_typed_field<c_fixed_string_32>* field_string = high_level_cast<h_typed_field<c_fixed_string_32>*>(field_type);
 						ASSERT(field_string != nullptr);
 						c_fixed_string_32& string = *reinterpret_cast<c_fixed_string_32*>(field_string->get_data());
 

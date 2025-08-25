@@ -1,7 +1,7 @@
 #include "tagreflection-private-pch.h"
 
 h_block::h_block(h_prototype* parent, unsigned char _global_vftable_index, unsigned short _local_vftable_index) :
-	h_extended_type(parent, _global_vftable_index, _local_vftable_index),
+	h_enumerable(parent, _global_vftable_index, _local_vftable_index),
 	block_data(nullptr)
 {
 
@@ -191,6 +191,11 @@ void h_block::clear()
 	}
 }
 
+unsigned int h_block::data_size() const
+{
+	return 0;
+}
+
 unsigned int h_block::size() const
 {
 	if (block_data == nullptr)
@@ -202,7 +207,7 @@ unsigned int h_block::size() const
 	return *block_count_ptr;
 }
 
-h_prototype& h_block::get(unsigned int index) const
+h_prototype& h_block::get(unsigned int index)
 {
 	if (block_data == nullptr)
 	{
@@ -221,7 +226,31 @@ h_prototype& h_block::get(unsigned int index) const
 	return *element;
 }
 
-h_prototype& h_block::operator[](unsigned int index) const
+h_prototype const& h_block::get(unsigned int index) const
+{
+	if (block_data == nullptr)
+	{
+		throw BCS_E_OUT_OF_RANGE;
+	}
+
+	unsigned int* block_count_ptr = reinterpret_cast<unsigned int*>(block_data);
+	if (index >= *block_count_ptr)
+	{
+		throw BCS_E_OUT_OF_RANGE;
+	}
+
+	h_prototype** elements = reinterpret_cast<h_prototype**>(reinterpret_cast<unsigned int*>(block_data) + 1);
+	h_prototype* element = elements[index];
+	DEBUG_ASSERT(element != nullptr);
+	return *element;
+}
+
+h_prototype& h_block::operator[](unsigned int index)
+{
+	return get(index);
+}
+
+h_prototype const& h_block::operator[](unsigned int index) const
 {
 	return get(index);
 }

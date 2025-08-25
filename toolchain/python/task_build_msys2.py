@@ -11,8 +11,8 @@ class MSYS2BuildTask(BuildTask):
 
     def build(self):
         super().build()
-        
-        msys2_version = 'msys2-base-x86_64-20230127'
+
+        msys2_version = 'msys2-base-x86_64-20250622'
         msys2_untar_directory = os.path.join(util.bcs_third_party_dir, f'msys2/{msys2_version}')
         msys2_directory = os.path.join(msys2_untar_directory, 'msys64')
         util.bcs_msys2_dir = msys2_directory
@@ -22,7 +22,7 @@ class MSYS2BuildTask(BuildTask):
             return # Don't init
         
         msys2_download_extract_task = download_extract_task(ExtractTarfileBuildTask,
-            f'https://github.com/msys2/msys2-installer/releases/download/2023-01-27/{msys2_version}.tar.xz',
+            f'https://github.com/msys2/msys2-installer/releases/download/2025-06-22/{msys2_version}.tar.xz',
             f'{msys2_version}.tar.xz',
             msys2_untar_directory)
 

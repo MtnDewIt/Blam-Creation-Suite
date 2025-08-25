@@ -93,26 +93,38 @@ extern "C" int bcs_main()
 						BCS_RESULT tag_definitions_register_result = blofeld::tag_definitions_register();
 						if (BCS_SUCCEEDED(tag_definitions_register_result))
 						{
-							try
+							BCS_RESULT high_level_registry_init_result = high_level_registry_init();
+							if (BCS_SUCCEEDED(high_level_registry_init_result))
 							{
-								mandrill_user_interface = new() c_mandrill_user_interface(
-									*window_render_context,
-									false,
-									launch_filepath_command_line_argument);
+								BCS_RESULT high_level_register_result = high_level_register();
+								if (BCS_SUCCEEDED(high_level_register_result))
+								{
+									try
+									{
+										mandrill_user_interface = new() c_mandrill_user_interface(
+											*window_render_context,
+											false,
+											launch_filepath_command_line_argument);
 
-								window_render_context->render();
+										window_render_context->render();
 
-								delete mandrill_user_interface;
-							}
-							catch (BCS_RESULT _rs)
-							{
-								rs = BCS_FAILED_CHAIN(rs, _rs);
-							}
-							catch (...)
-							{
-								rs = BCS_FAILED_CHAIN(rs, BCS_E_FATAL);
-							}
+										delete mandrill_user_interface;
+									}
+									catch (BCS_RESULT _rs)
+									{
+										rs = BCS_FAILED_CHAIN(rs, _rs);
+									}
+									catch (...)
+									{
+										rs = BCS_FAILED_CHAIN(rs, BCS_E_FATAL);
+									}
 
+									tag_definitions_register_result = high_level_unregister();
+									rs = BCS_FAILED_CHAIN(rs, tag_definitions_register_result);
+								}
+								tag_definitions_register_result = high_level_registry_deinit();
+								rs = BCS_FAILED_CHAIN(rs, tag_definitions_register_result);
+							}
 							tag_definitions_register_result = blofeld::tag_definitions_unregister();
 							rs = BCS_FAILED_CHAIN(rs, tag_definitions_register_result);
 						}

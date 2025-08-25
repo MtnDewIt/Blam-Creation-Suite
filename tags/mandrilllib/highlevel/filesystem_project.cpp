@@ -144,7 +144,7 @@ BCS_RESULT c_filesystem_tag_project::read_tag_gen3(
 			throw BCS_S_CONTINUE;
 		}
 
-		c_high_level_tag_file_reader* high_level_tag_file_reader = new() c_high_level_tag_file_reader(
+		high_level_tag_file_reader = new() c_high_level_tag_file_reader(
 			engine_platform_build,
 			tag_file_data,
 			nullptr,
@@ -173,7 +173,10 @@ BCS_RESULT c_filesystem_tag_project::read_tag_gen3(
 		delete prototype;
 	}
 
-	delete high_level_tag_file_reader;
+	if (high_level_tag_file_reader != nullptr)
+	{
+		delete high_level_tag_file_reader;
+	}
 
 	return rs;
 }
@@ -344,7 +347,9 @@ BCS_RESULT c_filesystem_tag_project::read_tags()
 			ASSERT(callback_data.high_level_tag_group != nullptr);
 
 			// #TODO: can this be done inside and made thread safe? is that worth it?
-			//callback_data.high_level_tag_group->associate_tag_instance(*callback_data.high_level_tag);
+			// callback_data.high_level_tag_group->associate_tag_instance(*callback_data.high_level_tag);
+			callback_data.high_level_tag_group->tags.push_back(callback_data.high_level_tag);
+
 			tags.push_back(callback_data.high_level_tag);
 		}
 	}

@@ -115,8 +115,8 @@ BCS_RESULT c_tag_project::resolve_unqualified_tag_references(h_prototype& protot
 		case _field_array:
 		{
 			h_type* type_field = prototype.get_member(field_serialization_info.pointer_to_member);
-			h_prototype* prototype_field = high_level_cast<h_prototype*>(type_field);
-			DEBUG_ASSERT(prototype_field != nullptr);
+			h_array* array_field = high_level_cast<h_array*>(type_field);
+			DEBUG_ASSERT(array_field != nullptr);
 		}
 		break;
 		case _field_block:
