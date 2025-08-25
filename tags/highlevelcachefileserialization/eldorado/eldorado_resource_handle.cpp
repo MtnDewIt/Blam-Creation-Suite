@@ -49,10 +49,6 @@ c_eldorado_resource_handle::c_eldorado_resource_handle(
 	int32_t file_size = resource_location.file_size;
 	int32_t size = resource_location.size;
 	short resource_reference_count = resource_location.resource_reference_count;
-	short streaming_sublocation_table = resource_location.streaming_sublocation_table;
-	int32_t value = resource_location.value;
-	int32_t value$2 = resource_location.value$2;
-	int32_t value$3 = resource_location.value$3;
 
 	if (shared_file >= 0)
 	{
