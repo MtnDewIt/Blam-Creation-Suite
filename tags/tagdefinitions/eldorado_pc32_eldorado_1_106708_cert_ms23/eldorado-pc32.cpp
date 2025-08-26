@@ -15006,7 +15006,6 @@ namespace blofeld::eldorado::pc32
 		{ _field_long_integer, "file size" },
 		{ _field_long_integer, "size" },
 		{ _field_struct, "checksum", &blofeld::eldorado::pc32::resource_checksum_struct },
-		{ _field_short_integer, "resource reference count" },
 		{ _field_struct, "streaming sublocation table", &blofeld::eldorado::pc32::cache_file_resource_streaming_sublocation_table_block },
 		{ _field_terminator }
 	};
