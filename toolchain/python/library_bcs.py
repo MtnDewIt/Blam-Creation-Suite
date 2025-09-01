@@ -156,7 +156,6 @@ class Build:
     build_eldorado_1_177150_cert_ms23 = None
     build_eldorado_1_235640_cert_ms25 = None
     build_eldorado_1_301003_cert_MS26_new = None
-    build_eldorado_1_327043_cert_ms26 = None
     build_eldorado_1_332089_Live = None
     build_eldorado_1_373869_Live = None
     build_eldorado_1_416138_Live = None
@@ -262,7 +261,6 @@ Build.build_eldorado_1_171227_cert_ms23 = Build('build_eldorado_1_171227_cert_ms
 Build.build_eldorado_1_177150_cert_ms23 = Build('build_eldorado_1_177150_cert_ms23', 'eldorado_1_177150_cert_ms23', "Eldorado 1.177150 cert_ms23")
 Build.build_eldorado_1_235640_cert_ms25 = Build('build_eldorado_1_235640_cert_ms25', 'eldorado_1_235640_cert_ms25', "Eldorado 1.235640 cert_ms25")
 Build.build_eldorado_1_301003_cert_MS26_new = Build('build_eldorado_1_301003_cert_MS26_new', 'eldorado_1_301003_cert_MS26_new', "Eldorado 1.301003 cert_MS26_new")
-Build.build_eldorado_1_327043_cert_ms26 = Build('build_eldorado_1_327043_cert_ms26', 'eldorado_1_327043_cert_ms26', "Eldorado 1.327043 cert_ms26")
 Build.build_eldorado_1_332089_Live = Build('build_eldorado_1_332089_Live', 'eldorado_1_332089_Live', "Eldorado 1.332089 Live")
 Build.build_eldorado_1_373869_Live = Build('build_eldorado_1_373869_Live', 'eldorado_1_373869_Live', "Eldorado 1.373869 Live")
 Build.build_eldorado_1_416138_Live = Build('build_eldorado_1_416138_Live', 'eldorado_1_416138_Live', "Eldorado 1.416138 Live")

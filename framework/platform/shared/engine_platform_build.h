@@ -81,7 +81,6 @@ enum e_build : unsigned short
 	_build_eldorado_1_177150_cert_ms23 [[maybe_unused]],
 	_build_eldorado_1_235640_cert_ms25 [[maybe_unused]],
 	_build_eldorado_1_301003_cert_MS26_new [[maybe_unused]],
-	_build_eldorado_1_327043_cert_ms26 [[maybe_unused]],
 	_build_eldorado_1_332089_Live [[maybe_unused]],
 	_build_eldorado_1_373869_Live [[maybe_unused]],
 	_build_eldorado_1_416138_Live [[maybe_unused]],
