@@ -51,14 +51,17 @@ BCS_RESULT dump_definition()
 
 			const char* engine_namespace = nullptr;
 			const char* platform_namespace = nullptr;
+			const char* build_namespace = nullptr;
 			ASSERT(BCS_SUCCEEDED(get_engine_type_namespace(engine_platform_build.engine_type, engine_namespace)));
 			ASSERT(BCS_SUCCEEDED(get_platform_type_namespace(engine_platform_build.platform_type, platform_namespace)));
+			ASSERT(BCS_SUCCEEDED(get_build_namespace(engine_platform_build.build, build_namespace)));
 			blamtoozle_generate_source(
 				*runtime_tag_definitions,
 				tag_definitions_output_directory,
 				tag_groups_output_directory,
 				engine_namespace,
 				platform_namespace,
+				build_namespace,
 				nullptr);
 		}
 	}

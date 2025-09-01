@@ -108,7 +108,7 @@ static constexpr const char* binary_filepaths[k_num_binaries] =
 };
 
 c_definition_tweaker::c_definition_tweaker(c_window& _window, c_render_context& _window_render_context) :
-	engine_platform_build{ _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_106708_cert_ms23 },
+	engine_platform_build(),
 	string_id_manager(16, 16, 0),
 	group_serialization_contexts(),
 	groupless_serialization_contexts(),
@@ -197,6 +197,9 @@ void c_definition_tweaker::init()
 		{
 			BCS_RESULT read_file_result = filesystem_read_file_to_memory(filepath, binary_data[binary_filepath_index], binary_data_size[binary_filepath_index]);
 			ASSERT(BCS_SUCCEEDED(read_file_result));
+
+			BCS_RESULT get_cache_file_reader_engine_and_platform_result = get_cache_file_reader_engine_and_platform(filepath, &engine_platform_build);
+			ASSERT(BCS_SUCCEEDED(get_cache_file_reader_engine_and_platform_result));
 		}
 		else
 		{
@@ -714,14 +717,17 @@ void c_definition_tweaker::render_user_interface()
 				{
 					const char* engine_namespace = nullptr;
 					const char* platform_namespace = nullptr;
+					const char* build_namespace = nullptr;
 					ASSERT(BCS_SUCCEEDED(get_engine_type_namespace(engine_platform_build.engine_type, engine_namespace)));
 					ASSERT(BCS_SUCCEEDED(get_platform_type_namespace(engine_platform_build.platform_type, platform_namespace)));
+					ASSERT(BCS_SUCCEEDED(get_build_namespace(engine_platform_build.build, build_namespace)));
 					blamtoozle_generate_source(
 						*runtime_tag_definitions,
 						tag_definitions_output_directory,
 						tag_groups_output_directory,
 						engine_namespace,
 						platform_namespace,
+						build_namespace,
 						nullptr);
 				}
 

@@ -61,9 +61,10 @@ void blamtoozle_generate_source(
 	const wchar_t* tag_groups_output_directory,
 	const char* engine_namespace,
 	const char* platform_namespace,
+	const char* build_namespace,
 	const char* _source_suffix)
 {
-	c_blamtoozle_source_generator source_generator(tag_definition_manager, engine_namespace, platform_namespace);
+	c_blamtoozle_source_generator source_generator(tag_definition_manager, engine_namespace, platform_namespace, build_namespace);
 
 	std::wstring source_suffix;
 	if (_source_suffix)
@@ -73,17 +74,20 @@ void blamtoozle_generate_source(
 		source_suffix += _source_suffix_wc;
 	}
 
+	const char* static_string = nullptr;
+	ASSERT(BCS_SUCCEEDED(build_namespace_to_static_string(build_namespace, static_string)));
+
 	std::wstringstream output_header_stream;
-	output_header_stream << std::wstring(tag_definitions_output_directory) << engine_namespace << source_suffix << "-" << platform_namespace << L".h";
+	output_header_stream << std::wstring(tag_definitions_output_directory) << engine_namespace << source_suffix << "-" << platform_namespace << "-" << static_string << L".h";
 
 	std::wstringstream output_source_stream;
-	output_source_stream << std::wstring(tag_definitions_output_directory) << engine_namespace << source_suffix << "-" << platform_namespace << L".cpp";
+	output_source_stream << std::wstring(tag_definitions_output_directory) << engine_namespace << source_suffix << "-" << platform_namespace << "-" << static_string << L".cpp";
 
 	std::wstringstream output_tag_groups_header_stream;
-	output_tag_groups_header_stream << std::wstring(tag_groups_output_directory) << engine_namespace << source_suffix << "-" << platform_namespace << L"-groups.h";
+	output_tag_groups_header_stream << std::wstring(tag_groups_output_directory) << engine_namespace << source_suffix << "-" << platform_namespace << "-" << static_string << L"-groups.h";
 
 	std::wstringstream output_tag_groups_source_stream;
-	output_tag_groups_source_stream << std::wstring(tag_groups_output_directory) << engine_namespace << source_suffix << "-" << platform_namespace << L"-groups.cpp";
+	output_tag_groups_source_stream << std::wstring(tag_groups_output_directory) << engine_namespace << source_suffix << "-" << platform_namespace << "-" << static_string << L"-groups.cpp";
 
 	std::wstring output_header = output_header_stream.str();
 	std::wstring output_source = output_source_stream.str();

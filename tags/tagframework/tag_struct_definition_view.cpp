@@ -57,7 +57,7 @@ namespace blofeld
 
 				get_engine_type_pretty_string(engine_platform_build.engine_type, engine_type_string);
 				get_platform_type_pretty_string(engine_platform_build.platform_type, platform_type_string);
-				get_build_pretty_string(engine_platform_build.build, &build_type_string);
+				get_build_pretty_string(engine_platform_build.build, build_type_string);
 
 				console_write_line("Failed to get group collection for %s %s %s", engine_type_string, platform_type_string, build_type_string);
 			}

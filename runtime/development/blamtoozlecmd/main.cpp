@@ -35,7 +35,7 @@ if (BCS_FAILED(rs = command_line_get_argument(argument, destination))) \
 	return rs; \
 }
 
-#define get_namespaces(engine_type, platform_type, engine_type_destination, platform_type_destination) \
+#define get_namespaces(engine_type, platform_type, build, engine_type_destination, platform_type_destination, build_destination) \
 if (BCS_FAILED(rs = get_engine_type_namespace(engine_type, engine_type_destination))) \
 { \
 	return rs; \
@@ -43,7 +43,11 @@ if (BCS_FAILED(rs = get_engine_type_namespace(engine_type, engine_type_destinati
 if (BCS_FAILED(rs = get_platform_type_namespace(platform_type, platform_type_destination))) \
 { \
 	return rs; \
-}
+} \
+if (BCS_FAILED(rs = get_build_namespace(build, build_destination))) \
+{ \
+	return rs; \
+} \
 
 const wchar_t* tag_definitions_output_directory;
 const wchar_t* tag_groups_output_directory;
@@ -54,23 +58,27 @@ void generate_source(
 	uint32_t num_tag_layouts,
 	const char* engine_namespace, 
 	const char* platform_namespace,
+	const char* build_namespace,
 	const char* source_suffix)
 {
 	tag_definition_manager.traverse(group_table_address, num_tag_layouts);
 
-	c_blamtoozle_source_generator source_generator(tag_definition_manager, engine_namespace, platform_namespace);
+	c_blamtoozle_source_generator source_generator(tag_definition_manager, engine_namespace, platform_namespace, build_namespace);
+
+	const char* static_string = nullptr;
+	ASSERT(BCS_SUCCEEDED(build_namespace_to_static_string(build_namespace, static_string)));
 
 	std::wstringstream output_header_stream;
-	output_header_stream << std::wstring(tag_definitions_output_directory) << engine_namespace << L"-"[!source_suffix] << source_suffix << "-" << platform_namespace << L".h";
+	output_header_stream << std::wstring(tag_definitions_output_directory) << engine_namespace << L"-"[!source_suffix] << source_suffix << "-" << platform_namespace << "-" << static_string << L".h";
 
 	std::wstringstream output_source_stream;
-	output_source_stream << std::wstring(tag_definitions_output_directory) << engine_namespace << L"-"[!source_suffix] << source_suffix << "-" << platform_namespace << L".cpp";
+	output_source_stream << std::wstring(tag_definitions_output_directory) << engine_namespace << L"-"[!source_suffix] << source_suffix << "-" << platform_namespace << "-" << static_string << L".cpp";
 
 	std::wstringstream output_tag_groups_header_stream;
-	output_tag_groups_header_stream << std::wstring(tag_groups_output_directory) << engine_namespace << L"-"[!source_suffix] << source_suffix << "-" << platform_namespace << L"-groups.h";
+	output_tag_groups_header_stream << std::wstring(tag_groups_output_directory) << engine_namespace << L"-"[!source_suffix] << source_suffix << "-" << platform_namespace << "-" << static_string << L"-groups.h";
 
 	std::wstringstream output_tag_groups_source_stream;
-	output_tag_groups_source_stream << std::wstring(tag_groups_output_directory) << engine_namespace << L"-"[!source_suffix] << source_suffix << "-" << platform_namespace << L"-groups.cpp";
+	output_tag_groups_source_stream << std::wstring(tag_groups_output_directory) << engine_namespace << L"-"[!source_suffix] << source_suffix << "-" << platform_namespace << "-" << static_string << L"-groups.cpp";
 
 	std::wstring output_header  = output_header_stream.str();
 	std::wstring output_source = output_source_stream.str();
@@ -115,13 +123,15 @@ extern "C" int bcs_main()
 
 		const char* engine_namespace = nullptr;
 		const char* platform_namespace = nullptr;
-		get_namespaces(_engine_type_halo1, _platform_type_pc_64bit, engine_namespace, platform_namespace);
+		const char* build_namespace = nullptr;
+		get_namespaces(_engine_type_halo1, _platform_type_pc_64bit, _build_halo1_guerilla, engine_namespace, platform_namespace, build_namespace);
 		generate_source(
 			halo1_tools_pc64_manager,
 			halo1_group_table_address,
 			halo1_num_tag_layouts,
 			engine_namespace,
 			platform_namespace,
+			build_namespace,
 			"tools");
 
 		debug_point;
@@ -147,13 +157,15 @@ extern "C" int bcs_main()
 
 		const char* engine_namespace = nullptr;
 		const char* platform_namespace = nullptr;
-		get_namespaces(_engine_type_halo2, _platform_type_pc_64bit, engine_namespace, platform_namespace);
+		const char* build_namespace = nullptr;
+		get_namespaces(_engine_type_halo2, _platform_type_pc_64bit, _build_halo2_guerilla, engine_namespace, platform_namespace, build_namespace);
 		generate_source(
 			halo2_tools_pc64_manager, 
 			halo2_group_table_address, 
 			halo2_num_tag_layouts, 
 			engine_namespace, 
 			platform_namespace, 
+			build_namespace,
 			"tools");
 
 		debug_point;
@@ -179,13 +191,15 @@ extern "C" int bcs_main()
 
 		const char* engine_namespace = nullptr;
 		const char* platform_namespace = nullptr;
-		get_namespaces(_engine_type_halo3, _platform_type_pc_64bit, engine_namespace, platform_namespace);
+		const char* build_namespace = nullptr;
+		get_namespaces(_engine_type_halo3, _platform_type_pc_64bit, _build_halo3_guerilla, engine_namespace, platform_namespace, build_namespace);
 		generate_source(
 			halo3_tools_pc64_manager,
 			halo3_group_table_address,
 			halo3_num_tag_layouts,
 			engine_namespace,
 			platform_namespace,
+			build_namespace,
 			"tools");
 
 		debug_point;
@@ -211,13 +225,15 @@ extern "C" int bcs_main()
 
 		const char* engine_namespace = nullptr;
 		const char* platform_namespace = nullptr;
-		get_namespaces(_engine_type_halo3odst, _platform_type_pc_64bit, engine_namespace, platform_namespace);
+		const char* build_namespace = nullptr;
+		get_namespaces(_engine_type_halo3odst, _platform_type_pc_64bit, _build_not_set, engine_namespace, platform_namespace, build_namespace); // TODO: Add ODST MCC Tools Build
 		generate_source(
 			halo3odst_tools_pc64_manager,
 			halo3odst_group_table_address,
 			halo3odst_num_tag_layouts,
 			engine_namespace,
 			platform_namespace,
+			build_namespace,
 			"tools");
 
 		debug_point;
@@ -243,13 +259,15 @@ extern "C" int bcs_main()
 
 		const char* engine_namespace = nullptr;
 		const char* platform_namespace = nullptr;
-		get_namespaces(_engine_type_haloreach, _platform_type_pc_64bit, engine_namespace, platform_namespace);
+		const char* build_namespace = nullptr;
+		get_namespaces(_engine_type_haloreach, _platform_type_pc_64bit, _build_not_set, engine_namespace, platform_namespace, build_namespace); // TODO: Add Reach MCC Tools Build
 		generate_source(
 			haloreach_pc64_manager,
 			haloreach_pc64_group_table_address,
 			haloreach_pc64_num_tag_layouts,
 			engine_namespace,
 			platform_namespace,
+			build_namespace,
 			"tools");
 
 		debug_point;
@@ -275,13 +293,15 @@ extern "C" int bcs_main()
 
 		const char* engine_namespace = nullptr;
 		const char* platform_namespace = nullptr;
-		get_namespaces(_engine_type_haloreach, _platform_type_xbox_360, engine_namespace, platform_namespace);
+		const char* build_namespace = nullptr;
+		get_namespaces(_engine_type_haloreach, _platform_type_xbox_360, _build_haloreach_tags, engine_namespace, platform_namespace, build_namespace);
 		generate_source(
 			haloreach_x360_manager,
 			haloreach_x360_group_table_address,
 			haloreach_x360_num_tag_layouts,
 			engine_namespace,
 			platform_namespace,
+			build_namespace,
 			"tagtest");
 
 		debug_point;
@@ -307,13 +327,15 @@ extern "C" int bcs_main()
 
 		const char* engine_namespace = nullptr;
 		const char* platform_namespace = nullptr;
-		get_namespaces(_engine_type_halo4, _platform_type_xbox_360, engine_namespace, platform_namespace);
+		const char* build_namespace = nullptr;
+		get_namespaces(_engine_type_halo4, _platform_type_xbox_360, _build_midnight_tag_test_untracked_november_13_2013, engine_namespace, platform_namespace, build_namespace);
 		generate_source(
 			halo4_x360_manager,
 			halo4_x360_group_table_address,
 			halo4_x360_num_tag_layouts,
 			engine_namespace,
 			platform_namespace,
+			build_namespace,
 			"tagtest");
 
 

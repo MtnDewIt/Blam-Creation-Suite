@@ -180,8 +180,15 @@ BCS_SHARED extern BCS_RESULT platform_namespace_to_platform_type(const char* pla
 BCS_SHARED extern BCS_RESULT platform_string_to_platform_type(const char* platform_string, e_platform_type& platform_type);
 
 BCS_SHARED extern BCS_RESULT get_platform_pointer_size(e_platform_type platform_type, uint32_t* pointer_size);
-BCS_SHARED extern BCS_RESULT get_build_pretty_string(e_build build, const char** result);
-BCS_SHARED extern BCS_RESULT get_build_string(e_build build, const char** result);
+
+BCS_SHARED extern BCS_RESULT get_build_pretty_string(e_build build, const char*& platform_pretty_string);
+BCS_SHARED extern BCS_RESULT get_build_namespace(e_build build, const char*& platform_namespace);
+BCS_SHARED extern BCS_RESULT get_build_string(e_build build, const char*& platform_string);
+
+BCS_SHARED extern BCS_RESULT build_pretty_string_to_build(const char* build_pretty_string, e_build& build);
+BCS_SHARED extern BCS_RESULT build_namespace_to_build(const char* build_namespace, e_build& build);
+BCS_SHARED extern BCS_RESULT build_string_to_build(const char* build_string, e_build& build);
+BCS_SHARED extern BCS_RESULT build_namespace_to_static_string(const char* build_namespace, const char*& static_string);
 
 BCS_SHARED extern BCS_RESULT get_engine_module_filename(s_engine_platform_build engine_platform_build, const char** result);
 

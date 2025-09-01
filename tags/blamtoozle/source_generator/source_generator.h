@@ -42,7 +42,8 @@ public:
 	BCS_SHARED c_blamtoozle_source_generator(
 		c_blamtoozle_tag_definition_manager& tag_definition_manager,
 		const char* engine_namespace,
-		const char* platform_namespace);
+		const char* platform_namespace,
+		const char* build_namespace);
 	c_blamtoozle_source_generator(const c_blamtoozle_source_generator&) = delete;
 	c_blamtoozle_source_generator(c_blamtoozle_source_generator&&) = delete;
 	BCS_SHARED ~c_blamtoozle_source_generator();
@@ -93,6 +94,7 @@ protected:
 
 	const char* engine_namespace;
 	const char* platform_namespace;
+	const char* build_namespace;
 
 	std::vector<c_blamtoozle_tag_group_definition*> group_definitions;
 	std::vector<c_blamtoozle_tag_block_definition*> block_definitions;

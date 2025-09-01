@@ -29,4 +29,5 @@ BCS_SHARED extern void blamtoozle_generate_source(
 	const wchar_t* tag_groups_output_directory,
 	const char* engine_namespace,
 	const char* platform_namespace,
+	const char* build_namespace,
 	const char* _source_suffix);

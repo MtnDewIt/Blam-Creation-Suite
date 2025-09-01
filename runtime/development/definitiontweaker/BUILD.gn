@@ -44,5 +44,6 @@ bcs_executable("definitiontweaker")
     "//tags/tagframework",
     "//tags/tagdefinitions",
     "//tags/stringdefinitions",
+    "//tags/highlevelcachefileserialization",
     "//tags/blamtoozle" ]
 }

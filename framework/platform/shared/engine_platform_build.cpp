@@ -1,6 +1,7 @@
 #include "platform-private-pch.h"
 
 #include <templatelibrary\xxhash_cx.h>
+#include <templatelibrary\fixed_string.h>
 
 using namespace xxhash;
 using namespace xxhash::literals;
@@ -107,12 +108,12 @@ BCS_RESULT engine_string_to_engine_type(const char* engine_string, e_engine_type
 static constexpr s_string_lookup<e_platform_type, k_num_engine_type_string_types> platform_string_lookup[] =
 {
 #define platform_type_string_pair(platform_type, _namespace, pretty_name) { platform_type, { #platform_type, _namespace, pretty_name } }
-		platform_type_string_pair(_platform_type_not_set, "notset", "Not Set"),
-		platform_type_string_pair(_platform_type_xbox, "xbox", "Xbox"),
-		platform_type_string_pair(_platform_type_xbox_360, "xbox360", "Xbox 360"),
-		platform_type_string_pair(_platform_type_xbox_one, "xboxone", "Xbox One"),
-		platform_type_string_pair(_platform_type_pc_32bit, "pc32", "PC (32bit)"),
-		platform_type_string_pair(_platform_type_pc_64bit, "pc64", "PC"),
+	platform_type_string_pair(_platform_type_not_set, "notset", "Not Set"),
+	platform_type_string_pair(_platform_type_xbox, "xbox", "Xbox"),
+	platform_type_string_pair(_platform_type_xbox_360, "xbox360", "Xbox 360"),
+	platform_type_string_pair(_platform_type_xbox_one, "xboxone", "Xbox One"),
+	platform_type_string_pair(_platform_type_pc_32bit, "pc32", "PC (32bit)"),
+	platform_type_string_pair(_platform_type_pc_64bit, "pc64", "PC"),
 #undef platform_type_string_pair
 };
 static_assert(_countof(platform_string_lookup) == k_number_of_platform_types);
@@ -182,6 +183,165 @@ BCS_RESULT platform_string_to_platform_type(const char* platform_string, e_platf
 		}
 	}
 	return BCS_E_NOT_FOUND;
+}
+
+static constexpr s_string_lookup<e_build, k_num_engine_type_string_types> build_string_lookup[] =
+{
+#define build_string_pair(build, _namespace, pretty_name) { build, { #build, _namespace, pretty_name } }
+	build_string_pair(_build_not_set, "not_set", "Not Set"),
+	build_string_pair(_build_halo1_xbox, "halo1_xbox", "Halo 1 Xbox"),
+	build_string_pair(_build_halo1_beta_01_05_22_0268, "halo1_beta_01_05_22_0268", "Halo 1 PC Beta (01.05.23.0268)"),
+	build_string_pair(_build_halo1_demo, "halo1_demo", "Halo 1 Demo"),
+	build_string_pair(_build_halo1_pc_retail, "halo1_pc_retail", "Halo 1 PC"),
+	build_string_pair(_build_halo1_custom_edition, "halo1_custom_edition", "Halo 1 Custom Edition"),
+	build_string_pair(_build_halo1_anniversary_xbox360, "halo1_anniversary_xbox360", "Halo 1 Anniversary (Xbox 360)"),
+	build_string_pair(_build_halo1_anniversary_mcc, "halo1_anniversary_mcc", "Halo 1 Anniversary (MCC)"),
+	build_string_pair(_build_stubbs, "stubbs", "Stubbz Generic"),
+	build_string_pair(_build_mcc_1_824_0_0, "mcc_1_824_0_0", "MCC 1.824.0.0"),
+	build_string_pair(_build_mcc_1_887_0_0, "mcc_1_887_0_0", "MCC 1.887.0.0"),
+	build_string_pair(_build_mcc_1_1035_0_0, "mcc_1_1035_0_0", "MCC 1.1035.0.0"),
+	build_string_pair(_build_mcc_1_1186_0_0, "mcc_1_1186_0_0", "MCC 1.1186.0.0"),
+	build_string_pair(_build_mcc_1_1211_0_0, "mcc_1_1211_0_0", "MCC 1.1211.0.0"),
+	build_string_pair(_build_mcc_1_1246_0_0, "mcc_1_1246_0_0", "MCC 1.1246.0.0"),
+	build_string_pair(_build_mcc_1_1270_0_0, "mcc_1_1270_0_0", "MCC 1.1270.0.0"),
+	build_string_pair(_build_mcc_1_1305_0_0, "mcc_1_1305_0_0", "MCC 1.1305.0.0"),
+	build_string_pair(_build_mcc_1_1350_0_0, "mcc_1_1350_0_0", "MCC 1.1350.0.0"),
+	build_string_pair(_build_mcc_1_1367_0_0, "mcc_1_1367_0_0", "MCC 1.1367.0.0"),
+	build_string_pair(_build_mcc_1_1377_0_0, "mcc_1_1377_0_0", "MCC 1.1377.0.0"),
+	build_string_pair(_build_mcc_1_1384_0_0, "mcc_1_1384_0_0", "MCC 1.1384.0.0"),
+	build_string_pair(_build_mcc_1_1387_0_0, "mcc_1_1387_0_0", "MCC 1.1387.0.0"),
+	build_string_pair(_build_mcc_1_1389_0_0, "mcc_1_1389_0_0", "MCC 1.1389.0.0"),
+	build_string_pair(_build_mcc_1_1477_0_0, "mcc_1_1477_0_0", "MCC 1.1477.0.0"),
+	build_string_pair(_build_mcc_1_1499_0_0, "mcc_1_1499_0_0", "MCC 1.1499.0.0"),
+	build_string_pair(_build_mcc_1_1520_0_0, "mcc_1_1520_0_0", "MCC 1.1520.0.0"),
+	build_string_pair(_build_mcc_1_1570_0_0, "mcc_1_1570_0_0", "MCC 1.1570.0.0"),
+	build_string_pair(_build_mcc_1_1619_0_0, "mcc_1_1619_0_0", "MCC 1.1619.0.0"),
+	build_string_pair(_build_mcc_1_1629_0_0, "mcc_1_1629_0_0", "MCC 1.1629.0.0"),
+	build_string_pair(_build_mcc_1_1658_0_0, "mcc_1_1658_0_0", "MCC 1.1658.0.0"),
+	build_string_pair(_build_mcc_1_1698_0_0, "mcc_1_1698_0_0", "MCC 1.1698.0.0"),
+	build_string_pair(_build_mcc_1_1716_0_0, "mcc_1_1716_0_0", "MCC 1.1716.0.0"),
+	build_string_pair(_build_mcc_1_1767_0_0, "mcc_1_1767_0_0", "MCC 1.1767.0.0"),
+	build_string_pair(_build_mcc_1_1778_0_0, "mcc_1_1778_0_0", "MCC 1.1778.0.0"),
+	build_string_pair(_build_mcc_1_1792_0_0, "mcc_1_1792_0_0", "MCC 1.1792.0.0"),
+	build_string_pair(_build_mcc_1_1829_0_0, "mcc_1_1829_0_0", "MCC 1.1829.0.0"),
+	build_string_pair(_build_mcc_1_1864_0_0, "mcc_1_1864_0_0", "MCC 1.1864.0.0"),
+	build_string_pair(_build_mcc_1_1871_0_0, "mcc_1_1871_0_0", "MCC 1.1871.0.0"),
+	build_string_pair(_build_mcc_1_1896_0_0, "mcc_1_1896_0_0", "MCC 1.1896.0.0"),
+	build_string_pair(_build_mcc_1_1930_0_0, "mcc_1_1930_0_0", "MCC 1.1930.0.0"),
+	build_string_pair(_build_mcc_1_1955_0_0, "mcc_1_1955_0_0", "MCC 1.1955.0.0"),
+	build_string_pair(_build_mcc_1_2028_0_0, "mcc_1_2028_0_0", "MCC 1.2028.0.0"),
+	build_string_pair(_build_mcc_1_2094_0_0, "mcc_1_2094_0_0", "MCC 1.2094.0.0"),
+	build_string_pair(_build_eldorado_1_106708_cert_ms23, "eldorado_1_106708_cert_ms23", "Eldorado 1.106708 cert_ms23"),
+	build_string_pair(_build_eldorado_1_155080_cert_ms23, "eldorado_1_155080_cert_ms23", "Eldorado 1.155080 cert_ms23"),
+	build_string_pair(_build_eldorado_1_171227_cert_ms23, "eldorado_1_171227_cert_ms23", "Eldorado 1.171227 cert_ms23"),
+	build_string_pair(_build_eldorado_1_177150_cert_ms23, "eldorado_1_177150_cert_ms23", "Eldorado 1.177150 cert_ms23"),
+	build_string_pair(_build_eldorado_1_235640_cert_ms25, "eldorado_1_235640_cert_ms25", "Eldorado 1.235640 cert_ms25"),
+	build_string_pair(_build_eldorado_1_301003_cert_MS26_new, "eldorado_1_301003_cert_ms26_new", "Eldorado 1.301003 cert_MS26_new"),
+	build_string_pair(_build_eldorado_1_332089_Live, "eldorado_1_332089_live", "Eldorado 1.332089 Live"),
+	build_string_pair(_build_eldorado_1_373869_Live, "eldorado_1_373869_live", "Eldorado 1.373869 Live"),
+	build_string_pair(_build_eldorado_1_416138_Live, "eldorado_1_416138_live", "Eldorado 1.416138 Live"),
+	build_string_pair(_build_eldorado_1_430653_Live, "eldorado_1_430653_live", "Eldorado 1.430653 Live"),
+	build_string_pair(_build_eldorado_1_454665_Live, "eldorado_1_454665_live", "Eldorado 1.454665 Live"),
+	build_string_pair(_build_eldorado_1_479394_Live, "eldorado_1_479394_live", "Eldorado 1.479394 Live"),
+	build_string_pair(_build_eldorado_1_498295_Live, "eldorado_1_498295_live", "Eldorado 1.498295 Live"),
+	build_string_pair(_build_eldorado_1_530945_Live, "eldorado_1_530945_live", "Eldorado 1.530945 Live"),
+	build_string_pair(_build_eldorado_1_533032_Live, "eldorado_1_533032_live", "Eldorado 1.533032 Live"),
+	build_string_pair(_build_eldorado_1_554482_Live, "eldorado_1_554482_live", "Eldorado 1.554482 Live"),
+	build_string_pair(_build_eldorado_1_571698_Live, "eldorado_1_571698_live", "Eldorado 1.571698 Live"),
+	build_string_pair(_build_eldorado_1_604673_Live, "eldorado_1_604673_live", "Eldorado 1.604673 Live"),
+	build_string_pair(_build_eldorado_1_700255_cert_ms30_oct19, "eldorado_1_700255_cert_ms30_oct19", "Eldorado 1.700255 cert_ms30_oct19"),
+	build_string_pair(_build_halo1_guerilla, "halo1_guerilla", "Halo 1 Guerilla"),
+	build_string_pair(_build_halo2_guerilla, "halo2_guerilla", "Halo 2 Guerilla"),
+	build_string_pair(_build_halo3_guerilla, "halo3_guerilla", "Halo 3 Guerilla"),
+	build_string_pair(_build_haloreach_tags, "haloreach_tags", "Halo Reach Tags"),
+	build_string_pair(_build_halo5_forge_1_114_4592_2, "halo5_forge_1_114_4592_2", "Halo 5 Forge 1.114.4592.2_x64__8wekyb3d8bbwe"),
+	build_string_pair(_build_halo5_forge_1_194_6192_2, "halo5_forge_1_194_6192_2", "Halo 5 Forge 1.194.6192.2_x64__8wekyb3d8bbwe"),
+	build_string_pair(_build_midnight_tag_test_untracked_november_13_2013, "midnight_tag_test_untracked_november_13_2013", "Halo 4 midnight tag test xenon untracked Nov 13 2013 11:14:44"),
+	build_string_pair(_build_infinite_FLT002INT_199229_21_07_20_0001, "infinite_FLT002INT_199229_21_07_20_0001", "Halo Infinite Flight 30/7/2021"),
+	build_string_pair(_build_infinite_HIFLTA_202700_21_09_06_0001, "infinite_HIFLTA_202700_21_09_06_0001", "Halo Infinite Flight 24/9/2021"),
+	build_string_pair(_build_infinite_HIREL_209048_21_12_09_1546, "infinite_HIREL_209048_21_12_09_1546", "Halo Infinite Release 21/12/2021"),
+#undef build_string_pair
+};
+static_assert(_countof(build_string_lookup) == k_number_of_build_types);
+static_assert(is_enum_lookup_valid(build_string_lookup));
+
+BCS_RESULT get_build_string(e_build build, const char*& build_string)
+{
+	BCS_VALIDATE_ARGUMENT(build < k_number_of_build_types);
+
+	build_string = build_string_lookup[build].strings[_type_string_type_type_string];
+
+	return BCS_S_OK;
+}
+
+BCS_RESULT get_build_namespace(e_build build, const char*& namespace_name)
+{
+	BCS_VALIDATE_ARGUMENT(build < k_number_of_build_types);
+
+	namespace_name = build_string_lookup[build].strings[_type_string_type_namespace];
+
+	return BCS_S_OK;
+}
+
+BCS_RESULT get_build_pretty_string(e_build build, const char*& pretty_name)
+{
+	BCS_VALIDATE_ARGUMENT(build < k_number_of_build_types);
+
+	pretty_name = build_string_lookup[build].strings[_type_string_type_pretty_name];
+
+	return BCS_S_OK;
+}
+
+BCS_RESULT build_pretty_string_to_build(const char* build_pretty_string, e_build& build)
+{
+	for (auto const& string_lookup : build_string_lookup)
+	{
+		if (strcmp(build_pretty_string, string_lookup.strings[_type_string_type_pretty_name]) == 0)
+		{
+			build = string_lookup._enum;
+			return BCS_S_OK;
+		}
+	}
+	return BCS_E_NOT_FOUND;
+}
+
+BCS_RESULT build_namespace_to_build(const char* build_namespace, e_build& build)
+{
+	for (auto const& string_lookup : build_string_lookup)
+	{
+		if (strcmp(build_namespace, string_lookup.strings[_type_string_type_namespace]) == 0)
+		{
+			build = string_lookup._enum;
+			return BCS_S_OK;
+		}
+	}
+	return BCS_E_NOT_FOUND;
+}
+
+BCS_RESULT build_string_to_build(const char* build_string, e_build& build)
+{
+	for (auto const& string_lookup : build_string_lookup)
+	{
+		if (strcmp(build_string, string_lookup.strings[_type_string_type_type_string]) == 0)
+		{
+			build = string_lookup._enum;
+			return BCS_S_OK;
+		}
+	}
+	return BCS_E_NOT_FOUND;
+}
+
+BCS_RESULT build_namespace_to_static_string(const char* build_namespace, const char*& static_string)
+{
+	BCS_VALIDATE_ARGUMENT(build_namespace);
+
+	c_fixed_path str = build_namespace;
+
+	str.replace('_', '-');
+
+	static_string = str.c_str();
+
+	return BCS_S_OK;
 }
 
 struct s_build_and_id
@@ -355,104 +515,6 @@ BCS_RESULT get_platform_pointer_size(e_platform_type platform_type, uint32_t* po
 	}
 
 	return BCS_E_NOT_IMPLEMENTED;
-}
-
-static BCS_RESULT get_build_string_impl(e_build build, bool pretty_name, const char** result)
-{
-	BCS_VALIDATE_ARGUMENT(IS_VALID_BOOLEAN(pretty_name));
-	BCS_VALIDATE_ARGUMENT(result);
-
-#define build_string_pair(build, pretty_name) case build: *result = (pretty_name ? (#build) : (pretty_name)); return BCS_S_OK;
-	switch (build)
-	{
-		build_string_pair(_build_not_set, "Not set");
-		build_string_pair(_build_halo1_xbox, "Halo 1 Xbox");
-		build_string_pair(_build_halo1_beta_01_05_22_0268, "Halo 1 PC Beta (01.05.23.0268)");
-		build_string_pair(_build_halo1_demo, "Halo 1 Demo");
-		build_string_pair(_build_halo1_pc_retail, "Halo 1 PC");
-		build_string_pair(_build_halo1_custom_edition, "Halo 1 Custom Edition");
-		build_string_pair(_build_halo1_anniversary_xbox360, "Halo 1 Anniversary (Xbox 360)");
-		build_string_pair(_build_halo1_anniversary_mcc, "Halo 1 Anniversary (MCC)");
-		build_string_pair(_build_stubbs, "Stubbz Generic");
-		build_string_pair(_build_mcc_1_824_0_0, "MCC 1.824.0.0");
-		build_string_pair(_build_mcc_1_887_0_0, "MCC 1.887.0.0");
-		build_string_pair(_build_mcc_1_1035_0_0, "MCC 1.1035.0.0");
-		build_string_pair(_build_mcc_1_1186_0_0, "MCC 1.1186.0.0");
-		build_string_pair(_build_mcc_1_1211_0_0, "MCC 1.1211.0.0");
-		build_string_pair(_build_mcc_1_1246_0_0, "MCC 1.1246.0.0");
-		build_string_pair(_build_mcc_1_1270_0_0, "MCC 1.1270.0.0");
-		build_string_pair(_build_mcc_1_1305_0_0, "MCC 1.1305.0.0");
-		build_string_pair(_build_mcc_1_1350_0_0, "MCC 1.1350.0.0");
-		build_string_pair(_build_mcc_1_1367_0_0, "MCC 1.1367.0.0");
-		build_string_pair(_build_mcc_1_1377_0_0, "MCC 1.1377.0.0");
-		build_string_pair(_build_mcc_1_1384_0_0, "MCC 1.1384.0.0");
-		build_string_pair(_build_mcc_1_1387_0_0, "MCC 1.1387.0.0");
-		build_string_pair(_build_mcc_1_1389_0_0, "MCC 1.1389.0.0");
-		build_string_pair(_build_mcc_1_1477_0_0, "MCC 1.1477.0.0");
-		build_string_pair(_build_mcc_1_1499_0_0, "MCC 1.1499.0.0");
-		build_string_pair(_build_mcc_1_1520_0_0, "MCC 1.1520.0.0");
-		build_string_pair(_build_mcc_1_1570_0_0, "MCC 1.1570.0.0");
-		build_string_pair(_build_mcc_1_1619_0_0, "MCC 1.1619.0.0");
-		build_string_pair(_build_mcc_1_1629_0_0, "MCC 1.1629.0.0");
-		build_string_pair(_build_mcc_1_1658_0_0, "MCC 1.1658.0.0");
-		build_string_pair(_build_mcc_1_1698_0_0, "MCC 1.1698.0.0");
-		build_string_pair(_build_mcc_1_1716_0_0, "MCC 1.1716.0.0");
-		build_string_pair(_build_mcc_1_1767_0_0, "MCC 1.1767.0.0");
-		build_string_pair(_build_mcc_1_1778_0_0, "MCC 1.1778.0.0");
-		build_string_pair(_build_mcc_1_1792_0_0, "MCC 1.1792.0.0");
-		build_string_pair(_build_mcc_1_1829_0_0, "MCC 1.1829.0.0");
-		build_string_pair(_build_mcc_1_1864_0_0, "MCC 1.1864.0.0");
-		build_string_pair(_build_mcc_1_1871_0_0, "MCC 1.1871.0.0");
-		build_string_pair(_build_mcc_1_1896_0_0, "MCC 1.1896.0.0");
-		build_string_pair(_build_mcc_1_1930_0_0, "MCC 1.1930.0.0");
-		build_string_pair(_build_mcc_1_1955_0_0, "MCC 1.1955.0.0");
-		build_string_pair(_build_mcc_1_2028_0_0, "MCC 1.2028.0.0");
-		build_string_pair(_build_mcc_1_2094_0_0, "MCC 1.2094.0.0");
-		build_string_pair(_build_eldorado_1_106708_cert_ms23, "Eldorado 1.106708 cert_ms23");
-		build_string_pair(_build_eldorado_1_155080_cert_ms23, "Eldorado 1.155080 cert_ms23");
-		build_string_pair(_build_eldorado_1_171227_cert_ms23, "Eldorado 1.171227 cert_ms23");
-		build_string_pair(_build_eldorado_1_177150_cert_ms23, "Eldorado 1.177150 cert_ms23");
-		build_string_pair(_build_eldorado_1_235640_cert_ms25, "Eldorado 1.235640 cert_ms25");
-		build_string_pair(_build_eldorado_1_301003_cert_MS26_new, "Eldorado 1.301003 cert_MS26_new");
-		build_string_pair(_build_eldorado_1_332089_Live, "Eldorado 1.332089 Live");
-		build_string_pair(_build_eldorado_1_373869_Live, "Eldorado 1.373869 Live");
-		build_string_pair(_build_eldorado_1_416138_Live, "Eldorado 1.416138 Live");
-		build_string_pair(_build_eldorado_1_430653_Live, "Eldorado 1.430653 Live");
-		build_string_pair(_build_eldorado_1_454665_Live, "Eldorado 1.454665 Live");
-		build_string_pair(_build_eldorado_1_479394_Live, "Eldorado 1.479394 Live");
-		build_string_pair(_build_eldorado_1_498295_Live, "Eldorado 1.498295 Live");
-		build_string_pair(_build_eldorado_1_530945_Live, "Eldorado 1.530945 Live");
-		build_string_pair(_build_eldorado_1_533032_Live, "Eldorado 1.533032 Live");
-		build_string_pair(_build_eldorado_1_554482_Live, "Eldorado 1.554482 Live");
-		build_string_pair(_build_eldorado_1_571698_Live, "Eldorado 1.571698 Live");
-		build_string_pair(_build_eldorado_1_604673_Live, "Eldorado 1.604673 Live");
-		build_string_pair(_build_eldorado_1_700255_cert_ms30_oct19, "Eldorado 1.700255 cert_ms30_oct19");
-		build_string_pair(_build_halo1_guerilla, "Halo 1 Guerilla");
-		build_string_pair(_build_halo2_guerilla, "Halo 2 Guerilla");
-		build_string_pair(_build_halo3_guerilla, "Halo 3 Guerilla");
-		build_string_pair(_build_haloreach_tags, "Halo Reach Tags");
-		build_string_pair(_build_halo5_forge_1_114_4592_2, "Halo 5 Forge 1.114.4592.2_x64__8wekyb3d8bbwe");
-		build_string_pair(_build_halo5_forge_1_194_6192_2, "Halo 5 Forge 1.194.6192.2_x64__8wekyb3d8bbwe");
-		build_string_pair(_build_midnight_tag_test_untracked_november_13_2013, "Halo 4 midnight tag test xenon untracked Nov 13 2013 11:14:44");
-		build_string_pair(_build_infinite_FLT002INT_199229_21_07_20_0001, "Halo Infinite Flight 30/7/2021");
-		build_string_pair(_build_infinite_HIFLTA_202700_21_09_06_0001, "Halo Infinite Flight 24/9/2021");
-		build_string_pair(_build_infinite_HIREL_209048_21_12_09_1546, "Halo Infinite Release 21/12/2021");
-		case k_number_of_build_types:
-			break;
-	}
-#undef build_string_pair
-
-	return BCS_E_NOT_IMPLEMENTED;
-}
-
-BCS_RESULT get_build_string(e_build build, const char** result)
-{
-	return get_build_string_impl(build, true, result);
-}
-
-BCS_RESULT get_build_pretty_string(e_build build, const char** result)
-{
-	return get_build_string_impl(build, false, result);
 }
 
 struct s_engine_info_impl

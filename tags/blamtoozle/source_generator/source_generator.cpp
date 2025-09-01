@@ -94,10 +94,12 @@ static void escape_string(
 c_blamtoozle_source_generator::c_blamtoozle_source_generator(
 	c_blamtoozle_tag_definition_manager& _tag_definition_manager,
 	const char* _engine_namespace,
-	const char* _platform_namespace) :
+	const char* _platform_namespace,
+	const char* _build_namespace) :
 	tag_definition_manager(_tag_definition_manager),
 	engine_namespace(_strdup(_engine_namespace)),
 	platform_namespace(_strdup(_platform_namespace)),
+	build_namespace(_strdup(_build_namespace)),
 	group_definitions(),
 	block_definitions(),
 	tag_reference_definitions(),
@@ -126,6 +128,7 @@ c_blamtoozle_source_generator::~c_blamtoozle_source_generator()
 {
 	untracked_free(engine_namespace);
 	untracked_free(platform_namespace);
+	untracked_free(build_namespace);
 }
 
 void c_blamtoozle_source_generator::export_single_tag_definitions_header(const wchar_t* file_path)
@@ -145,6 +148,10 @@ void c_blamtoozle_source_generator::export_single_tag_definitions_header(const w
 	if (platform_namespace)
 	{
 		stream << "::" << platform_namespace;
+	}
+	if (build_namespace)
+	{
+		stream << "::" << build_namespace;
 	}
 	stream << std::endl;
 	stream << "{" << std::endl;
@@ -248,6 +255,10 @@ void c_blamtoozle_source_generator::export_single_tag_definitions_header(const w
 	if (platform_namespace)
 	{
 		stream << "::" << platform_namespace;
+	}
+	if (build_namespace)
+	{
+		stream << "::" << build_namespace;
 	}
 	stream << std::endl;
 
@@ -848,7 +859,10 @@ void c_blamtoozle_source_generator::export_single_tag_definitions_source(const w
 
 #define stream file_stream.stream
 
-	stream << "#include <" << engine_namespace << "tagdefinitions-private-pch.h>" << std::endl;
+	const char* static_string = nullptr;
+	ASSERT(BCS_SUCCEEDED(build_namespace_to_static_string(build_namespace, static_string)));
+
+	stream << "#include <" << static_string << "tagdefinitions-private-pch.h>" << std::endl;
 	stream << "#include <TagFramework\\Definitions\\definitions.h>" << std::endl;
 	stream << std::endl;
 	stream << "namespace blofeld";
@@ -859,6 +873,10 @@ void c_blamtoozle_source_generator::export_single_tag_definitions_source(const w
 	if (platform_namespace)
 	{
 		stream << "::" << platform_namespace;
+	}
+	if (build_namespace)
+	{
+		stream << "::" << build_namespace;
 	}
 	stream << std::endl;
 	stream << "{" << std::endl;
@@ -995,6 +1013,10 @@ void c_blamtoozle_source_generator::export_single_tag_definitions_source(const w
 	{
 		stream << "::" << platform_namespace;
 	}
+	if (build_namespace)
+	{
+		stream << "::" << build_namespace;
+	}
 	stream << std::endl;
 
 #undef stream
@@ -1021,6 +1043,10 @@ void c_blamtoozle_source_generator::export_tag_groups_header(const wchar_t* file
 	{
 		stream << "::" << platform_namespace;
 	}
+	if (build_namespace)
+	{
+		stream << "::" << build_namespace;
+	}
 	stream << std::endl;
 	stream << "{" << std::endl;
 	stream << std::endl;
@@ -1036,6 +1062,10 @@ void c_blamtoozle_source_generator::export_tag_groups_header(const wchar_t* file
 	if (platform_namespace)
 	{
 		stream << "::" << platform_namespace;
+	}
+	if (build_namespace)
+	{
+		stream << "::" << build_namespace;
 	}
 	stream << std::endl;
 
@@ -1063,6 +1093,10 @@ void c_blamtoozle_source_generator::export_tag_groups_source(const wchar_t* file
 	{
 		stream << "::" << platform_namespace;
 	}
+	if (build_namespace)
+	{
+		stream << "::" << build_namespace;
+	}
 	stream << std::endl;
 	stream << "{" << std::endl;
 	stream << std::endl;
@@ -1088,6 +1122,10 @@ void c_blamtoozle_source_generator::export_tag_groups_source(const wchar_t* file
 	if (platform_namespace)
 	{
 		stream << "::" << platform_namespace;
+	}
+	if (build_namespace)
+	{
+		stream << "::" << build_namespace;
 	}
 	stream << std::endl;
 
@@ -1137,10 +1175,10 @@ void c_blamtoozle_source_generator::write_fields(std::stringstream& stream, c_bl
 			switch (combined_fixup_field->fixup_type)
 			{
 			case _blamtoozle_tag_field_combined_fixup_type_equal:
-				stream << "\t\t{ _version_mode_tag_group_equal, &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << combined_fixup_field->group_definition.get_code_symbol_name() << ", " << combined_fixup_field->count << " }," << std::endl;
+				stream << "\t\t{ _version_mode_tag_group_equal, &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << combined_fixup_field->group_definition.get_code_symbol_name() << ", " << combined_fixup_field->count << " }," << std::endl;
 				break;
 			case _blamtoozle_tag_field_combined_fixup_type_not_equal:
-				stream << "\t\t{ _version_mode_tag_group_not_equal, &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << combined_fixup_field->group_definition.get_code_symbol_name() << ", " << combined_fixup_field->count << " }," << std::endl;
+				stream << "\t\t{ _version_mode_tag_group_not_equal, &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << combined_fixup_field->group_definition.get_code_symbol_name() << ", " << combined_fixup_field->count << " }," << std::endl;
 				break;
 			}
 		}
@@ -1524,7 +1562,7 @@ void c_blamtoozle_source_generator::write_fields(std::stringstream& stream, c_bl
 					}
 					if (c_blamtoozle_tag_array_definition* array_definition = tag_field->get_array_definition())
 					{
-						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << array_definition->get_code_symbol_name();
+						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << array_definition->get_code_symbol_name();
 					}
 					else
 					{
@@ -1573,7 +1611,7 @@ void c_blamtoozle_source_generator::write_fields(std::stringstream& stream, c_bl
 					//ASSERT(tag_field->get_block_definition());
 					if (tag_field->get_block_definition())
 					{
-						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << tag_field->get_block_definition()->get_code_symbol_name();
+						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << tag_field->get_block_definition()->get_code_symbol_name();
 					}
 					if (write_tag)
 					{
@@ -1613,7 +1651,7 @@ void c_blamtoozle_source_generator::write_fields(std::stringstream& stream, c_bl
 					if (field_struct_definition)
 					{
 						c_blamtoozle_tag_struct_definition& latest_struct_definition = field_struct_definition->get_latest_struct_definition();
-						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << latest_struct_definition.get_code_symbol_name();
+						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << latest_struct_definition.get_code_symbol_name();
 					}
 					else
 					{
@@ -1661,7 +1699,7 @@ void c_blamtoozle_source_generator::write_fields(std::stringstream& stream, c_bl
 					}
 					if (c_blamtoozle_tag_api_interop_definition* api_interop_definition = tag_field->get_api_interop_definition())
 					{
-						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << api_interop_definition->get_code_symbol_name();
+						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << api_interop_definition->get_code_symbol_name();
 					}
 					else
 					{
@@ -1704,7 +1742,7 @@ void c_blamtoozle_source_generator::write_fields(std::stringstream& stream, c_bl
 					//ASSERT(tag_field->get_data_definition());
 					if (tag_field->get_data_definition())
 					{
-						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << tag_field->get_data_definition()->get_code_symbol_name();
+						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << tag_field->get_data_definition()->get_code_symbol_name();
 					}
 					if (write_tag)
 					{
@@ -1744,7 +1782,7 @@ void c_blamtoozle_source_generator::write_fields(std::stringstream& stream, c_bl
 					//ASSERT(tag_field->get_block_index_custom_search_definition());
 					if (tag_field->get_block_index_custom_search_definition())
 					{
-						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << tag_field->get_block_index_custom_search_definition()->get_code_symbol_name();
+						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << tag_field->get_block_index_custom_search_definition()->get_code_symbol_name();
 					}
 					if (write_tag)
 					{
@@ -1781,7 +1819,7 @@ void c_blamtoozle_source_generator::write_fields(std::stringstream& stream, c_bl
 					}
 					if (c_blamtoozle_tag_resource_definition* resource_definition = tag_field->get_tag_resource_definition())
 					{
-						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << resource_definition->get_code_symbol_name();
+						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << resource_definition->get_code_symbol_name();
 					}
 					else
 					{
@@ -1823,7 +1861,7 @@ void c_blamtoozle_source_generator::write_fields(std::stringstream& stream, c_bl
 					}
 					if (c_blamtoozle_tag_reference_definition* reference_definition = tag_field->get_tag_reference_definition())
 					{
-						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << reference_definition->get_code_symbol_name();
+						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << reference_definition->get_code_symbol_name();
 					}
 					else
 					{
@@ -1882,7 +1920,7 @@ void c_blamtoozle_source_generator::write_fields(std::stringstream& stream, c_bl
 
 					if (c_blamtoozle_string_list_definition* string_list_definition = tag_field->get_string_list_definition())
 					{
-						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << string_list_definition->get_code_symbol_name();
+						stream << ", &blofeld::" << engine_namespace << "::" << platform_namespace << "::" << build_namespace << "::" << string_list_definition->get_code_symbol_name();
 					}
 					else
 					{
