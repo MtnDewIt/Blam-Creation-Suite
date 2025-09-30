@@ -44,9 +44,9 @@ c_halo3_cache_file_reader::~c_halo3_cache_file_reader()
 
 BCS_RESULT c_halo3_cache_file_reader::get_build_info(s_cache_file_build_info& build_info) const
 {
-	build_info.file_version = cache_file_header.file_version;
-	build_info.file_length = cache_file_header.file_length;
-	build_info.file_compressed_length = cache_file_header.file_compressed_length;
+	build_info.version = cache_file_header.file_version;
+	build_info.size = cache_file_header.file_length;
+	build_info.compressed_file_padding = cache_file_header.file_compressed_length;
 
 	BCS_RESULT rs = BCS_S_OK;
 
@@ -54,13 +54,13 @@ BCS_RESULT c_halo3_cache_file_reader::get_build_info(s_cache_file_build_info& bu
 	{
 	case _platform_type_xbox_360:
 	{
-		build_info.source_file = xbox360_cache_file_header.source_file;
-		build_info.build_version = xbox360_cache_file_header.build;
+		build_info.path = xbox360_cache_file_header.path;
+		build_info.build_number = xbox360_cache_file_header.build_number;
 		if (BCS_FAILED(rs = gen3::gen3_scenario_type_to_base_scenario_type(xbox360_cache_file_header.scenario_type, build_info.scenario_type)))
 		{
 			return rs;
 		}
-		if (BCS_FAILED(rs = gen3::gen3_scenario_load_type_to_base_scenario_load_type(xbox360_cache_file_header.scenario_load_type, build_info.scenario_load_type)))
+		if (BCS_FAILED(rs = gen3::gen3_cache_file_shared_file_type_to_base_cache_file_shared_file_type(xbox360_cache_file_header.shared_cache_file_type, build_info.shared_cache_file_type)))
 		{
 			return rs;
 		}
@@ -68,17 +68,19 @@ BCS_RESULT c_halo3_cache_file_reader::get_build_info(s_cache_file_build_info& bu
 		{
 			return rs;
 		}
-		if (BCS_FAILED(rs = gen3::gen3_cache_file_shared_file_type_to_base_cache_file_shared_file_type(xbox360_cache_file_header.shared_file_type, build_info.shared_file_type)))
+		if (BCS_FAILED(rs = gen3::gen3_cache_file_shared_file_flags_to_base_cache_file_shared_file_flags(xbox360_cache_file_header.shared_map_usage, build_info.shared_map_usage)))
 		{
 			return rs;
 		}
-		build_info.timestamp = xbox360_cache_file_header.timestamp;
+		build_info.creation_date = xbox360_cache_file_header.creation_date;
 		build_info.name = xbox360_cache_file_header.name;
-		build_info.relative_path = xbox360_cache_file_header.relative_path;
+		build_info.tag_path = xbox360_cache_file_header.tag_path;
 		build_info.expected_base_address = xbox360_cache_file_header.expected_base_address;
 		build_info.xdk_version = xbox360_cache_file_header.xdk_version;
-		build_info.hash = xbox360_cache_file_header.hash;
-		build_info.rsa = xbox360_cache_file_header.rsa;
+		build_info.content_hashes[0] = xbox360_cache_file_header.content_hashes[0];
+		build_info.content_hashes[1] = xbox360_cache_file_header.content_hashes[1];
+		build_info.content_hashes[2] = xbox360_cache_file_header.content_hashes[2];
+		build_info.rsa_signature = xbox360_cache_file_header.rsa_signature;
 	}
 	break;
 	default: throw BCS_E_UNSUPPORTED;
@@ -105,9 +107,9 @@ BCS_RESULT c_halo3_cache_file_reader::get_section_buffer(gen3::e_cache_file_sect
 	{
 	case _platform_type_xbox_360:
 	{
-		section_size = xbox360_cache_file_header.section_file_bounds[section_index].size;
-		section_offset_mask = xbox360_cache_file_header.offset_masks[section_index];
-		section_offset = xbox360_cache_file_header.section_file_bounds[section_index].offset;
+		section_size = xbox360_cache_file_header.original_section_bounds[section_index].size;
+		section_offset_mask = xbox360_cache_file_header.section_offsets[section_index];
+		section_offset = xbox360_cache_file_header.original_section_bounds[section_index].offset;
 	}
 	break;
 	default: throw BCS_E_UNSUPPORTED;
@@ -140,13 +142,13 @@ BCS_RESULT c_halo3_cache_file_reader::get_buffer(e_cache_file_buffer_index buffe
 		buffer_info.size = static_cast<unsigned long>(file_info.file_size);
 		return BCS_S_OK;
 	case _debug_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_debug, buffer_info);
+		return get_section_buffer(gen3::_cache_file_debug_section, buffer_info);
 	case _resources_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_resource, buffer_info);
+		return get_section_buffer(gen3::_cache_file_resource_section, buffer_info);
 	case _tag_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_tags, buffer_info);
+		return get_section_buffer(gen3::_cache_file_tag_section, buffer_info);
 	case _localization_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_localization, buffer_info);
+		return get_section_buffer(gen3::_cache_file_language_pack_section, buffer_info);
 	case _tag_post_link_buffer:
 		buffer_info = {};
 		break;
@@ -231,7 +233,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_tags_header_relative_offset(int32_t& t
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_xbox_360:
-		BCS_FAIL_RETURN(virtual_address_to_relative_offset(xbox360_cache_file_header.tags_header_address, tags_header_relative_offset));
+		BCS_FAIL_RETURN(virtual_address_to_relative_offset(xbox360_cache_file_header.tags_header_when_loaded, tags_header_relative_offset));
 		return BCS_S_OK;
 	}
 	return BCS_E_UNSUPPORTED;
@@ -242,7 +244,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_file_count(int32_t& file_count) const
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_xbox_360:
-		file_count = xbox360_cache_file_header.file_count;
+		file_count = xbox360_cache_file_header.debug_tag_name_count;
 		return BCS_S_OK;
 	}
 	return BCS_E_UNSUPPORTED;
@@ -253,7 +255,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_string_id_index_buffer_count(int32_t& 
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_xbox_360:
-		string_id_index_buffer_count = xbox360_cache_file_header.string_id_index_buffer_count;
+		string_id_index_buffer_count = xbox360_cache_file_header.string_id_count;
 		return BCS_S_OK;
 	}
 	return BCS_E_UNSUPPORTED;
@@ -264,7 +266,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_string_id_index_buffer_offset(int32_t&
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_xbox_360:
-		string_id_index_buffer_offset = xbox360_cache_file_header.string_id_index_buffer_offset;
+		string_id_index_buffer_offset = xbox360_cache_file_header.string_id_index_offset;
 		return BCS_S_OK;
 	}
 	return BCS_E_UNSUPPORTED;
@@ -275,7 +277,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_string_id_string_storage_offset(int32_
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_xbox_360:
-		string_id_string_storage_offset = xbox360_cache_file_header.string_id_string_storage_offset;
+		string_id_string_storage_offset = xbox360_cache_file_header.string_id_data_offset;
 		return BCS_S_OK;
 	}
 	return BCS_E_UNSUPPORTED;
@@ -286,7 +288,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_string_id_string_storage_size(int32_t&
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_xbox_360:
-		string_id_string_storage_size = xbox360_cache_file_header.string_id_string_storage_size;
+		string_id_string_storage_size = xbox360_cache_file_header.string_id_data_count;
 		return BCS_S_OK;
 	}
 	return BCS_E_UNSUPPORTED;
@@ -297,7 +299,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_file_table_indices_offset(int32_t& fil
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_xbox_360:
-		file_table_indices_offset = xbox360_cache_file_header.file_table_indices_offset;
+		file_table_indices_offset = xbox360_cache_file_header.debug_tag_name_index_offset;
 		return BCS_S_OK;
 	}
 	return BCS_E_UNSUPPORTED;
@@ -308,7 +310,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_file_table_offset(int32_t& file_table_
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_xbox_360:
-		file_table_offset = xbox360_cache_file_header.file_table_offset;
+		file_table_offset = xbox360_cache_file_header.debug_tag_name_data_offset;
 		return BCS_S_OK;
 	}
 	return BCS_E_UNSUPPORTED;
@@ -319,7 +321,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_file_table_length(int32_t& file_table_
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_xbox_360:
-		file_table_length = xbox360_cache_file_header.file_table_length;
+		file_table_length = xbox360_cache_file_header.debug_tag_name_data_size;
 		return BCS_S_OK;
 	}
 	return BCS_E_UNSUPPORTED;

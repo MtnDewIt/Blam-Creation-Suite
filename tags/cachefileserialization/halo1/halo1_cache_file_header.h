@@ -7,7 +7,6 @@ namespace halo1
 	namespace pc
 	{
 #pragma pack(push, 4)
-
 		struct s_cache_file_header
 		{
 			tag header_signature; // k_cache_header_signature
@@ -26,14 +25,12 @@ namespace halo1
 			tag footer_signature; // k_cache_footer_signature
 		};
 		static_assert(sizeof(s_cache_file_header) == 0x800);
-
 #pragma pack(pop)
 	}
 
 	namespace demo
 	{
 #pragma pack(push, 4)
-
 		struct s_cache_file_header
 		{
 			char __data0[2];
@@ -64,7 +61,6 @@ namespace halo1
 			char __data5F4[524];
 		};
 		static_assert(sizeof(s_cache_file_header) == 0x800);
-
 #pragma pack(pop)
 	}
 

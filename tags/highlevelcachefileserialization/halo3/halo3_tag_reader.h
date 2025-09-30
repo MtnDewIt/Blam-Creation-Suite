@@ -45,7 +45,7 @@ private:
 
 	struct s_halo3_tag_global_instance_info
 	{
-		::halo3::s_cache_file_tag_global_instance global_instance;
+		::halo3::s_cache_file_global_tag_index global_instance;
 		s_halo3_tag_instance_info* instance_info;
 	};
 
@@ -69,7 +69,7 @@ private:
 	using t_tag_group_infos = std::vector<s_halo3_tag_group_info>;
 	using t_tag_instance_infos = std::vector<s_halo3_tag_instance_info>;
 	using t_tag_global_instance_infos = std::vector<s_halo3_tag_global_instance_info>;
-	using t_tag_interop_infos = std::vector<::halo3::s_cache_file_tag_interop>;
+	using t_tag_interop_infos = std::vector<::halo3::s_cache_file_tag_interop_type_fixup>;
 	using t_tag_instance_infos_by_index = std::unordered_map<uint32_t, s_halo3_tag_global_instance_info*>;
 
 	t_tag_group_infos tag_group_infos;

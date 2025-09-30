@@ -360,7 +360,7 @@ void c_tag_project_configurator_tab::render_cache_file_selection()
 			ImGui::NextColumn();
 		}
 		{
-			ImGui::TextUnformatted(entry.build_info.build_version.get_string());
+			ImGui::TextUnformatted(entry.build_info.build_number.get_string());
 			if (entry.build_info.xdk_version)
 			{
 				ImGui::SameLine();

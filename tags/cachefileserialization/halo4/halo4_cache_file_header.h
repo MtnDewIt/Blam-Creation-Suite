@@ -1,7 +1,5 @@
 #pragma once
 
-/* ---------- types */
-
 namespace halo4
 {
 	namespace pc
@@ -62,8 +60,8 @@ namespace halo4
 //			int32_t unknown338;
 //			gen3::s_network_http_request_hash hash;
 //			gen3::s_rsa_signature rsa;
-//			s_static_array<int32_t, gen3::k_num_cache_file_section> offset_masks;
-//			s_static_array<gen3::s_cache_file_section_file_bounds, gen3::k_num_cache_file_section> section_file_bounds;
+//			s_static_array<int32_t, gen3::k_number_of_cache_file_sections> offset_masks;
+//			s_static_array<gen3::s_cache_file_section_file_bounds, gen3::k_number_of_cache_file_sections> section_file_bounds;
 //			//unsigned int unknown4AC;
 //
 //			//unsigned __int8 gap4B0[100836];
@@ -93,56 +91,51 @@ namespace halo4
 //		static constexpr int32_t k_cache_file_header_size = sizeof(s_cache_file_header);
 //		static_assert(k_cache_file_header_size == 0x1E000);
 	}
-	
 	namespace xbox360
 	{
 #pragma pack(push, 4)
 		struct s_cache_file_header
 		{
-			tag header_signature; // k_cache_header_signature
-			int32_t file_version;
-			int32_t file_length;
-			int32_t file_compressed_length;
-
-			uintptr32_t tags_header_address;
-			int32_t tag_buffer_offset;
+			tag header_signature;
+			int32_t version;
+			int32_t size;
+			int32_t compressed_file_padding;
+			uintptr32_t tags_header_when_loaded;
+			int32_t tags_offset;
 			int32_t total_tags_size;
-			c_static_string<256> source_file;
-			c_static_string<32> build;
-			c_enum_no_init<gen3::e_scenario_type, short> scenario_type;
-			c_enum_no_init<gen3::e_scenario_load_type, short> scenario_load_type;
-			bool unknown140;
-			bool tracked_build;
-			bool unknown142; // something involved with packages
-			c_flags_no_init<gen3::e_cache_file_header_bit, unsigned char> header_flags;
-			int32_t unknown144;
-			int32_t unknown148;
-			int32_t unknown14C;
-			int32_t unknown150;
-			int32_t unknown154;
-			int32_t string_id_index_buffer_count;
-			int32_t string_id_string_storage_size;
-			int32_t string_id_index_buffer_offset;
-			int32_t string_id_string_storage_offset;
-			c_flags_no_init<gen3::e_cache_file_shared_file_type, unsigned char> shared_file_type_flags; // see cached_map_file_dependencies_loaded for more information
-			s_file_last_modification_date timestamp; // see cached_map_file_dependencies_loaded for more information
-			s_file_last_modification_date scenario_type_timestamps[3]; // see cached_map_file_dependencies_loaded for more information
+			c_static_string<256> path;
+			c_static_string<32> build_number;
+			c_enum_no_init<gen4::e_scenario_type, short> scenario_type;
+			c_enum_no_init<gen4::e_cache_file_shared_file_type, short> shared_cache_file_type;
+			bool uncompressed;
+			bool tracked;
+			bool valid_shared_resource_usage;
+			c_flags_no_init<gen4::e_cache_file_header_bit, unsigned char, gen4::k_num_cache_file_header_bits> header_flags;
+			s_file_last_modification_date slot_modification_date;
+			int32_t low_detail_texture_number;
+			int32_t low_detail_texture_offset;
+			int32_t low_detail_texture_byte_count;
+			int32_t string_id_count;
+			int32_t string_id_data_count;
+			int32_t string_id_index_offset;
+			int32_t string_id_data_offset;
+			c_flags_no_init<gen4::e_cache_file_shared_file_type, unsigned char, gen4::k_number_of_shared_file_types> shared_map_usage;
+			s_file_last_modification_date creation_date;
+			s_file_last_modification_date shared_creation_date[3];
 			c_static_string<32> name;
-			int32_t unknown1AC;
-			c_static_string<256> relative_path;
-			int32_t minor_version;
-			int32_t file_count;
-			int32_t file_table_offset;
-			int32_t file_table_length;
-			int32_t file_table_indices_offset;
-
-			uint32_t tag_remap_count;
+			int32_t language;
+			c_static_string<256> tag_path;
+			int32_t minor_version_number;
+			int32_t debug_tag_name_count;
+			int32_t debug_tag_name_data_offset;
+			int32_t debug_tag_name_data_size;
+			int32_t debug_tag_name_index_offset;
+			uint32_t tag_remap_count; // c_wrapped_array tag_remap_info
 			uint32_t tag_remap_address;
-			uint32_t dlc_tag_remap_count;
+			uint32_t dlc_tag_remap_count; // c_wrapped_array dlc_tag_remap_info
 			uint32_t dlc_tag_remap_address;
-
-			int32_t unknown2D4;
-			c_static_string<32> unknown2D8;
+			int32_t realtime_checksum;
+			c_static_string<32> creator_name;
 			uintptr32_t expected_base_address;
 			uint32_t xdk_version;
 			c_basic_buffer32<void> tag_post_link_buffer;
@@ -151,122 +144,38 @@ namespace halo4
 			c_basic_buffer32<void> tag_language_neutral_read_write_buffer;
 			c_basic_buffer32<void> tag_language_neutral_write_combined_buffer;
 			c_basic_buffer32<void> tag_language_neutral_read_only_buffer;
-			int32_t unknown330;
-			int32_t unknown334;
-			int32_t unknown338;
-			int32_t unknown33C;
-			s_network_http_request_hash hash;
-			s_rsa_signature rsa;
-			s_static_array<int32_t, gen3::k_num_cache_file_section> offset_masks;
-			s_static_array<gen3::s_cache_file_section_file_bounds, gen3::k_num_cache_file_section> section_file_bounds;
-			unsigned int unknown4AC;
-			unsigned int unknown4B0;
-			unsigned int unknown4B4;
-			unsigned int unknown4B8;
-
-			unsigned __int8 gap4BC[100824];
-
-			unsigned __int8 unknown18E94;
-			unsigned __int8 unknown18E95;
-			unsigned __int8 unknown18E96;
-			unsigned __int8 unknown18E97;
-
-			s_static_array<gen3::s_cache_file_insertion_point_resource_usage, 12> insertion_point_resource_usage;
-
-			char gap1D728[16];
-
+			int32_t content_hash_mask;
+			int32_t pad2[1];
+			int64_t signature_marker;
+			s_network_http_request_hash content_hashes[3];
+			s_rsa_signature rsa_signature;
+			s_static_array<int32_t, gen4::k_number_of_cache_file_sections> section_offsets;
+			s_static_array<gen4::s_cache_file_section_file_bounds, gen4::k_number_of_cache_file_sections> original_section_bounds;
+			gen4::s_cache_file_shared_resource_usage shared_resource_usage;
+			int8_t unknown1D728[16];
 			uint32_t late_binding_tag_reference_fixup_info_count;
 			uint32_t late_binding_tag_reference_fixup_info_address;
 			uint32_t cache_file_fixups_count;
 			uint32_t cache_file_fixups_address;
-
-			char gap1D748[2228];
+			int8_t unknown1D738[16];
+			uint32_t unknown1D73C;
+			uint32_t unknown1D740;
+			uint32_t unknown1D744;
+			uint32_t unknown1D748;
+			int8_t unknown1D74C[28];
+			uint32_t unknown1D768; 
+			uint32_t unknown1D76C;
+			int8_t padding[2160];
 			tag footer_signature;
 		};
 #pragma pack(pop)
-
-		static_assert(offsetof(s_cache_file_header, header_signature												) == 0x00000000);
-		static_assert(offsetof(s_cache_file_header, file_version                                             		) == 0x00000004);
-		static_assert(offsetof(s_cache_file_header, file_length                                              		) == 0x00000008);
-		static_assert(offsetof(s_cache_file_header, file_compressed_length                                   		) == 0x0000000C);
-		static_assert(offsetof(s_cache_file_header, tags_header_address                                      		) == 0x00000010);
-		static_assert(offsetof(s_cache_file_header, tag_buffer_offset                                        		) == 0x00000014);
-		static_assert(offsetof(s_cache_file_header, total_tags_size                                          		) == 0x00000018);
-		static_assert(offsetof(s_cache_file_header, source_file                                              		) == 0x0000001C);
-		static_assert(offsetof(s_cache_file_header, build                                                    		) == 0x0000011C);
-		static_assert(offsetof(s_cache_file_header, scenario_type                                            		) == 0x0000013C);
-		static_assert(offsetof(s_cache_file_header, scenario_load_type                                       		) == 0x0000013E);
-		static_assert(offsetof(s_cache_file_header, unknown140                                               		) == 0x00000140);
-		static_assert(offsetof(s_cache_file_header, tracked_build                                            		) == 0x00000141);
-		static_assert(offsetof(s_cache_file_header, unknown142                                               		) == 0x00000142);
-		static_assert(offsetof(s_cache_file_header, header_flags                                             		) == 0x00000143);
-		static_assert(offsetof(s_cache_file_header, unknown144                                               		) == 0x00000144);
-		static_assert(offsetof(s_cache_file_header, unknown148                                               		) == 0x00000148);
-		static_assert(offsetof(s_cache_file_header, unknown14C                                               		) == 0x0000014C);
-		static_assert(offsetof(s_cache_file_header, unknown150                                               		) == 0x00000150);
-		static_assert(offsetof(s_cache_file_header, unknown154                                               		) == 0x00000154);
-		static_assert(offsetof(s_cache_file_header, string_id_index_buffer_count                             		) == 0x00000158);
-		static_assert(offsetof(s_cache_file_header, string_id_string_storage_size									) == 0x0000015C);
-		static_assert(offsetof(s_cache_file_header, string_id_index_buffer_offset                            		) == 0x00000160);
-		static_assert(offsetof(s_cache_file_header, string_id_string_storage_offset									) == 0x00000164);
-		static_assert(offsetof(s_cache_file_header, shared_file_type_flags                                   		) == 0x00000168);
-		static_assert(offsetof(s_cache_file_header, timestamp                                                		) == 0x0000016C);
-		static_assert(offsetof(s_cache_file_header, scenario_type_timestamps                                 		) == 0x00000174);
-		static_assert(offsetof(s_cache_file_header, name                                                     		) == 0x0000018C);
-		static_assert(offsetof(s_cache_file_header, unknown1AC                                               		) == 0x000001AC);
-		static_assert(offsetof(s_cache_file_header, relative_path                                            		) == 0x000001B0);
-		static_assert(offsetof(s_cache_file_header, minor_version                                            		) == 0x000002B0);
-		static_assert(offsetof(s_cache_file_header, file_count                                               		) == 0x000002B4);
-		static_assert(offsetof(s_cache_file_header, file_table_offset                                        		) == 0x000002B8);
-		static_assert(offsetof(s_cache_file_header, file_table_length                                        		) == 0x000002BC);
-		static_assert(offsetof(s_cache_file_header, file_table_indices_offset                                		) == 0x000002C0);
-		static_assert(offsetof(s_cache_file_header, tag_remap_count                                          		) == 0x000002C4);
-		static_assert(offsetof(s_cache_file_header, tag_remap_address                                        		) == 0x000002C8);
-		static_assert(offsetof(s_cache_file_header, dlc_tag_remap_count                                      		) == 0x000002CC);
-		static_assert(offsetof(s_cache_file_header, dlc_tag_remap_address                                    		) == 0x000002D0);
-		static_assert(offsetof(s_cache_file_header, unknown2D4                                               		) == 0x000002D4);
-		static_assert(offsetof(s_cache_file_header, unknown2D8                                               		) == 0x000002D8);
-		static_assert(offsetof(s_cache_file_header, expected_base_address                                    		) == 0x000002F8);
-		static_assert(offsetof(s_cache_file_header, xdk_version                                              		) == 0x000002FC);
-		static_assert(offsetof(s_cache_file_header, tag_post_link_buffer                                     		) == 0x00000300);
-		static_assert(offsetof(s_cache_file_header, tag_language_dependent_read_only_buffer                  		) == 0x00000308);
-		static_assert(offsetof(s_cache_file_header, tag_language_dependent_read_write_buffer                 		) == 0x00000310);
-		static_assert(offsetof(s_cache_file_header, tag_language_neutral_read_write_buffer                   		) == 0x00000318);
-		static_assert(offsetof(s_cache_file_header, tag_language_neutral_write_combined_buffer               		) == 0x00000320);
-		static_assert(offsetof(s_cache_file_header, tag_language_neutral_read_only_buffer                    		) == 0x00000328);
-		static_assert(offsetof(s_cache_file_header, unknown330                                               		) == 0x00000330);
-		static_assert(offsetof(s_cache_file_header, unknown334                                               		) == 0x00000334);
-		static_assert(offsetof(s_cache_file_header, unknown338                                               		) == 0x00000338);
-		static_assert(offsetof(s_cache_file_header, unknown33C                                               		) == 0x0000033C);
-		static_assert(offsetof(s_cache_file_header, hash                                                     		) == 0x00000340);
-		static_assert(offsetof(s_cache_file_header, rsa                                                      		) == 0x0000037C);
-		static_assert(offsetof(s_cache_file_header, offset_masks                                             		) == 0x0000047C);
-		static_assert(offsetof(s_cache_file_header, section_file_bounds                                      		) == 0x0000048C);
-		static_assert(offsetof(s_cache_file_header, unknown4AC                                               		) == 0x000004AC);
-		static_assert(offsetof(s_cache_file_header, unknown4B0                                               		) == 0x000004B0);
-		static_assert(offsetof(s_cache_file_header, unknown4B4                                               		) == 0x000004B4);
-		static_assert(offsetof(s_cache_file_header, unknown4B8                                               		) == 0x000004B8);
-		static_assert(offsetof(s_cache_file_header, gap4BC                                                   		) == 0x000004BC);
-		static_assert(offsetof(s_cache_file_header, unknown18E94                                             		) == 0x00018E94);
-		static_assert(offsetof(s_cache_file_header, unknown18E95                                             		) == 0x00018E95);
-		static_assert(offsetof(s_cache_file_header, unknown18E96                                             		) == 0x00018E96);
-		static_assert(offsetof(s_cache_file_header, unknown18E97                                             		) == 0x00018E97);
-		static_assert(offsetof(s_cache_file_header, insertion_point_resource_usage                           		) == 0x00018E98);
-		static_assert(offsetof(s_cache_file_header, gap1D728                                                 		) == 0x0001D728);
-		static_assert(offsetof(s_cache_file_header, late_binding_tag_reference_fixup_info_count              		) == 0x0001D738);
-		static_assert(offsetof(s_cache_file_header, late_binding_tag_reference_fixup_info_address            		) == 0x0001D73C);
-		static_assert(offsetof(s_cache_file_header, cache_file_fixups_count                                  		) == 0x0001D740);
-		static_assert(offsetof(s_cache_file_header, cache_file_fixups_address                                		) == 0x0001D744);
-		static_assert(offsetof(s_cache_file_header, gap1D748                                                 		) == 0x0001D748);
-		static_assert(offsetof(s_cache_file_header, footer_signature                                         		) == 0x0001DFFC);
-		
-		static constexpr int32_t k_cache_file_header_size2 = offsetof(s_cache_file_header, footer_signature) + 4;
-		static constexpr int32_t k_cache_file_header_size = sizeof(s_cache_file_header);
-		//static_assert(k_cache_file_header_size == 0x1E000);
+		static constexpr size_t k_xbox360_cache_file_header = sizeof(s_cache_file_header);
+		static_assert(k_xbox360_cache_file_header == 0x1E000);
 
 		struct s_cache_file_tag_group
 		{
-			tag group_tags[3];
+			tag group_tag;
+			tag parent_group_tags[2];
 			uint32_t name;
 		};
 		static_assert(sizeof(s_cache_file_tag_group) == 0x10);
@@ -274,24 +183,24 @@ namespace halo4
 		struct s_cache_file_tag_instance
 		{
 			unsigned short group_index;
-			unsigned short identifier;
-			uint32_t address;
+			unsigned short tag_index_datum_header;
+			uint32_t base_address;
 		};
 		static_assert(sizeof(s_cache_file_tag_instance) == 0x8);
 
-		struct s_cache_file_tag_global_instance
+		struct s_cache_file_global_tag_index
 		{
 			uint32_t group_tag;
-			int32_t datum_index;
+			int32_t tag_index;
 		};
-		static_assert(sizeof(s_cache_file_tag_global_instance) == 0x8);
+		static_assert(sizeof(s_cache_file_global_tag_index) == 0x8);
 
-		struct s_cache_file_tag_interop
+		struct s_cache_file_tag_interop_type_fixup
 		{
-			dword page_address;
-			int32_t type_index;
+			dword interop_address;
+			int32_t cache_file_interop_type;
 		};
-		static_assert(sizeof(s_cache_file_tag_interop) == 0x8);
+		static_assert(sizeof(s_cache_file_tag_interop_type_fixup) == 0x8);
 
 		struct s_section
 		{
@@ -304,17 +213,15 @@ namespace halo4
 		{
 			s_section tag_groups; // s_cache_file_tag_group
 			s_section tag_instances; // s_cache_file_tag_instance
-			s_section global_tag_instances; // s_cache_file_tag_global_instance
-			s_section tag_interop_table; // s_cache_file_tag_interop
+			s_section global_tag_indices; // s_cache_file_global_tag_index
+			s_section tag_interop_fixups; // s_cache_file_tag_interop_type_fixup
 			int32_t unknown20;
-			dword checksum;
-			uint32_t tags_signature;
+			dword tags_checksum;
+			uint32_t signature;
 		};
 		static constexpr size_t k_cache_file_tags_header = sizeof(s_cache_file_tags_header);
 		static_assert(k_cache_file_tags_header == 0x2C);
 
 		bool cache_file_header_verify(s_cache_file_header& header);
 	}
-
-	
 }

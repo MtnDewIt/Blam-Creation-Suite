@@ -19,6 +19,7 @@ defined(BCS_BUILD_HIGH_LEVEL_HALOREACH) || \
 defined(BCS_BUILD_HIGH_LEVEL_HALO4) || \
 defined(BCS_BUILD_HIGH_LEVEL_GROUNDHOG)
 #include "gen3\gen3_cache_file_header.h"
+#include "gen4\gen4_cache_file_header.h"
 #endif
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO3
 #include "halo3\halo3_cache_file_header.h"

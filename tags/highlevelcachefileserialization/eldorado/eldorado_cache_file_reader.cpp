@@ -86,7 +86,7 @@ BCS_RESULT c_eldorado_cache_file_reader::get_section_buffer(gen3::e_cache_file_s
 {
 	switch (section_index)
 	{
-	case gen3::_cache_file_section_index_tags:
+	case gen3::_cache_file_tag_section:
 		if (t_memory_mapped_file* tags_cache_file = memory_mapped_files[_eldorado_file_type_tags_cache])
 		{
 			s_memory_mapped_file_info const& memory_mapped_file_info = memory_mapped_file_infos[_eldorado_file_type_tags_cache];

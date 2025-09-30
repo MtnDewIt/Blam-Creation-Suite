@@ -89,7 +89,7 @@ BCS_RESULT c_infinite_module_file_reader::get_string_buffer_fixup_offset_hack(ui
 
 BCS_RESULT c_infinite_module_file_reader::get_build_info(s_cache_file_build_info& build_info) const
 {
-	build_info.file_version = module_file_header->file_version;
+	build_info.version = module_file_header->file_version;
 	//build_info.file_length = module_file_header->file_length;
 	//build_info.file_compressed_length = cache_file_header->file_compressed_length;
 	//build_info.source_file = cache_file_header->source_file;
@@ -197,13 +197,13 @@ BCS_RESULT c_infinite_module_file_reader::get_buffer(e_cache_file_buffer_index b
 		return rs;
 	}
 	case _debug_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_debug, buffer_info);
+		return get_section_buffer(gen3::_cache_file_debug_section, buffer_info);
 	case _tag_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_tags, buffer_info);
+		return get_section_buffer(gen3::_cache_file_tag_section, buffer_info);
 	case _resources_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_resource, buffer_info);
+		return get_section_buffer(gen3::_cache_file_resource_section, buffer_info);
 	case _localization_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_localization, buffer_info);
+		return get_section_buffer(gen3::_cache_file_language_pack_section, buffer_info);
 	default:
 		rs = BCS_E_UNSUPPORTED;
 	}

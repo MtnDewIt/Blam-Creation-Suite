@@ -54,11 +54,11 @@ BCS_RESULT c_halo1_cache_file_reader::get_build_info(s_cache_file_build_info& bu
 	build_info = {};
 	if(cache_file_header)
 	{
-		build_info.file_version = cache_file_header->file_version;
-		build_info.file_length = cache_file_header->file_length;
+		build_info.version = cache_file_header->file_version;
+		build_info.size = cache_file_header->file_length;
 		//build_info.file_compressed_length = cache_file_header->file_compressed_length;
 		//build_info.source_file = cache_file_header->source_file;
-		build_info.build_version = cache_file_header->build_version;
+		build_info.build_number = cache_file_header->build_version;
 		//build_info.scenario_type = cache_file_header->scenario_type;
 		//build_info.scenario_load_type = cache_file_header->scenario_load_type;
 		//build_info.tracked_build = cache_file_header->tracked_build;
@@ -106,7 +106,7 @@ BCS_RESULT c_halo1_cache_file_reader::get_section_buffer(gen3::e_cache_file_sect
 {
 	if (is_resource_file)
 	{
-		if (section_index == gen3::_cache_file_section_index_debug)
+		if (section_index == gen3::_cache_file_debug_section)
 		{
 			buffer_info.begin = file_info.file_view_begin + cache_file_resource_header->tag_names_offset;
 			buffer_info.end = nullptr;
@@ -116,7 +116,7 @@ BCS_RESULT c_halo1_cache_file_reader::get_section_buffer(gen3::e_cache_file_sect
 
 			return BCS_S_OK;
 		}
-		if (section_index == gen3::_cache_file_section_index_tags)
+		if (section_index == gen3::_cache_file_tag_section)
 		{
 			buffer_info.begin = file_info.file_view_begin + cache_file_resource_header->tag_data_offset;
 			buffer_info.end = nullptr;
@@ -129,7 +129,7 @@ BCS_RESULT c_halo1_cache_file_reader::get_section_buffer(gen3::e_cache_file_sect
 	}
 	else
 	{
-		if (section_index == gen3::_cache_file_section_index_tags || section_index == gen3::_cache_file_section_index_debug)
+		if (section_index == gen3::_cache_file_tag_section || section_index == gen3::_cache_file_debug_section)
 		{
 			buffer_info.begin = file_info.file_view_begin + cache_file_header->tag_data_offset;
 			buffer_info.end = buffer_info.begin + cache_file_header->tag_data_size;
@@ -153,11 +153,11 @@ BCS_RESULT c_halo1_cache_file_reader::get_buffer(e_cache_file_buffer_index buffe
 		buffer_info.size = static_cast<unsigned long>(file_info.file_size);
 		return BCS_S_OK;
 	case _debug_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_debug, buffer_info);
+		return get_section_buffer(gen3::_cache_file_debug_section, buffer_info);
 	case _tag_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_tags, buffer_info);
+		return get_section_buffer(gen3::_cache_file_tag_section, buffer_info);
 	case _resources_section_buffer:
-		return get_section_buffer(gen3::_cache_file_section_index_resource, buffer_info);
+		return get_section_buffer(gen3::_cache_file_resource_section, buffer_info);
 	default:
 		return BCS_E_UNSUPPORTED;
 	}
