@@ -2,7 +2,73 @@
 
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO4
 
-template<> void byteswap_inplace(halo4::xbox360::s_cache_file_header& header)
+template<> BCS_SHARED void byteswap_inplace(halo4::pc::s_cache_file_header& header) 
+{
+	byteswap_inplace(header.header_signature);
+	byteswap_inplace(header.version);
+	byteswap_inplace(header.size);
+	byteswap_inplace(header.compressed_file_padding);
+	byteswap_inplace(header.tags_offset);
+	byteswap_inplace(header.total_tags_size);
+	byteswap_inplace(header.scenario_type);
+	byteswap_inplace(header.shared_cache_file_type);
+	byteswap_inplace(header.uncompressed);
+	byteswap_inplace(header.tracked);
+	byteswap_inplace(header.valid_shared_resource_usage);
+	byteswap_inplace(header.header_flags);
+	byteswap_inplace(header.debug_tag_name_count);
+	byteswap_inplace(header.debug_tag_name_data_offset);
+	byteswap_inplace(header.debug_tag_name_data_size);
+	byteswap_inplace(header.debug_tag_name_index_offset);
+	byteswap_inplace(header.string_id_count);
+	byteswap_inplace(header.string_id_data_count);
+	byteswap_inplace(header.string_id_index_offset);
+	byteswap_inplace(header.string_id_data_offset);
+	byteswap_inplace(header.string_id_namespace_count);
+	byteswap_inplace(header.string_id_namespace_offset);
+	byteswap_inplace(header.shared_creation_date);
+	byteswap_inplace(header.unknown1);
+	byteswap_inplace(header.creator_name);
+	byteswap_inplace(header.build_number);
+	byteswap_inplace(header.name);
+	byteswap_inplace(header.tag_path);
+	byteswap_inplace(header.path);
+	byteswap_inplace(header.expected_base_address);
+	byteswap_inplace(header.tags_header_when_loaded);
+	byteswap_inplace(header.unknown2);
+	byteswap_inplace(header.tag_post_link_buffer);
+	byteswap_inplace(header.tag_language_dependent_read_only_buffer);
+	byteswap_inplace(header.tag_language_dependent_read_write_buffer);
+	byteswap_inplace(header.tag_language_neutral_read_write_buffer);
+	byteswap_inplace(header.tag_language_neutral_write_combined_buffer);
+	byteswap_inplace(header.tag_language_neutral_read_only_buffer);
+	byteswap_inplace(header.realtime_checksum);
+	byteswap_inplace(header.content_hash_mask);
+	byteswap_inplace(header.signature_marker);
+	byteswap_inplace(header.content_hashes);
+	byteswap_inplace(header.rsa_key_blob_hash);
+	byteswap_inplace(header.rsa_signature);
+	byteswap_inplace(header.section_offsets);
+	byteswap_inplace(header.original_section_bounds);
+	byteswap_inplace(header.shared_resource_usage);
+	byteswap_inplace(header.unknown1D728);
+	byteswap_inplace(header.late_binding_tag_reference_fixup_info_count);
+	byteswap_inplace(header.late_binding_tag_reference_fixup_info_address);
+	byteswap_inplace(header.cache_file_fixups_count);
+	byteswap_inplace(header.cache_file_fixups_address);
+	byteswap_inplace(header.unknown1D738);
+	byteswap_inplace(header.unknown1D73C);
+	byteswap_inplace(header.unknown1D740);
+	byteswap_inplace(header.unknown1D744);
+	byteswap_inplace(header.unknown1D748);
+	byteswap_inplace(header.unknown1D74C);
+	byteswap_inplace(header.unknown1D768);
+	byteswap_inplace(header.unknown1D76C);
+	byteswap_inplace(header.padding);
+	byteswap_inplace(header.footer_signature);
+}
+
+template<> BCS_SHARED void byteswap_inplace(halo4::xbox360::s_cache_file_header& header)
 {
 	byteswap_inplace(header.header_signature);
 	byteswap_inplace(header.version);
@@ -77,44 +143,54 @@ template<> void byteswap_inplace(halo4::xbox360::s_cache_file_header& header)
 	byteswap_inplace(header.footer_signature);
 }
 
-template<> void byteswap_inplace<halo4::xbox360::s_section>(halo4::xbox360::s_section& section)
+template<> BCS_SHARED void byteswap_inplace(halo4::s_section& section)
 {
 	byteswap_inplace(section.count);
 	byteswap_inplace(section.address);
 }
 
-template<> void byteswap_inplace<halo4::xbox360::s_cache_file_tag_group>(halo4::xbox360::s_cache_file_tag_group& tag_group)
+template<> BCS_SHARED void byteswap_inplace(halo4::s_cache_file_tag_group& tag_group)
 {
 	byteswap_inplace(tag_group.group_tag);
 	byteswap_inplace(tag_group.name);
 }
 
-template<> void byteswap_inplace<halo4::xbox360::s_cache_file_tag_instance>(halo4::xbox360::s_cache_file_tag_instance& tag_instance)
+template<> BCS_SHARED void byteswap_inplace(halo4::s_cache_file_tag_instance& tag_instance)
 {
 	byteswap_inplace(tag_instance.group_index);
 	byteswap_inplace(tag_instance.tag_index_datum_header);
 	byteswap_inplace(tag_instance.base_address);
 }
 
-template<> void byteswap_inplace<halo4::xbox360::s_cache_file_global_tag_index>(halo4::xbox360::s_cache_file_global_tag_index& tag_global_instance)
+template<> BCS_SHARED void byteswap_inplace(halo4::s_cache_file_global_tag_index& tag_global_instance)
 {
 	byteswap_inplace(tag_global_instance.group_tag);
 	byteswap_inplace(tag_global_instance.tag_index);
 }
 
-template<> void byteswap_inplace<halo4::xbox360::s_cache_file_tag_interop_type_fixup>(halo4::xbox360::s_cache_file_tag_interop_type_fixup& tag_interop)
+template<> BCS_SHARED void byteswap_inplace(halo4::s_cache_file_tag_interop_type_fixup& tag_interop)
 {
 	byteswap_inplace(tag_interop.interop_address);
 	byteswap_inplace(tag_interop.cache_file_interop_type);
 }
 
-template<> void byteswap_inplace<halo4::xbox360::s_cache_file_tags_header>(halo4::xbox360::s_cache_file_tags_header& tags_header)
+template<> BCS_SHARED void byteswap_inplace(halo4::pc::s_cache_file_tags_header& tags_header)
 {
 	byteswap_inplace(tags_header.tag_groups);
 	byteswap_inplace(tags_header.tag_instances);
 	byteswap_inplace(tags_header.global_tag_indices);
 	byteswap_inplace(tags_header.tag_interop_fixups);
+	byteswap_inplace(tags_header.tags_checksum);
 	byteswap_inplace(tags_header.unknown20);
+	byteswap_inplace(tags_header.signature);
+}
+
+template<> BCS_SHARED void byteswap_inplace(halo4::xbox360::s_cache_file_tags_header& tags_header)
+{
+	byteswap_inplace(tags_header.tag_groups);
+	byteswap_inplace(tags_header.tag_instances);
+	byteswap_inplace(tags_header.global_tag_indices);
+	byteswap_inplace(tags_header.tag_interop_fixups);
 	byteswap_inplace(tags_header.tags_checksum);
 	byteswap_inplace(tags_header.signature);
 }

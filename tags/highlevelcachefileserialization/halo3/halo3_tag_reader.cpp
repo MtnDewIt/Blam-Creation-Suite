@@ -93,7 +93,7 @@ BCS_RESULT c_halo3_tag_reader::read_tags_header()
 	case _platform_type_xbox_360:
 		xbox360_tags_header = *reinterpret_cast<const ::halo3::xbox360::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
 		byteswap_inplace(xbox360_tags_header);
-		if (xbox360_tags_header.tags_signature != 'tags')
+		if (xbox360_tags_header.signature != 'tags')
 		{
 			return BCS_E_FAIL;
 		}
