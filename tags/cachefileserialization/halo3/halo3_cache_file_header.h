@@ -25,22 +25,22 @@ namespace halo3
 	};
 	static_assert(sizeof(s_cache_file_global_tag_index) == 0x8);
 
-	struct s_cache_file_tag_interop_type_fixup
-	{
-		dword interop_address;
-		int32_t cache_file_interop_type;
-	};
-	static_assert(sizeof(s_cache_file_tag_interop_type_fixup) == 0x8);
-
-	struct s_section
-	{
-		uint32_t count = 0;
-		intptr32_t address = 0;
-	};
-	static_assert(sizeof(s_section) == 0x8);
-
 	namespace pc
 	{
+		struct s_cache_file_tag_interop_type_fixup
+		{
+			qword interop_address;
+			int32_t cache_file_interop_type;
+		};
+		static_assert(sizeof(s_cache_file_tag_interop_type_fixup) == 0x10);
+
+		struct s_section
+		{
+			uint32_t count = 0;
+			intptr64_t address = 0;
+		};
+		static_assert(sizeof(s_section) == 0x10);
+
 #pragma pack(push, 8)
 		struct s_cache_file_header
 		{
@@ -100,21 +100,36 @@ namespace halo3
 		static constexpr size_t k_pc_cache_file_header = sizeof(s_cache_file_header);
 		static_assert(k_pc_cache_file_header == 0x4000);
 
+#pragma pack(push, 8)
 		struct s_cache_file_tags_header
 		{
-			s_section tag_groups; // s_cache_file_tag_group (should be a 64 bit pointer)
-			s_section tag_instances; // s_cache_file_tag_instance (should be a 64 bit pointer)
-			s_section global_tag_indices; // s_cache_file_global_tag_index (should be a 64 bit pointer)
-			s_section tag_interop_fixups; // s_cache_file_tag_interop_type_fixup (should be a 64 bit pointer)
-			int32_t unknown20;
+			s_section tag_groups; // s_cache_file_tag_group
+			s_section tag_instances; // s_cache_file_tag_instance
+			s_section global_tag_indices; // s_cache_file_global_tag_index
+			s_section tag_interop_fixups; // s_cache_file_tag_interop_type_fixup
 			dword tags_checksum;
 			uint32_t signature;
 		};
+#pragma pack(pop)
 		static constexpr size_t k_pc_cache_file_tags_header = sizeof(s_cache_file_tags_header);
-		static_assert(k_pc_cache_file_tags_header == 0x2C);
+		static_assert(k_pc_cache_file_tags_header == 0x48);
 	}
 	namespace xbox360
 	{
+		struct s_cache_file_tag_interop_type_fixup
+		{
+			dword interop_address;
+			int32_t cache_file_interop_type;
+		};
+		static_assert(sizeof(s_cache_file_tag_interop_type_fixup) == 0x8);
+
+		struct s_section
+		{
+			uint32_t count = 0;
+			intptr32_t address = 0;
+		};
+		static_assert(sizeof(s_section) == 0x8);
+
 #pragma pack(push, 4)
 		struct s_cache_file_header	
 		{
@@ -177,6 +192,7 @@ namespace halo3
 		static constexpr size_t k_xbox360_cache_file_header = sizeof(s_cache_file_header);
 		static_assert(k_xbox360_cache_file_header == 0x3000);
 
+#pragma pack(push, 4)
 		struct s_cache_file_tags_header
 		{
 			s_section tag_groups; // s_cache_file_tag_group
@@ -186,11 +202,26 @@ namespace halo3
 			dword tags_checksum;
 			uint32_t signature;
 		};
+#pragma pack(pop)
 		static constexpr size_t k_xbox360_cache_file_tags_header = sizeof(s_cache_file_tags_header);
 		static_assert(k_xbox360_cache_file_tags_header == 0x28);
 	}
 	namespace xboxone 
 	{
+		struct s_cache_file_tag_interop_type_fixup
+		{
+			qword interop_address;
+			int32_t cache_file_interop_type;
+		};
+		static_assert(sizeof(s_cache_file_tag_interop_type_fixup) == 0x10);
+
+		struct s_section
+		{
+			uint32_t count = 0;
+			intptr64_t address = 0;
+		};
+		static_assert(sizeof(s_section) == 0x10);
+
 #pragma pack(push, 8)
 		struct s_cache_file_header
 		{
@@ -260,16 +291,18 @@ namespace halo3
 		static constexpr size_t k_xboxone_cache_file_header = sizeof(s_cache_file_header);
 		static_assert(k_xboxone_cache_file_header == 0x3000);
 
+#pragma pack(push, 8)
 		struct s_cache_file_tags_header 
 		{
-			s_section tag_groups; // s_cache_file_tag_group (should be a 64 bit pointer)
-			s_section tag_instances; // s_cache_file_tag_instance (should be a 64 bit pointer)
-			s_section global_tag_indices; // s_cache_file_global_tag_index (should be a 64 bit pointer)
-			s_section tag_interop_fixups; // s_cache_file_tag_interop_type_fixup (should be a 64 bit pointer)
+			s_section tag_groups; // s_cache_file_tag_group
+			s_section tag_instances; // s_cache_file_tag_instance
+			s_section global_tag_indices; // s_cache_file_global_tag_index
+			s_section tag_interop_fixups; // s_cache_file_tag_interop_type_fixup
 			dword tags_checksum;
 			uint32_t signature;
 		};
+#pragma pack(pop)
 		static constexpr size_t k_xboxone_cache_file_tags_header = sizeof(s_cache_file_tags_header);
-		static_assert(k_xboxone_cache_file_tags_header == 0x28);
+		static_assert(k_xboxone_cache_file_tags_header == 0x48);
 	}
 }

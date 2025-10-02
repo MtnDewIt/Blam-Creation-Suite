@@ -50,45 +50,45 @@ c_halo3_cache_cluster::c_halo3_cache_cluster(c_halo3_cache_file_reader** cache_r
 		{
 			tag_readers[cache_reader] = new() c_halo3_tag_reader(*this, *cache_reader);
 		}
-
-		
 	}
 
 	for (c_halo3_cache_file_reader* cache_reader : this->cache_readers)
 	{
-		c_halo3_tag_reader* tag_reader;
-		if (BCS_SUCCEEDED(get_tag_reader(*cache_reader, tag_reader)))
-		{
-			if (BCS_FAILED(rs = tag_reader->init_shared_files_table()))
-			{
-				throw(rs);
-			}
-
-			if (BCS_FAILED(rs = tag_reader->init_interop_table()))
-			{
-				throw(rs);
-			}
-			if (BCS_FAILED(rs = tag_reader->init_resource_table()))
-			{
-				throw(rs);
-			}
-		}
+		// #TODO: Handle resource fail over (have correct definitions should fix this)
+		//c_halo3_tag_reader* tag_reader;
+		//if (BCS_SUCCEEDED(get_tag_reader(*cache_reader, tag_reader)))
+		//{
+		//	if (BCS_FAILED(rs = tag_reader->init_shared_files_table()))
+		//	{
+		//		throw(rs);
+		//	}
+		//
+		//	if (BCS_FAILED(rs = tag_reader->init_interop_table()))
+		//	{
+		//		throw(rs);
+		//	}
+		//	if (BCS_FAILED(rs = tag_reader->init_resource_table()))
+		//	{
+		//		throw(rs);
+		//	}
+		//}
 	}	
 	
 	for (c_halo3_cache_file_reader* cache_reader : this->cache_readers)
 	{
-		c_halo3_tag_reader* tag_reader;
-		if (BCS_SUCCEEDED(get_tag_reader(*cache_reader, tag_reader)))
-		{
-			if (BCS_FAILED(rs = tag_reader->init_interops()))
-			{
-				throw(rs);
-			}
-			if (BCS_FAILED(rs = tag_reader->init_resources()))
-			{
-				throw(rs);
-			}
-		}
+		// #TODO: Handle resource fail over (have correct definitions should fix this)
+		//c_halo3_tag_reader* tag_reader;
+		//if (BCS_SUCCEEDED(get_tag_reader(*cache_reader, tag_reader)))
+		//{
+		//	if (BCS_FAILED(rs = tag_reader->init_interops()))
+		//	{
+		//		throw(rs);
+		//	}
+		//	if (BCS_FAILED(rs = tag_reader->init_resources()))
+		//	{
+		//		throw(rs);
+		//	}
+		//}
 	}
 }
 

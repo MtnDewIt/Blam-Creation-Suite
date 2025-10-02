@@ -40,12 +40,13 @@ c_halo3_debug_reader::c_halo3_debug_reader(c_halo3_cache_cluster& cache_cluster,
 	int32_t string_id_buffer_relative_offset = string_id_string_storage_offset - buffers_info.debug_section_buffer.offset;
 	const char* encrypted_string_id_buffer = reinterpret_cast<const char*>(buffers_info.debug_section_buffer.begin + string_id_buffer_relative_offset);
 
-	string_id_buffer = static_cast<char*>(tracked_aligned_malloc(string_id_string_storage_size, 16));
-	if (string_id_buffer == nullptr)
-	{
-		throw(BCS_E_FAIL);
-	}
-	memcpy(string_id_buffer, encrypted_string_id_buffer, string_id_string_storage_size);
+	// #TODO: Fix (tracked_aligned_malloc fails, either we're reading the wrong value for the storage size or the data itself isn't aligned properly)
+	//string_id_buffer = static_cast<char*>(tracked_aligned_malloc(string_id_string_storage_size, 16));
+	//if (string_id_buffer == nullptr)
+	//{
+	//	throw(BCS_E_FAIL);
+	//}
+	//memcpy(string_id_buffer, encrypted_string_id_buffer, string_id_string_storage_size);
 	//aes128_decrypt(encrypted_string_id_buffer, string_id_buffer, cache_file_header.string_id_string_storage_size, c_halo3_cache_file_reader::k_string_id_encryption_key);
 
 	int32_t file_table_index_buffer_relative_offset = file_table_indices_offset - buffers_info.debug_section_buffer.offset;
@@ -54,12 +55,13 @@ c_halo3_debug_reader::c_halo3_debug_reader(c_halo3_cache_cluster& cache_cluster,
 	int32_t file_table_buffer_relative_offset = file_table_offset - buffers_info.debug_section_buffer.offset;
 	const char* encrypted_file_table_buffer = reinterpret_cast<const char*>(buffers_info.debug_section_buffer.begin + file_table_buffer_relative_offset);
 
-	file_table_buffer = static_cast<char*>(tracked_aligned_malloc(file_table_length, 16));
-	if (file_table_buffer == nullptr)
-	{
-		throw(BCS_E_FAIL);
-	}
-	memcpy(file_table_buffer, encrypted_file_table_buffer, file_table_length);
+	// #TODO: Fix (tracked_aligned_malloc fails, either we're reading the wrong value for the table length or the data itself isn't aligned properly)
+	//file_table_buffer = static_cast<char*>(tracked_aligned_malloc(file_table_length, 16));
+	//if (file_table_buffer == nullptr)
+	//{
+	//	throw(BCS_E_FAIL);
+	//}
+	//memcpy(file_table_buffer, encrypted_file_table_buffer, file_table_length);
 	//aes128_decrypt(encrypted_file_table_buffer, file_table_buffer, cache_file_header.file_table_length, c_halo3_cache_file_reader::k_file_name_encryption_key);
 
 	
@@ -91,7 +93,9 @@ BCS_RESULT c_halo3_debug_reader::string_id_to_string(uint32_t string_id_index, u
 		return rs;
 	}
 
-	int32_t string_id_buffer_offset = _byteswap_ulong(string_id_index_buffer[string_index]);
+	// #TODO: Handle big endian 
+	//int32_t string_id_buffer_offset = _byteswap_ulong(string_id_index_buffer[string_index]);
+	int32_t string_id_buffer_offset = string_id_index_buffer[string_index];
 	string = string_id_buffer + string_id_buffer_offset;
 
 	return rs;
@@ -113,7 +117,9 @@ BCS_RESULT c_halo3_debug_reader::get_tag_filepath(uint32_t tag_index, const char
 		return BCS_E_FAIL;
 	}
 
-	uint32_t file_buffer_offset = _byteswap_ulong(file_table_index_buffer[tag_index]);
+	// #TODO: Handle big endian 
+	//uint32_t file_buffer_offset = _byteswap_ulong(file_table_index_buffer[tag_index]);
+	uint32_t file_buffer_offset = file_table_index_buffer[tag_index];
 	filepath = file_table_buffer + file_buffer_offset;
 
 	return rs;

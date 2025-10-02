@@ -180,7 +180,37 @@ template<> BCS_SHARED void byteswap_inplace(halo3::xboxone::s_cache_file_header&
 	byteswap_inplace(header.footer_signature);
 }
 
-template<> BCS_SHARED void byteswap_inplace(halo3::s_section& section)
+template<> BCS_SHARED void byteswap_inplace(halo3::pc::s_cache_file_tag_interop_type_fixup& tag_interop)
+{
+	byteswap_inplace(tag_interop.interop_address);
+	byteswap_inplace(tag_interop.cache_file_interop_type);
+}
+
+template<> BCS_SHARED void byteswap_inplace(halo3::xbox360::s_cache_file_tag_interop_type_fixup& tag_interop)
+{
+	byteswap_inplace(tag_interop.interop_address);
+	byteswap_inplace(tag_interop.cache_file_interop_type);
+}
+
+template<> BCS_SHARED void byteswap_inplace(halo3::xboxone::s_cache_file_tag_interop_type_fixup& tag_interop)
+{
+	byteswap_inplace(tag_interop.interop_address);
+	byteswap_inplace(tag_interop.cache_file_interop_type);
+}
+
+template<> BCS_SHARED void byteswap_inplace(halo3::pc::s_section& section)
+{
+	byteswap_inplace(section.count);
+	byteswap_inplace(section.address);
+}
+
+template<> BCS_SHARED void byteswap_inplace(halo3::xbox360::s_section& section)
+{
+	byteswap_inplace(section.count);
+	byteswap_inplace(section.address);
+}
+
+template<> BCS_SHARED void byteswap_inplace(halo3::xboxone::s_section& section)
 {
 	byteswap_inplace(section.count);
 	byteswap_inplace(section.address);
@@ -206,19 +236,12 @@ template<> BCS_SHARED void byteswap_inplace(halo3::s_cache_file_global_tag_index
 	byteswap_inplace(tag_global_instance.tag_index);
 }
 
-template<> BCS_SHARED void byteswap_inplace(halo3::s_cache_file_tag_interop_type_fixup& tag_interop)
-{
-	byteswap_inplace(tag_interop.interop_address);
-	byteswap_inplace(tag_interop.cache_file_interop_type);
-}
-
 template<> BCS_SHARED void byteswap_inplace(halo3::pc::s_cache_file_tags_header& tags_header)
 {
 	byteswap_inplace(tags_header.tag_groups);
 	byteswap_inplace(tags_header.tag_instances);
 	byteswap_inplace(tags_header.global_tag_indices);
 	byteswap_inplace(tags_header.tag_interop_fixups);
-	byteswap_inplace(tags_header.unknown20);
 	byteswap_inplace(tags_header.tags_checksum);
 	byteswap_inplace(tags_header.signature);
 }

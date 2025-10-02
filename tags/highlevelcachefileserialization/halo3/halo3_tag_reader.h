@@ -49,6 +49,18 @@ private:
 		s_halo3_tag_instance_info* instance_info;
 	};
 
+	struct s_halo3_tag_interop_type_fixup 
+	{
+		qword interop_address;
+		int32_t cache_file_interop_type;
+	};
+
+	struct s_halo3_section 
+	{
+		uint32_t count = 0;
+		int64_t address = 0;
+	};
+
 	c_halo3_cache_cluster& cache_cluster;
 	c_halo3_cache_file_reader& cache_reader;
 
@@ -56,6 +68,7 @@ private:
 	{
 		::halo3::pc::s_cache_file_tags_header pc_tags_header;
 		::halo3::xbox360::s_cache_file_tags_header xbox360_tags_header;
+		::halo3::xboxone::s_cache_file_tags_header xboxone_tags_header;
 	};
 
 	using t_tag_groups = std::vector<c_halo3_tag_group*>;
@@ -69,7 +82,7 @@ private:
 	using t_tag_group_infos = std::vector<s_halo3_tag_group_info>;
 	using t_tag_instance_infos = std::vector<s_halo3_tag_instance_info>;
 	using t_tag_global_instance_infos = std::vector<s_halo3_tag_global_instance_info>;
-	using t_tag_interop_infos = std::vector<::halo3::s_cache_file_tag_interop_type_fixup>;
+	using t_tag_interop_infos = std::vector<s_halo3_tag_interop_type_fixup>;
 	using t_tag_instance_infos_by_index = std::unordered_map<uint32_t, s_halo3_tag_global_instance_info*>;
 
 	t_tag_group_infos tag_group_infos;
@@ -117,8 +130,8 @@ private:
 	BCS_RESULT get_tag_instance_info_by_tag_index(uint32_t tag_index, c_halo3_tag_instance*& instance_info);
 
 protected:
-	BCS_RESULT get_tag_groups_section(::halo3::s_section& tag_groups);
-	BCS_RESULT get_tag_instances_section(::halo3::s_section& tag_instances);
-	BCS_RESULT get_global_tag_instances_section(::halo3::s_section& global_tag_instances);
-	BCS_RESULT get_tag_interop_table_section(::halo3::s_section& tag_interop_table);
+	BCS_RESULT get_tag_groups_section(s_halo3_section& tag_groups);
+	BCS_RESULT get_tag_instances_section(s_halo3_section& tag_instances);
+	BCS_RESULT get_global_tag_instances_section(s_halo3_section& global_tag_instances);
+	BCS_RESULT get_tag_interop_table_section(s_halo3_section& tag_interop_table);
 };

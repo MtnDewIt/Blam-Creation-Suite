@@ -432,7 +432,7 @@ namespace blofeld::halo3::pc64
 	static constexpr uint32_t SHADER_BEAM_TAG = 'rmb ';
 	BCS_SHARED extern s_tag_group shader_beam_group;
 
-	static constexpr uint32_t SHADER_CONTRAIL_TAG = 'rmc\0';
+	static constexpr uint32_t SHADER_CONTRAIL_TAG = 'rmc';
 	BCS_SHARED extern s_tag_group shader_contrail_group;
 
 	static constexpr uint32_t SHADER_CORTANA_TAG = 'rmct';
@@ -453,7 +453,7 @@ namespace blofeld::halo3::pc64
 	static constexpr uint32_t SHADER_LIGHT_VOLUME_TAG = 'rmlv';
 	BCS_SHARED extern s_tag_group shader_light_volume_group;
 
-	static constexpr uint32_t SHADER_PARTICLE_TAG = 'rmp\0';
+	static constexpr uint32_t SHADER_PARTICLE_TAG = 'rmp';
 	BCS_SHARED extern s_tag_group shader_particle_group;
 
 	static constexpr uint32_t SHADER_SKIN_TAG = 'rmsk';
@@ -518,6 +518,15 @@ namespace blofeld::halo3::pc64
 
 	static constexpr uint32_t STYLE_TAG = 'styl';
 	BCS_SHARED extern s_tag_group style_group;
+
+	static constexpr uint32_t TAG_DATABASE_TAG = 'tag+';
+	BCS_SHARED extern s_tag_group tag_database_group;
+
+	static constexpr uint32_t TAG_TEMPLATE_UNIT_TEST_TAG = 'uttt';
+	BCS_SHARED extern s_tag_group tag_template_unit_test_group;
+
+	static constexpr uint32_t TEST_TAG_TAG = 'ttag';
+	BCS_SHARED extern s_tag_group test_tag_group;
 
 	static constexpr uint32_t TEXT_VALUE_PAIR_DEFINITION_TAG = 'sily';
 	BCS_SHARED extern s_tag_group text_value_pair_definition_group;

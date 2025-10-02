@@ -1380,6 +1380,33 @@ namespace blofeld::halo3::pc64
 		nullptr,
 		style_block_group_block);
 
+	// #TODO: Map this definition correctly if we even can :/
+	TAG_GROUP_V8(
+		"tag_database",
+		tag_database_group,
+		TAG_DATABASE_TAG,
+		1,
+		nullptr,
+		g_null_block_block);
+
+	// #TODO: Map this definition correctly if we even can :/
+	TAG_GROUP_V8(
+		"tag_template_unit_test",
+		tag_template_unit_test_group,
+		TAG_TEMPLATE_UNIT_TEST_TAG,
+		1,
+		nullptr,
+		g_null_block_block);
+
+	// #TODO: Map this definition correctly if we even can :/
+	TAG_GROUP_V8(
+		"test_tag",
+		test_tag_group,
+		TEST_TAG_TAG,
+		1,
+		nullptr,
+		g_null_block_block);
+
 	TAG_GROUP_V8(
 		"text_value_pair_definition",
 		text_value_pair_definition_group,

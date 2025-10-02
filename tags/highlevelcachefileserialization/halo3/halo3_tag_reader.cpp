@@ -90,6 +90,13 @@ BCS_RESULT c_halo3_tag_reader::read_tags_header()
 
 	switch (cache_cluster.engine_platform_build.platform_type)
 	{
+	case _platform_type_pc_64bit:
+		pc_tags_header = *reinterpret_cast<const ::halo3::pc::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
+		if (pc_tags_header.signature != 'tags')
+		{
+			return BCS_E_FAIL;
+		}
+		break;
 	case _platform_type_xbox_360:
 		xbox360_tags_header = *reinterpret_cast<const ::halo3::xbox360::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
 		byteswap_inplace(xbox360_tags_header);
@@ -98,9 +105,9 @@ BCS_RESULT c_halo3_tag_reader::read_tags_header()
 			return BCS_E_FAIL;
 		}
 		break;
-	case _platform_type_pc_64bit:
-		pc_tags_header = *reinterpret_cast<const ::halo3::pc::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
-		if (pc_tags_header.signature != 'tags')
+	case _platform_type_xbox_one:
+		xboxone_tags_header = *reinterpret_cast<const ::halo3::xboxone::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
+		if (xboxone_tags_header.signature != 'tags') 
 		{
 			return BCS_E_FAIL;
 		}
@@ -112,64 +119,112 @@ BCS_RESULT c_halo3_tag_reader::read_tags_header()
 	return rs;
 }
 
-BCS_RESULT c_halo3_tag_reader::get_tag_groups_section(::halo3::s_section& tag_groups)
+BCS_RESULT c_halo3_tag_reader::get_tag_groups_section(s_halo3_section& tag_groups)
 {
 	switch (cache_cluster.engine_platform_build.platform_type)
 	{
-	case _platform_type_xbox_360:
-		tag_groups = xbox360_tags_header.tag_groups;
+	case _platform_type_pc_64bit: 
+	{
+		tag_groups.count = pc_tags_header.tag_groups.count;
+		tag_groups.address = pc_tags_header.tag_groups.address;
 		return BCS_S_OK;
-	case _platform_type_pc_64bit:
-		tag_groups = pc_tags_header.tag_groups;
+	}
+	case _platform_type_xbox_360: 
+	{
+		tag_groups.count = xbox360_tags_header.tag_groups.count;
+		tag_groups.address = xbox360_tags_header.tag_groups.address;
 		return BCS_S_OK;
+	}
+	case _platform_type_xbox_one: 
+	{
+		tag_groups.count = xboxone_tags_header.tag_groups.count;
+		tag_groups.address = xboxone_tags_header.tag_groups.address;
+		return BCS_S_OK;
+	}
 	default:
 		return BCS_E_UNSUPPORTED;
 	}
 	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_tag_reader::get_tag_instances_section(::halo3::s_section& tag_instances)
+BCS_RESULT c_halo3_tag_reader::get_tag_instances_section(s_halo3_section& tag_instances)
 {
 	switch (cache_cluster.engine_platform_build.platform_type)
 	{
-	case _platform_type_xbox_360:
-		tag_instances = xbox360_tags_header.tag_instances;
+	case _platform_type_pc_64bit: 
+	{
+		tag_instances.count = pc_tags_header.tag_instances.count;
+		tag_instances.address = pc_tags_header.tag_instances.address;
 		return BCS_S_OK;
-	case _platform_type_pc_64bit:
-		tag_instances = pc_tags_header.tag_instances;
+	}
+	case _platform_type_xbox_360: 
+	{
+		tag_instances.count = xbox360_tags_header.tag_instances.count;
+		tag_instances.address = xbox360_tags_header.tag_instances.address;
 		return BCS_S_OK;
+	}
+	case _platform_type_xbox_one: 
+	{
+		tag_instances.count = xboxone_tags_header.tag_instances.count;
+		tag_instances.address = xboxone_tags_header.tag_instances.address;
+		return BCS_S_OK;
+	}
 	default:
 		return BCS_E_UNSUPPORTED;
 	}
 	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_tag_reader::get_global_tag_instances_section(::halo3::s_section& global_tag_instances)
+BCS_RESULT c_halo3_tag_reader::get_global_tag_instances_section(s_halo3_section& global_tag_instances)
 {
 	switch (cache_cluster.engine_platform_build.platform_type)
 	{
-	case _platform_type_xbox_360:
-		global_tag_instances = xbox360_tags_header.global_tag_indices;
+	case _platform_type_pc_64bit: 
+	{
+		global_tag_instances.count = pc_tags_header.global_tag_indices.count;
+		global_tag_instances.address = pc_tags_header.global_tag_indices.address;
 		return BCS_S_OK;
-	case _platform_type_pc_64bit:
-		global_tag_instances = pc_tags_header.global_tag_indices;
+	}
+	case _platform_type_xbox_360: 
+	{
+		global_tag_instances.count = xbox360_tags_header.global_tag_indices.count;
+		global_tag_instances.address = xbox360_tags_header.global_tag_indices.address;
 		return BCS_S_OK;
+	}
+	case _platform_type_xbox_one: 
+	{
+		global_tag_instances.count = xboxone_tags_header.global_tag_indices.count;
+		global_tag_instances.address = xboxone_tags_header.global_tag_indices.address;
+		return BCS_S_OK;
+	}
 	default:
 		return BCS_E_UNSUPPORTED;
 	}
 	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_tag_reader::get_tag_interop_table_section(::halo3::s_section& tag_interop_table)
+BCS_RESULT c_halo3_tag_reader::get_tag_interop_table_section(s_halo3_section& tag_interop_table)
 {
 	switch (cache_cluster.engine_platform_build.platform_type)
 	{
-	case _platform_type_xbox_360:
-		tag_interop_table = xbox360_tags_header.tag_interop_fixups;
+	case _platform_type_pc_64bit: 
+	{
+		tag_interop_table.count = pc_tags_header.tag_interop_fixups.count;
+		tag_interop_table.address = pc_tags_header.tag_interop_fixups.address;
 		return BCS_S_OK;
-	case _platform_type_pc_64bit:
-		tag_interop_table = pc_tags_header.tag_interop_fixups;
+	}
+	case _platform_type_xbox_360: 
+	{
+		tag_interop_table.count = xbox360_tags_header.tag_interop_fixups.count;
+		tag_interop_table.address = xbox360_tags_header.tag_interop_fixups.address;
 		return BCS_S_OK;
+	}
+	case _platform_type_xbox_one:
+	{
+		tag_interop_table.count = xboxone_tags_header.tag_interop_fixups.count;
+		tag_interop_table.address = xboxone_tags_header.tag_interop_fixups.address;
+		return BCS_S_OK;
+	}
 	default:
 		return BCS_E_UNSUPPORTED;
 	}
@@ -192,7 +247,7 @@ BCS_RESULT c_halo3_tag_reader::read_tag_groups()
 		return rs;
 	}
 
-	::halo3::s_section tag_groups_section;
+	s_halo3_section tag_groups_section;
 	if (BCS_FAILED(rs = get_tag_groups_section(tag_groups_section)))
 	{
 		return rs;
@@ -210,7 +265,8 @@ BCS_RESULT c_halo3_tag_reader::read_tag_groups()
 	{
 		s_halo3_tag_group_info& tag_group_info = tag_group_infos[group_index];
 		::halo3::s_cache_file_tag_group& tag_group = tag_group_info.group = tag_groups_read_pointer[group_index];
-		cache_reader.byteswap_inplace(tag_group);
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(tag_group);
 
 		tag group_tag = tag_group_info.group.group_tag;
 		if (group_tag == CACHE_FILE_SOUND_TAG)
@@ -227,10 +283,12 @@ BCS_RESULT c_halo3_tag_reader::read_tag_groups()
 		tag_group_info.blofeld_tag_group = blofeld_tag_group;
 		tag_group_info.tag_group = nullptr; // deferred : init_tag_groups
 
-		if (BCS_FAILED(rs = debug_reader->string_id_to_string(tag_group.name, tag_group_info.group_name)))
-		{
-			return rs;
-		}
+		// #TODO: Fix string id handling
+		tag_group_info.group_name = blofeld_tag_group->pretty_name;
+		//if (BCS_FAILED(rs = debug_reader->string_id_to_string(tag_group.name, tag_group_info.group_name)))
+		//{
+		//	return rs;
+		//}
 
 		
 	}
@@ -254,7 +312,7 @@ BCS_RESULT c_halo3_tag_reader::read_tag_instances()
 		return rs;
 	}
 
-	::halo3::s_section tag_instances_section;
+	s_halo3_section tag_instances_section;
 	if (BCS_FAILED(rs = get_tag_instances_section(tag_instances_section)))
 	{
 		return rs;
@@ -272,7 +330,8 @@ BCS_RESULT c_halo3_tag_reader::read_tag_instances()
 	{
 		s_halo3_tag_instance_info& tag_instance_info = tag_instance_infos[tag_index];
 		::halo3::s_cache_file_tag_instance& tag_instance = tag_instance_info.instance = tag_instances_read_pointer[tag_index];
-		cache_reader.byteswap_inplace(tag_instance);
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(tag_instance);
 
 		tag_instance_info.absolute_index = tag_index;
 		tag_instance_info.identifier = tag_instance.tag_index_datum_header;
@@ -328,7 +387,7 @@ BCS_RESULT c_halo3_tag_reader::read_tag_global_instances()
 		return rs;
 	}
 
-	::halo3::s_section global_tag_instances_section;
+	s_halo3_section global_tag_instances_section;
 	if (BCS_FAILED(rs = get_global_tag_instances_section(global_tag_instances_section)))
 	{
 		return rs;
@@ -346,7 +405,8 @@ BCS_RESULT c_halo3_tag_reader::read_tag_global_instances()
 	{
 		s_halo3_tag_global_instance_info& global_instance_info = tag_global_instance_infos[global_tag_index];
 		::halo3::s_cache_file_global_tag_index& global_tag_instance = global_instance_info.global_instance = global_tag_instances_read_pointer[global_tag_index];
-		cache_reader.byteswap_inplace(global_tag_instance);
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(global_tag_instance);
 
 		uint32_t tag_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(global_tag_instance.tag_index);
 
@@ -374,7 +434,7 @@ BCS_RESULT c_halo3_tag_reader::read_tag_interops()
 		return rs;
 	}
 
-	::halo3::s_section tag_interop_table_section;
+	s_halo3_section tag_interop_table_section;
 	if (BCS_FAILED(rs = get_tag_interop_table_section(tag_interop_table_section)))
 	{
 		return rs;
@@ -387,11 +447,12 @@ BCS_RESULT c_halo3_tag_reader::read_tag_interops()
 	}
 
 	tag_interop_infos.resize(tag_interop_table_section.count);
-	const ::halo3::s_cache_file_tag_interop_type_fixup* tag_interops_read_pointer = reinterpret_cast<const ::halo3::s_cache_file_tag_interop_type_fixup*>(tag_section_buffer.begin + tag_interops_relative_offset);
+	const s_halo3_tag_interop_type_fixup* tag_interops_read_pointer = reinterpret_cast<const s_halo3_tag_interop_type_fixup*>(tag_section_buffer.begin + tag_interops_relative_offset);
 	for (uint32_t interop_index = 0; interop_index < tag_interop_table_section.count; interop_index++)
 	{
-		::halo3::s_cache_file_tag_interop_type_fixup& tag_interop = tag_interop_infos[interop_index] = tag_interops_read_pointer[interop_index];
-		cache_reader.byteswap_inplace(tag_interop);
+		s_halo3_tag_interop_type_fixup& tag_interop = tag_interop_infos[interop_index] = tag_interops_read_pointer[interop_index];
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(tag_interop); #TODO: Handle this :/
 
 		
 	}
@@ -693,7 +754,8 @@ BCS_RESULT c_halo3_tag_reader::init_interop_table()
 	}
 
 	s_cache_file_resource_gestalt_block_struct resource_gestalt = *static_cast<const s_cache_file_resource_gestalt_block_struct*>(global_instance_info->instance_info->instance_data);
-	cache_reader.byteswap_inplace(resource_gestalt);
+	// #TODO: Handle big endian 
+	//cache_reader.byteswap_inplace(resource_gestalt);
 
 	const s_cache_file_resource_type_identifier_block* resource_type_identifiers;
 	if (BCS_FAILED(rs = page_offset_to_pointer(resource_gestalt.resource_type_identifiers_block.address, *reinterpret_cast<const void**>(&resource_type_identifiers))))
@@ -761,7 +823,7 @@ BCS_RESULT c_halo3_tag_reader::init_interops()
 	interop_containers[interop_count] = nullptr;
 	for (uint32_t interop_index = 0; interop_index < interop_count; interop_index++)
 	{
-		::halo3::s_cache_file_tag_interop_type_fixup& cache_file_tag_interop_entry = tag_interop_infos[interop_index];
+		s_halo3_tag_interop_type_fixup& cache_file_tag_interop_entry = tag_interop_infos[interop_index];
 
 		e_halo3_interop_type interop_type;
 		if (BCS_FAILED(rs = interop_type_index_to_halo3_interop_type(cache_file_tag_interop_entry.cache_file_interop_type, interop_type)))
@@ -1267,14 +1329,16 @@ BCS_RESULT c_halo3_tag_reader::init_shared_files_table()
 	if (resource_layout_table_global_instance_info->instance_info->instance_data)
 	{
 		s_cache_file_resource_layout_table_block_struct resource_layout_table = *static_cast<const s_cache_file_resource_layout_table_block_struct*>(resource_layout_table_global_instance_info->instance_info->instance_data);
-		cache_reader.byteswap_inplace(resource_layout_table);
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(resource_layout_table);
 
 		shared_files_block = resource_layout_table.shared_files_block;
 	}
 	else if (resource_gestalt_global_instance_info->instance_info->instance_data)
 	{
 		s_cache_file_resource_gestalt_block_struct resource_gestalt = *static_cast<const s_cache_file_resource_gestalt_block_struct*>(resource_gestalt_global_instance_info->instance_info->instance_data);
-		cache_reader.byteswap_inplace(resource_gestalt);
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(resource_gestalt);
 
 		shared_files_block = resource_gestalt.shared_files_block;
 	}
@@ -1291,7 +1355,8 @@ BCS_RESULT c_halo3_tag_reader::init_shared_files_table()
 	for (uint32_t shared_file_index = 0; shared_file_index < shared_files_block.count; shared_file_index++)
 	{
 		s_cache_file_shared_file_block shared_file = shared_files[shared_file_index];
-		cache_reader.byteswap_inplace(shared_file);
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(shared_file);
 
 		const char* dvd_relative_path = shared_file.dvd_relative_path.get_string();
 
@@ -1360,7 +1425,8 @@ BCS_RESULT c_halo3_tag_reader::get_compression_codec_by_index(int32_t codec_inde
 	if (resource_layout_table_global_instance_info->instance_info->instance_data)
 	{
 		s_cache_file_resource_layout_table_block_struct resource_layout_table = *static_cast<const s_cache_file_resource_layout_table_block_struct*>(resource_layout_table_global_instance_info->instance_info->instance_data);
-		cache_reader.byteswap_inplace(resource_layout_table);
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(resource_layout_table);
 
 		codec_identifiers_block = resource_layout_table.codec_identifiers_block;
 	}
@@ -1372,7 +1438,8 @@ BCS_RESULT c_halo3_tag_reader::get_compression_codec_by_index(int32_t codec_inde
 			return rs;
 		}
 		s_cache_file_resource_gestalt_block_struct resource_gestalt = *static_cast<const s_cache_file_resource_gestalt_block_struct*>(resource_gestalt_global_instance_info->instance_info->instance_data);
-		cache_reader.byteswap_inplace(resource_gestalt);
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(resource_gestalt);
 
 		codec_identifiers_block = resource_gestalt.codec_identifiers_block;
 	}

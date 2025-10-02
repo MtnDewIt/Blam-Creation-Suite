@@ -53,5 +53,6 @@ private:
 		s_cache_file_header cache_file_header;
 		::halo3::pc::s_cache_file_header pc_cache_file_header;
 		::halo3::xbox360::s_cache_file_header xbox360_cache_file_header;
+		::halo3::xboxone::s_cache_file_header xboxone_cache_file_header;
 	};
 };

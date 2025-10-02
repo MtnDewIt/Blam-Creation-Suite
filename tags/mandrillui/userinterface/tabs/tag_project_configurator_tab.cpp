@@ -441,6 +441,13 @@ void c_tag_project_configurator_tab::create_cache_cluster()
 			throw rs;
 		}
 
+		// #TODO: This need to be run in order for the tag context to be populated 
+		// #TODO: Handle when tags fail to allocate correctly, due to bad definitions
+		//if (BCS_FAILED(rs = high_level_transplant_context_execute_v2(*cache_cluster_transplant_context)))
+		//{
+		//	throw rs;
+		//}
+
 		debug_point;
 	}
 

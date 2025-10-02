@@ -78,6 +78,11 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 			{
 				*engine_platform_build = { _engine_type_halo3, _platform_type_xbox_360, _build_not_set };
 			}
+			else 
+			{
+				// #TODO: Add some extra validation here
+				*engine_platform_build = { _engine_type_halo3, _platform_type_xbox_one, _build_not_set };
+			}
 			return BCS_S_OK;
 		}
 		else if (header.file_version == 5)
@@ -139,6 +144,12 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 			}
 			// #TODO: validate retail build
 			*engine_platform_build = { _engine_type_halo1, _platform_type_pc_32bit, _build_halo1_pc_retail };
+			return BCS_S_OK;
+		}
+		else if (header.file_version == 13) 
+		{
+			// #TODO: Add some extra validation here
+			*engine_platform_build = { _engine_type_halo3, _platform_type_pc_64bit, _build_not_set };
 			return BCS_S_OK;
 		}
 		else if (header.file_version == 609)

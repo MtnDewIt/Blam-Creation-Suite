@@ -1186,15 +1186,17 @@ BCS_RESULT high_level_transplant_context_instances_initialize_v2(s_cache_cluster
 
 			const char* tag_data_position = static_cast<const char*>(tag_data_root);
 			c_tag_transplant_context tag_transplant_context(tag_instance, context.engine_platform_build);
-			if (BCS_FAILED(transplant_prototype(tag_transplant_context, tag_data_position, high_level_prototype)))
-			{
-				continue;
-			}
 
-			if (BCS_FAILED(transplant_prototype_tag_references(context, tag_instance, high_level_prototype)))
-			{
-				continue;
-			}
+			// #TODO: Handle failover in the event a given tag malloc fails
+			//if (BCS_FAILED(transplant_prototype(tag_transplant_context, tag_data_position, high_level_prototype)))
+			//{
+			//	continue;
+			//}
+			//
+			//if (BCS_FAILED(transplant_prototype_tag_references(context, tag_instance, high_level_prototype)))
+			//{
+			//	continue;
+			//}
 
 		}
 
