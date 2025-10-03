@@ -71,6 +71,8 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 	{
 		if (header.file_version == 5)
 		{
+			// 01.10.12.2276 - Halo 1 Xbox Release
+
 			halo1::pc::s_cache_file_header header;
 			if (!fread(&header, 1, sizeof(header), file_handle)) // #TODO: pipe BCS result
 			{
@@ -91,6 +93,8 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 		}
 		else if (header.file_version == 6)
 		{
+			// 01.05.22.0268 Halo 1 PC Beta
+
 			halo1::pc::s_cache_file_header header;
 			if (!fread(&header, 1, sizeof(header), file_handle)) // #TODO: pipe BCS result
 			{
@@ -110,6 +114,8 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 		}
 		else if (header.file_version == 7)
 		{
+			// 01.00.00.0564 - Halo 1 PC Release
+
 			halo1::demo::s_cache_file_header header;
 			if (!fread(&header, 1, sizeof(header), file_handle)) // #TODO: pipe BCS result
 			{
@@ -121,28 +127,46 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 		}
 		else if (header.file_version == 8) 
 		{
-
+			// 02.01.07.4998 - Halo 2 Alpha
+			// 02.06.28.07902 - Halo 2 Beta
+			// 02.09.27.09809 - Halo 2 Xbox
+			// 11081.07.04.30.0934.main - Halo 2 Vista
 		}
 		else if (header.file_version == 9) 
 		{
-
+			// 09699.07.05.01.1534.delta - Halo 3 Multiplayer Beta
 		}
 		else if (header.file_version == 11)
 		{
 			if (is_big_endian)
 			{
+				// 11855.07.08.20.2317.halo3_ship - Halo 3 Release
+				// 12065.08.08.26.0819.halo3_ship - Halo 3 Mythic Release
+				// 13895.09.04.27.2201.atlas_relea - Halo 3 ODST Release
 				*engine_platform_build = { _engine_type_halo3, _platform_type_xbox_360, _build_not_set };
 			}
 			else
 			{
 				// #TODO: Add some extra validation here
-				*engine_platform_build = { _engine_type_halo3, _platform_type_xbox_one, _build_not_set };
+				// Oct  1 2014 16:20:07 - Halo 3 Xbox One Cache Play
+				// Oct 30 2014 19:01:55 - Halo 3 Xbox One Cache Play
+				*engine_platform_build = { _engine_type_halo3, _platform_type_pc_64bit, _build_not_set };
 			}
 			return BCS_S_OK;
 		}
 		else if (header.file_version == 12) 
 		{
+			// 08516.10.02.19.1607.omaha_alpha - Reach Alpha
+			// 09449.10.03.25.1545.omaha_beta - Reach Pre Beta
+			// 09730.10.04.09.1309.omaha_delta - Reach Beta
+			// 11860.10.07.24.0147.omaha_relea - Reach Release
 
+			// 15119.12.05.31.0400.e3m60 - Halo 4 E3
+			// 20810.12.09.22.1647.main - Halo 4 Release
+			// 21122.12.11.21.0101.main - Halo 4 Release
+			// 21165.12.12.12.0112.main - Halo 4 Release
+			// 21339.13.02.05.0117.main - Halo 4 Release
+			// 21391.13.03.13.1711.main - Halo 4 Release
 		}
 		else if (header.file_version == 13) 
 		{
@@ -158,36 +182,43 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 			{
 			case 0: 
 			{
+				// 01.03.43.0000 - Halo 1 MCC Retail
 				*engine_platform_build = { _engine_type_halo1, _platform_type_pc_64bit, _build_not_set };
 				return BCS_S_OK;
 			}
 			case 1:
 			{
+				// its fucking empty - Halo 2 MCC Retail
 				*engine_platform_build = { _engine_type_halo2, _platform_type_pc_64bit, _build_not_set };
 				return BCS_S_OK;
 			}
 			case 2:
 			{
+				// Dec 21 2023 22:31:37 - Halo 3 MCC Retail
 				*engine_platform_build = { _engine_type_halo3, _platform_type_pc_64bit, _build_not_set };
 				return BCS_S_OK;
 			}
 			case 3:
 			{
+				// Apr  1 2023 17:35:22 - Halo 4 MCC Retail
 				*engine_platform_build = { _engine_type_halo4, _platform_type_pc_64bit, _build_not_set };
 				return BCS_S_OK;
 			}
 			case 4:
 			{
+				// Jun 13 2023 20:21:18 - Halo 2 Anniversary Multiplayer MCC Retail
 				*engine_platform_build = { _engine_type_groundhog, _platform_type_pc_64bit, _build_not_set };
 				return BCS_S_OK;
 			}
 			case 5:
 			{
+				// May 16 2023 11:44:41 - Halo 3 ODST MCC Retail
 				*engine_platform_build = { _engine_type_halo3odst, _platform_type_pc_64bit, _build_not_set };
 				return BCS_S_OK;
 			}
 			case 6:
 			{
+				// Jun 21 2023 15:35:31 - Halo Reach MCC Retail
 				*engine_platform_build = { _engine_type_haloreach, _platform_type_pc_64bit, _build_not_set };
 				return BCS_S_OK;
 			}
@@ -195,6 +226,8 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 		}
 		else if (header.file_version == 609)
 		{
+			// 01.00.00.0609 - Halo Custom Edition PC
+
 			halo1::pc::s_cache_file_header header;
 			if (!fread(&header, 1, sizeof(header), file_handle)) // #TODO: pipe BCS result
 			{
