@@ -54,18 +54,18 @@ BCS_RESULT c_halo1_cache_file_reader::get_build_info(s_cache_file_build_info& bu
 	build_info = {};
 	if(cache_file_header)
 	{
-		build_info.version = cache_file_header->file_version;
-		build_info.size = cache_file_header->file_length;
+		build_info.version = cache_file_header->version;
+		build_info.size = cache_file_header->size;
 		//build_info.file_compressed_length = cache_file_header->file_compressed_length;
 		//build_info.source_file = cache_file_header->source_file;
-		build_info.build_number = cache_file_header->build_version;
+		build_info.build_number = cache_file_header->build_number;
 		//build_info.scenario_type = cache_file_header->scenario_type;
 		//build_info.scenario_load_type = cache_file_header->scenario_load_type;
 		//build_info.tracked_build = cache_file_header->tracked_build;
 		//build_info.header_flags = cache_file_header->header_flags;
 		//build_info.shared_file_type_flags = cache_file_header->shared_file_type_flags;
 		//build_info.timestamp = cache_file_header->timestamp;
-		build_info.name = cache_file_header->scenario_name;
+		build_info.name = cache_file_header->name;
 		//build_info.relative_path = cache_file_header->relative_path;
 		//build_info.expected_base_address = cache_file_header->expected_base_address;
 		//build_info.xdk_version = cache_file_header->xdk_version;
@@ -131,9 +131,9 @@ BCS_RESULT c_halo1_cache_file_reader::get_section_buffer(gen3::e_cache_file_sect
 	{
 		if (section_index == gen3::_cache_file_tag_section || section_index == gen3::_cache_file_debug_section)
 		{
-			buffer_info.begin = file_info.file_view_begin + cache_file_header->tag_data_offset;
-			buffer_info.end = buffer_info.begin + cache_file_header->tag_data_size;
-			buffer_info.size = cache_file_header->tag_data_size;
+			buffer_info.begin = file_info.file_view_begin + cache_file_header->tags_offset;
+			buffer_info.end = buffer_info.begin + cache_file_header->tags_size;
+			buffer_info.size = cache_file_header->tags_size;
 			buffer_info.offset = 0;
 			buffer_info.offset_mask = 0;
 

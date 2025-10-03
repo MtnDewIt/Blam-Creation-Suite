@@ -68,7 +68,7 @@ namespace halo3
 			int32_t string_id_namespace_offset;
 			int32_t language;
 			int32_t minor_version_number;
-			s_file_last_modification_date shared_creation_date[4]; // k_shared_resource_database_type_count
+			s_file_last_modification_date shared_creation_date[4];
 			int8_t unknown1[16];
 			c_static_string<32> creator_name;
 			c_static_string<32> build_number;
@@ -158,7 +158,7 @@ namespace halo3
 			int32_t string_id_data_offset;
 			c_flags_no_init<gen3::e_cache_file_shared_file_type, unsigned char, gen3::k_number_of_shared_file_types> shared_map_usage;
 			s_file_last_modification_date creation_date;
-			s_file_last_modification_date shared_creation_date[3]; // k_shared_resource_database_type_count
+			s_file_last_modification_date shared_creation_date[3];
 			c_static_string<32> name;
 			int32_t language;
 			c_static_string<256> tag_path;
@@ -250,7 +250,7 @@ namespace halo3
 			int32_t string_id_data_offset;
 			c_flags_no_init<gen3::e_cache_file_shared_file_type, unsigned char, gen3::k_number_of_shared_file_types> shared_map_usage; // k_number_of_shared_file_types == 4 on xbox one
 			s_file_last_modification_date creation_date;
-			s_file_last_modification_date shared_creation_date[4]; // k_shared_resource_database_type_count
+			s_file_last_modification_date shared_creation_date[4];
 			c_static_string<32> name;
 			int32_t language;
 			c_static_string<256> tag_path;

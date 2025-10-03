@@ -58,7 +58,7 @@ BCS_RESULT c_halo1_tag_reader::read_tag_instances()
 
 	halo1::s_cache_file_tags_header tags_header = *reinterpret_cast<const halo1::s_cache_file_tags_header*>(tag_section_buffer.begin);
 
-	if (tags_header.tags_signature != 'tags')
+	if (tags_header.signature != 'tags')
 	{
 		return BCS_E_FAIL;
 	}
@@ -69,14 +69,14 @@ BCS_RESULT c_halo1_tag_reader::read_tag_instances()
 		return rs;
 	}
 
-	tag_instance_infos.resize(tags_header.tag_instance_count);
+	tag_instance_infos.resize(tags_header.tag_count);
 	const halo1::s_cache_file_tag_instance* tag_instances_read_pointer = reinterpret_cast<const halo1::s_cache_file_tag_instance*>(tag_section_buffer.begin + tag_instances_relative_offset);
-	for (uint32_t tag_index = 0; tag_index < tags_header.tag_instance_count; tag_index++)
+	for (uint32_t tag_index = 0; tag_index < tags_header.tag_count; tag_index++)
 	{
 		s_halo1_tag_instance_info& tag_instance_info = tag_instance_infos[tag_index];
 		halo1::s_cache_file_tag_instance& tag_instance = tag_instance_info.instance = tag_instances_read_pointer[tag_index];
 
-		tag group_tag = tag_instance.group_tags[0];
+		tag group_tag = tag_instance.group_tag;
 		s_tag_group const* tag_group;
 		if (BCS_FAILED(rs = tag_definition_registry_get_tag_group_by_engine_platform_build(cache_reader.engine_platform_build, group_tag, tag_group)))
 		{
@@ -94,9 +94,9 @@ BCS_RESULT c_halo1_tag_reader::read_tag_instances()
 		}
 
 		const void* instance_data;
-		if (!tag_instance.in_data_file || tag_instance.group_tags[0] == SOUND_TAG)
+		if (!tag_instance.bool_in_data_file || tag_instance.group_tag == SOUND_TAG)
 		{
-			if (BCS_FAILED(rs = page_offset_to_pointer(tag_instance_info.instance.address, instance_data)))
+			if (BCS_FAILED(rs = page_offset_to_pointer(tag_instance_info.instance.base_address, instance_data)))
 			{
 				return rs;
 			}
@@ -104,7 +104,7 @@ BCS_RESULT c_halo1_tag_reader::read_tag_instances()
 		else
 		{
 			const char* relative_cache_file_path = nullptr;
-			switch (tag_instance.group_tags[0])
+			switch (tag_instance.group_tag)
 			{
 			case BITMAP_TAG:
 				relative_cache_file_path = "maps\\bitmaps.map";
@@ -126,12 +126,12 @@ BCS_RESULT c_halo1_tag_reader::read_tag_instances()
 			{
 				return rs;
 			}
-			if (BCS_FAILED(rs = cache_file_reader->get_cache_file_resource_instance_data(tag_instance_info.instance.address, instance_data)))
+			if (BCS_FAILED(rs = cache_file_reader->get_cache_file_resource_instance_data(tag_instance_info.instance.base_address, instance_data)))
 			{
 				return rs;
 			}
 			const char* resource_tag_instance_name;
-			if (BCS_FAILED(rs = cache_file_reader->get_cache_file_resource_instance_name(tag_instance_info.instance.address, resource_tag_instance_name)))
+			if (BCS_FAILED(rs = cache_file_reader->get_cache_file_resource_instance_name(tag_instance_info.instance.base_address, resource_tag_instance_name)))
 			{
 				return rs;
 			}

@@ -2,5 +2,5 @@
 
 template<> BCS_SHARED void byteswap_inplace(s_rsa_signature& value)
 {
-
+	byteswap_inplace(value.data);
 }

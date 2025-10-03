@@ -67,35 +67,16 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 		byteswap_inplace(header);
 	}
 
-	//if (header.header_signature == 'head')
+	if (header.header_signature == k_cache_header_signature)
 	{
-#if defined(BCS_BUILD_HIGH_LEVEL_HALO1) || defined(BCS_BUILD_HIGH_LEVEL_STUBBS)
-		if (header.file_version == 11)
+		if (header.file_version == 5)
 		{
-			ASSERT(header.header_signature == k_cache_header_signature);
-
-			if (is_big_endian)
-			{
-				*engine_platform_build = { _engine_type_halo3, _platform_type_xbox_360, _build_not_set };
-			}
-			else 
-			{
-				// #TODO: Add some extra validation here
-				*engine_platform_build = { _engine_type_halo3, _platform_type_xbox_one, _build_not_set };
-			}
-			return BCS_S_OK;
-		}
-		else if (header.file_version == 5)
-		{
-			ASSERT(header.header_signature == k_cache_header_signature);
-
 			halo1::pc::s_cache_file_header header;
 			if (!fread(&header, 1, sizeof(header), file_handle)) // #TODO: pipe BCS result
 			{
 				return BCS_E_FAIL;
 			}
-
-			if (header.build_version.is_empty())
+			if (header.build_number.is_empty())
 			{
 				// #TODO: check for 32bit stubbs
 				*engine_platform_build = { _engine_type_stubbs, _platform_type_pc_64bit, _build_stubbs };
@@ -110,26 +91,18 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 		}
 		else if (header.file_version == 6)
 		{
-			if (header.header_signature == k_cache_header_signature)
+			halo1::pc::s_cache_file_header header;
+			if (!fread(&header, 1, sizeof(header), file_handle)) // #TODO: pipe BCS result
 			{
-				halo1::pc::s_cache_file_header header;
-				if (!fread(&header, 1, sizeof(header), file_handle)) // #TODO: pipe BCS result
-				{
-					return BCS_E_FAIL;
-				}
-				if (strcmp(header.build_version.get_buffer(), "01.05.22.0268") == 0)
-				{
-					*engine_platform_build = { _engine_type_halo1, _platform_type_pc_32bit, _build_halo1_beta_01_05_22_0268 };
-					return BCS_S_OK;
-				}
+				return BCS_E_FAIL;
+			}
+			if (strcmp(header.build_number.get_buffer(), "01.05.22.0268") == 0)
+			{
+				*engine_platform_build = { _engine_type_halo1, _platform_type_pc_32bit, _build_halo1_beta_01_05_22_0268 };
+				return BCS_S_OK;
 			}
 			else
 			{
-				halo1::pc::s_cache_file_header header;
-				if (!fread(&header, 1, sizeof(header), file_handle)) // #TODO: pipe BCS result
-				{
-					return BCS_E_FAIL;
-				}
 				// #TODO: validate demo build
 				*engine_platform_build = { _engine_type_halo1, _platform_type_pc_32bit, _build_halo1_demo };
 				return BCS_S_OK;
@@ -146,11 +119,79 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 			*engine_platform_build = { _engine_type_halo1, _platform_type_pc_32bit, _build_halo1_pc_retail };
 			return BCS_S_OK;
 		}
+		else if (header.file_version == 8) 
+		{
+
+		}
+		else if (header.file_version == 9) 
+		{
+
+		}
+		else if (header.file_version == 11)
+		{
+			if (is_big_endian)
+			{
+				*engine_platform_build = { _engine_type_halo3, _platform_type_xbox_360, _build_not_set };
+			}
+			else
+			{
+				// #TODO: Add some extra validation here
+				*engine_platform_build = { _engine_type_halo3, _platform_type_xbox_one, _build_not_set };
+			}
+			return BCS_S_OK;
+		}
+		else if (header.file_version == 12) 
+		{
+
+		}
 		else if (header.file_version == 13) 
 		{
-			// #TODO: Add some extra validation here
-			*engine_platform_build = { _engine_type_halo3, _platform_type_pc_64bit, _build_not_set };
-			return BCS_S_OK;
+			int8_t engine;
+			_fseeki64(file_handle, 0xC, SEEK_SET);
+			if (!fread(&engine, 1, sizeof(engine), file_handle)) 
+			{
+				return BCS_E_FAIL;
+			}
+			_fseeki64(file_handle, 0, SEEK_SET);
+
+			switch (engine) 
+			{
+			case 0: 
+			{
+				*engine_platform_build = { _engine_type_halo1, _platform_type_pc_64bit, _build_not_set };
+				return BCS_S_OK;
+			}
+			case 1:
+			{
+				*engine_platform_build = { _engine_type_halo2, _platform_type_pc_64bit, _build_not_set };
+				return BCS_S_OK;
+			}
+			case 2:
+			{
+				*engine_platform_build = { _engine_type_halo3, _platform_type_pc_64bit, _build_not_set };
+				return BCS_S_OK;
+			}
+			case 3:
+			{
+				*engine_platform_build = { _engine_type_halo4, _platform_type_pc_64bit, _build_not_set };
+				return BCS_S_OK;
+			}
+			case 4:
+			{
+				*engine_platform_build = { _engine_type_groundhog, _platform_type_pc_64bit, _build_not_set };
+				return BCS_S_OK;
+			}
+			case 5:
+			{
+				*engine_platform_build = { _engine_type_halo3odst, _platform_type_pc_64bit, _build_not_set };
+				return BCS_S_OK;
+			}
+			case 6:
+			{
+				*engine_platform_build = { _engine_type_haloreach, _platform_type_pc_64bit, _build_not_set };
+				return BCS_S_OK;
+			}
+			}
 		}
 		else if (header.file_version == 609)
 		{
@@ -159,7 +200,7 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 			{
 				return BCS_E_FAIL;
 			}
-			if (strcmp(header.build_version.get_buffer(), "01.00.00.0609") == 0)
+			if (strcmp(header.build_number.get_buffer(), "01.00.00.0609") == 0)
 			{
 				*engine_platform_build = { _engine_type_halo1, _platform_type_pc_32bit, _build_halo1_custom_edition };
 				return BCS_S_OK;
@@ -171,7 +212,6 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 			*engine_platform_build = { _engine_type_halo1, _platform_type_pc_32bit, _build_halo1_custom_edition };
 			return BCS_S_OK;
 		}
-#endif
 
 		// #TODO determine the engine platform
 

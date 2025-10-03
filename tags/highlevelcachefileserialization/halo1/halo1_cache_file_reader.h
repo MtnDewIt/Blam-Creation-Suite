@@ -5,19 +5,19 @@ class c_halo1_cache_cluster;
 class c_halo1_header_wrapper
 {
 public:
-	tag& header_signature; // k_cache_header_signature
-	int32_t& file_version;
-	int32_t& file_length;
-	int32_t* padding_length; //#TODO: is this not compressed_file_length ?
-	int32_t& tag_data_offset;
-	int32_t& tag_data_size;
-	int32_t* memory_buffer_offset;
-	int32_t* memory_buffer_size;
-	c_static_string<32>& scenario_name;
-	c_static_string<32>& build_version;
+	tag& header_signature;
+	int32_t& version;
+	int32_t& size;
+	int32_t* compressed_file_padding;
+	int32_t& tags_offset;
+	int32_t& tags_size;
+	int32_t* index_buffer_count;
+	int32_t* index_buffers_offset;
+	c_static_string<32>& name;
+	c_static_string<32>& build_number;
 	short& scenario_type;
 	int32_t& checksum;
-	tag& footer_signature; // k_cache_footer_signature
+	tag& footer_signature;
 
 	uint32_t const _structure_size;
 
@@ -27,15 +27,15 @@ public:
 
 	c_halo1_header_wrapper(halo1::pc::s_cache_file_header& cache_file_header) :
 		header_signature(cache_file_header.header_signature),
-		file_version(cache_file_header.file_version),
-		file_length(cache_file_header.file_length),
-		padding_length(&cache_file_header.padding_length),
-		tag_data_offset(cache_file_header.tag_data_offset),
-		tag_data_size(cache_file_header.tag_data_size),
-		memory_buffer_offset(&cache_file_header.memory_buffer_offset),
-		memory_buffer_size(&cache_file_header.memory_buffer_size),
-		scenario_name(cache_file_header.scenario_name),
-		build_version(cache_file_header.build_version),
+		version(cache_file_header.version),
+		size(cache_file_header.size),
+		compressed_file_padding(&cache_file_header.compressed_file_padding),
+		tags_offset(cache_file_header.tags_offset),
+		tags_size(cache_file_header.tags_size),
+		index_buffer_count(&cache_file_header.index_buffer_count),
+		index_buffers_offset(&cache_file_header.index_buffers_offset),
+		name(cache_file_header.name),
+		build_number(cache_file_header.build_number),
 		scenario_type(cache_file_header.scenario_type),
 		checksum(cache_file_header.checksum),
 		footer_signature(cache_file_header.footer_signature),
@@ -46,16 +46,15 @@ public:
 
 	c_halo1_header_wrapper(halo1::demo::s_cache_file_header& cache_file_header) :
 		header_signature(cache_file_header.header_signature),
-		file_version(cache_file_header.file_version),
-		file_length(cache_file_header.file_length),
-		//padding_length(),
-		padding_length(nullptr /*cache_file_header.padding_length*/),
-		tag_data_offset(cache_file_header.tag_data_offset),
-		tag_data_size(cache_file_header.tag_data_size),
-		memory_buffer_offset(nullptr /*cache_file_header.memory_buffer_offset*/),
-		memory_buffer_size(nullptr /*cache_file_header.memory_buffer_size*/),
-		scenario_name(cache_file_header.scenario_name),
-		build_version(cache_file_header.build_version),
+		version(cache_file_header.version),
+		size(cache_file_header.size),
+		compressed_file_padding(nullptr /*cache_file_header.compressed_file_padding*/),
+		tags_offset(cache_file_header.tags_offset),
+		tags_size(cache_file_header.tags_size),
+		index_buffer_count(nullptr /*cache_file_header.index_buffer_count*/),
+		index_buffers_offset(nullptr /*cache_file_header.index_buffers_offset*/),
+		name(cache_file_header.name),
+		build_number(cache_file_header.build_number),
 		scenario_type(cache_file_header.scenario_type),
 		checksum(cache_file_header.checksum),
 		footer_signature(cache_file_header.footer_signature),
