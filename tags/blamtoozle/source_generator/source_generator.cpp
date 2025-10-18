@@ -155,7 +155,6 @@ void c_blamtoozle_source_generator::export_single_tag_definitions_header(const w
 	}
 	stream << std::endl;
 	stream << "{" << std::endl;
-	stream << std::endl;
 
 	for (auto& group_definition : group_definitions)
 	{
@@ -246,7 +245,6 @@ void c_blamtoozle_source_generator::export_single_tag_definitions_header(const w
 		}
 	}
 
-	stream << std::endl;
 	stream << "} // namespace blofeld";
 	if (engine_namespace)
 	{
@@ -862,8 +860,8 @@ void c_blamtoozle_source_generator::export_single_tag_definitions_source(const w
 	const char* static_string = nullptr;
 	ASSERT(BCS_SUCCEEDED(build_namespace_to_static_string(build_namespace, static_string)));
 
-	stream << "#include <" << static_string << "tagdefinitions-private-pch.h>" << std::endl;
-	stream << "#include <TagFramework\\Definitions\\definitions.h>" << std::endl;
+	stream << "#include \"" << static_string << "-tagdefinitions-private-pch.h\"" << std::endl;
+	stream << "#include <tagframework\\definitions\\definitions.h>" << std::endl;
 	stream << std::endl;
 	stream << "namespace blofeld";
 	if (engine_namespace)
@@ -880,7 +878,6 @@ void c_blamtoozle_source_generator::export_single_tag_definitions_source(const w
 	}
 	stream << std::endl;
 	stream << "{" << std::endl;
-	stream << std::endl;
 
 	for (auto& group_definition : group_definitions)
 	{
@@ -1003,7 +1000,6 @@ void c_blamtoozle_source_generator::export_single_tag_definitions_source(const w
 		}
 	}
 
-	stream << std::endl;
 	stream << "} // namespace blofeld";
 	if (engine_namespace)
 	{
@@ -1049,11 +1045,9 @@ void c_blamtoozle_source_generator::export_tag_groups_header(const wchar_t* file
 	}
 	stream << std::endl;
 	stream << "{" << std::endl;
-	stream << std::endl;
 
 	stream << "\t" << "BCS_SHARED extern s_tag_group const* const tag_groups[];" << std::endl;
 
-	stream << std::endl;
 	stream << "} // namespace blofeld";
 	if (engine_namespace)
 	{
@@ -1082,7 +1076,10 @@ void c_blamtoozle_source_generator::export_tag_groups_source(const wchar_t* file
 
 #define stream file_stream.stream
 
-	stream << "#pragma once" << std::endl;
+	const char* static_string = nullptr;
+	ASSERT(BCS_SUCCEEDED(build_namespace_to_static_string(build_namespace, static_string)));
+
+	stream << "#include \"" << static_string << "-tagdefinitions-private-pch.h\"" << std::endl;
 	stream << std::endl;
 	stream << "namespace blofeld";
 	if (engine_namespace)
@@ -1099,7 +1096,6 @@ void c_blamtoozle_source_generator::export_tag_groups_source(const wchar_t* file
 	}
 	stream << std::endl;
 	stream << "{" << std::endl;
-	stream << std::endl;
 
 	stream << "\t" << "s_tag_group const* const tag_groups[] =" << std::endl;
 	stream << "\t" << "{" << std::endl;
@@ -1113,7 +1109,6 @@ void c_blamtoozle_source_generator::export_tag_groups_source(const wchar_t* file
 	stream << "\t\t" << "nullptr," << std::endl;
 	stream << "\t" << "};" << std::endl;
 
-	stream << std::endl;
 	stream << "} // namespace blofeld";
 	if (engine_namespace)
 	{
