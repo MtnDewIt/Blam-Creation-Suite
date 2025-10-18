@@ -35,13 +35,15 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 		c_static_string<32> date_string;
 		file_date_format_for_output_extended(&section_header.creation_date, date_string.get_buffer(), date_string.max_length());
 
-		if (strcmp(date_string.get_buffer(), "2015-3-20 14:40:23.949") == 0)
+		switch (string_hash(date_string.get_buffer())) 
+		{
+		case "2015-03-20 14:40:23.000949"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_106708_cert_ms23 };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-4-10 11:37:39.234") == 0) 
+		break;
+		case "2015-04-10 11:37:39.000234"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_155080_cert_ms23 };
 
@@ -51,95 +53,97 @@ BCS_RESULT get_cache_file_reader_engine_and_platform(const wchar_t* filepath, s_
 
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-5-28 13:28:6.234") == 0)
+		break;
+		case "2015-05-28 13:28:06.000234"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_235640_cert_ms25 };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-6-12 13:42:28.644") == 0)
+		break;
+		case "2015-06-12 13:42:28.000644"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_301003_cert_MS26_new };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-6-29 9:41:56.45") == 0)
+		break;
+		case "2015-06-29 09:41:56.000045"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_332089_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-7-15 11:3:59.611") == 0)
+		break;
+		case "2015-07-15 11:03:59.000611"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_373869_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-8-1 14:19:18.911") == 0)
+		break;
+		case "2015-08-01 14:19:18.000911"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_416138_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-8-7 13:56:43.415") == 0)
+		break;
+		case "2015-08-07 13:56:43.000415"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_430653_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-8-19 9:47:11.625") == 0)
+		break;
+		case "2015-08-19 09:47:11.000625"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_454665_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-8-27 15:51:4.580") == 0)
+		break;
+		case "2015-08-27 15:51:04.000580"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_479394_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-9-4 13:36:11.687") == 0)
+		break;
+		case "2015-09-04 13:36:11.000687"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_498295_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-9-16 14:59:54.594") == 0)
+		break;
+		case "2015-09-16 14:59:54.000594"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_530945_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-9-17 11:53:39.863") == 0)
+		break;
+		case "2015-09-17 11:53:39.000863"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_533032_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-9-29 10:14:31.955") == 0)
+		break;
+		case "2015-09-29 10:14:31.000955"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_554482_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-10-1 16:2:13.69") == 0)
+		break;
+		case "2015-10-01 16:02:13.000069"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_571698_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-10-15 10:57:15.177") == 0)
+		break;
+		case "2015-10-15 10:57:15.000177"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_604673_Live };
 			return BCS_S_OK;
 		}
-
-		if (strcmp(date_string.get_buffer(), "2015-11-26 10:26:2.893") == 0)
+		break;
+		case "2015-11-26 10:26:02.000893"_hash:
 		{
 			*engine_platform_build = { _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_700255_cert_ms30_oct19 };
 			return BCS_S_OK;
+		}
+		break;
 		}
 	}
 	else 

@@ -158,3 +158,45 @@ constexpr decltype(auto) underlying_cast(T value)
 #define va_end(...)
 
 #endif
+
+constexpr uint64_t string_hash(const char* str) 
+{
+	const char* tmp = str;
+	while (*tmp) tmp++;
+	int32_t len = tmp - str;
+
+	uint64_t hash = 0;
+	for (int32_t i = 0; i < len; i++) hash = (hash * 131) + str[i];
+	return hash;
+}
+
+constexpr uint64_t operator"" _hash(const char* str, size_t len)
+{
+	return string_hash(str);
+}
+
+constexpr size_t operator"" _len(const char* str, size_t len)
+{
+	return len;
+}
+
+constexpr uint64_t wstring_hash(const wchar_t* str)
+{
+	const wchar_t* tmp = str;
+	while (*tmp) tmp++;
+	int32_t len = tmp - str;
+
+	uint64_t hash = 0;
+	for (int32_t i = 0; i < len; i++) hash = (hash * 131) + str[i];
+	return hash;
+}
+
+constexpr uint64_t operator"" _hash(const wchar_t* str, size_t len)
+{
+	return wstring_hash(str);
+}
+
+constexpr size_t operator"" _len(const wchar_t* str, size_t len)
+{
+	return len;
+}

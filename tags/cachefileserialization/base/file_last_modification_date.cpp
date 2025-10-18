@@ -46,7 +46,7 @@ BCS_RESULT file_date_format_for_output_extended(s_file_last_modification_date* d
 	csnzprintf(
 		buffer, 
 		buffer_size, 
-		"%d-%d-%d %d:%d:%d.%d",
+		"%04d-%02d-%02d %02d:%02d:%02d.%06d",
 		SystemTime.wYear, 
 		SystemTime.wMonth, 
 		SystemTime.wDay, 
