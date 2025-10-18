@@ -289,8 +289,6 @@ BCS_RESULT c_halo3_tag_reader::read_tag_groups()
 		//{
 		//	return rs;
 		//}
-
-		
 	}
 
 	return rs;
@@ -343,7 +341,6 @@ BCS_RESULT c_halo3_tag_reader::read_tag_instances()
 			if (tag_instance_info.group_info->group.group_tag == SOUND_TAG)
 			{
 				ASSERT(BCS_SUCCEEDED(rs = get_tag_group_info_by_group_tag(CACHE_FILE_SOUND_TAG, tag_instance_info.group_info)));
-				
 			}
 
 			if (BCS_FAILED(rs = debug_reader->get_tag_filepath(tag_index, tag_instance_info.instance_name)))
@@ -364,8 +361,6 @@ BCS_RESULT c_halo3_tag_reader::read_tag_instances()
 			tag_instance_info.group_info = nullptr;
 			tag_instance_info.instance_data = nullptr;
 		}
-
-		
 	}
 
 	return rs;
@@ -411,8 +406,6 @@ BCS_RESULT c_halo3_tag_reader::read_tag_global_instances()
 		uint32_t tag_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(global_tag_instance.tag_index);
 
 		global_instance_info.instance_info = &tag_instance_infos[tag_index];
-
-		
 	}
 
 	return rs;
@@ -453,8 +446,6 @@ BCS_RESULT c_halo3_tag_reader::read_tag_interops()
 		s_halo3_tag_interop_type_fixup& tag_interop = tag_interop_infos[interop_index] = tag_interops_read_pointer[interop_index];
 		// #TODO: Handle big endian 
 		//cache_reader.byteswap_inplace(tag_interop); #TODO: Handle this :/
-
-		
 	}
 
 	return rs;
@@ -743,8 +734,6 @@ BCS_RESULT c_halo3_tag_reader::get_tag_instance_by_cache_file_tag_index(uint32_t
 
 BCS_RESULT c_halo3_tag_reader::init_interop_table()
 {
-	
-
 	BCS_RESULT rs = BCS_S_OK;
 
 	const s_halo3_tag_global_instance_info* global_instance_info;
@@ -1069,7 +1058,7 @@ public:
 			c_halo3_cache_file_reader* resource_cache_file = new() c_halo3_cache_file_reader(required_cache_file_path, engine_platform_build);
 
 			s_cache_file_buffer_info buffer_info;
-			resource_cache_file->get_section_buffer(gen3::_cache_file_resource_section, buffer_info);
+			resource_cache_file->get_section_buffer(_cache_file_resource_section, buffer_info);
 
 			const char* page_data_pointer = buffer_info.begin + required_file_resource_location.file_offset;
 			size_t raw_page_data_size = required_file_resource_location.file_size;
@@ -1091,7 +1080,7 @@ public:
 			c_halo3_cache_file_reader* resource_cache_file = new() c_halo3_cache_file_reader(optional_cache_file_path, engine_platform_build);
 
 			s_cache_file_buffer_info buffer_info;
-			resource_cache_file->get_section_buffer(gen3::_cache_file_resource_section, buffer_info);
+			resource_cache_file->get_section_buffer(_cache_file_resource_section, buffer_info);
 
 			const char* page_data_pointer = buffer_info.begin + optional_file_resource_location.file_offset;
 			size_t raw_page_data_size = optional_file_resource_location.file_size;

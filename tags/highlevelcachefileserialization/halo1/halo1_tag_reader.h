@@ -25,7 +25,7 @@ public:
 private:
 	struct s_halo1_tag_instance_info
 	{
-		halo1::s_cache_file_tag_instance instance;
+		::halo1::s_cache_file_tag_instance instance;
 		int32_t index;
 		const char* instance_name;
 		const void* instance_data;

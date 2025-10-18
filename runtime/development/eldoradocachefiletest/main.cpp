@@ -140,8 +140,16 @@ extern "C" int bcs_main()
 						BCS_RESULT get_eldorado_directory_result = command_line_get_argument("eldoradodir", eldorado_directory);
 						if (BCS_SUCCEEDED(get_eldorado_directory_result))
 						{
+							// #TODO: replace with generic handling for an explicit filepath
+							const char* binary_filepath = "tags.dat";
+							size_t filepath_buffer_length = strlen(eldorado_directory) + strlen("\\maps\\") + strlen(binary_filepath) + 1;
+							char* filepath = trivial_malloc(char, filepath_buffer_length);
+							strcpy(filepath, eldorado_directory);
+							strcat(filepath, "\\maps\\");
+							strcat(filepath, binary_filepath);
+
 							c_cache_file_reader* cache_file_reader;
-							BCS_RESULT open_cache_file_reader_result = ::open_cache_file_reader(eldorado_directory, engine_platform_build, true, true, &cache_file_reader);
+							BCS_RESULT open_cache_file_reader_result = ::open_cache_file_reader(filepath, engine_platform_build, true, true, &cache_file_reader);
 							BCS_FAIL_RETURN(open_cache_file_reader_result);
 
 							c_cache_cluster* cache_cluster;
@@ -195,6 +203,8 @@ extern "C" int bcs_main()
 							{
 								return rs;
 							}
+
+							trivial_free(filepath);
 						}
 						rs = BCS_FAILED_CHAIN(rs, get_eldorado_directory_result);
 

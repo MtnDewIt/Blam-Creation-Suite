@@ -90,7 +90,7 @@ const s_halo4_tag_interop_info halo4_tag_interop_infos[k_num_halo4_interop_types
 };
 
 c_halo4_interop_container::c_halo4_interop_container(e_halo4_interop_type type, uint32_t descriptor, const void* data) :
-	h_interop(),
+	//h_interop(),
 	type(type),
 	descriptor(descriptor),
 	data(data)

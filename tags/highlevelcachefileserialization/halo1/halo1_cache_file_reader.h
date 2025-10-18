@@ -25,7 +25,26 @@ public:
 	c_halo1_header_wrapper(c_halo1_header_wrapper const&) = delete;
 	c_halo1_header_wrapper& operator=(c_halo1_header_wrapper const&) = delete;
 
-	c_halo1_header_wrapper(halo1::pc::s_cache_file_header& cache_file_header) :
+	c_halo1_header_wrapper(halo1::demo::s_cache_file_header& cache_file_header) :
+		header_signature(cache_file_header.header_signature),
+		version(cache_file_header.version),
+		size(cache_file_header.size),
+		compressed_file_padding(nullptr /*cache_file_header.compressed_file_padding*/),
+		tags_offset(cache_file_header.tags_offset),
+		tags_size(cache_file_header.tags_size),
+		index_buffer_count(nullptr /*cache_file_header.index_buffer_count*/),
+		index_buffers_offset(nullptr /*cache_file_header.index_buffers_offset*/),
+		name(cache_file_header.name),
+		build_number(cache_file_header.build_number),
+		scenario_type(cache_file_header.scenario_type),
+		checksum(cache_file_header.checksum),
+		footer_signature(cache_file_header.footer_signature),
+		_structure_size(sizeof(cache_file_header))
+	{
+
+	}
+
+	c_halo1_header_wrapper(halo1::pc32::s_cache_file_header& cache_file_header) :
 		header_signature(cache_file_header.header_signature),
 		version(cache_file_header.version),
 		size(cache_file_header.size),
@@ -44,15 +63,15 @@ public:
 
 	}
 
-	c_halo1_header_wrapper(halo1::demo::s_cache_file_header& cache_file_header) :
+	c_halo1_header_wrapper(halo1::pc64::s_cache_file_header& cache_file_header) :
 		header_signature(cache_file_header.header_signature),
 		version(cache_file_header.version),
 		size(cache_file_header.size),
 		compressed_file_padding(nullptr /*cache_file_header.compressed_file_padding*/),
 		tags_offset(cache_file_header.tags_offset),
 		tags_size(cache_file_header.tags_size),
-		index_buffer_count(nullptr /*cache_file_header.index_buffer_count*/),
-		index_buffers_offset(nullptr /*cache_file_header.index_buffers_offset*/),
+		index_buffer_count(&cache_file_header.index_buffer_count),
+		index_buffers_offset(&cache_file_header.index_buffers_offset),
 		name(cache_file_header.name),
 		build_number(cache_file_header.build_number),
 		scenario_type(cache_file_header.scenario_type),
@@ -72,7 +91,7 @@ public:
 
 	virtual BCS_RESULT get_build_info(s_cache_file_build_info& build_info) const;
 	virtual BCS_RESULT get_debug_info(s_cache_file_debug_info& debug_info) const;
-	BCS_RESULT get_section_buffer(gen3::e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const;
+	BCS_RESULT get_section_buffer(e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const;
 	virtual BCS_RESULT get_buffer(e_cache_file_buffer_index buffer_index, s_cache_file_buffer_info& buffer_info) const;
 	virtual BCS_RESULT get_buffers(s_cache_file_buffers_info& buffers_info) const;
 	virtual BCS_RESULT associate_cache_cluster(c_cache_cluster& cache_cluster);

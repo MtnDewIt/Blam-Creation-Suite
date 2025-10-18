@@ -18,12 +18,12 @@ c_eldorado_debug_reader::c_eldorado_debug_reader(c_eldorado_cache_cluster& cache
 	{
 		s_memory_mapped_file_info& string_ids_file_info = cache_reader.memory_mapped_file_infos[_eldorado_file_type_string_ids];
 
-		if (string_ids_file_info.file_size < sizeof(blofeld::eldorado::s_strings_file_header))
+		if (string_ids_file_info.file_size < sizeof(::eldorado::s_strings_file_header))
 		{
 			throw BCS_E_OUT_OF_RANGE;
 		}
 
-		blofeld::eldorado::s_strings_file_header* _strings_file_header = reinterpret_cast<blofeld::eldorado::s_strings_file_header*>(string_ids_file_info.file_view_begin);
+		::eldorado::s_strings_file_header* _strings_file_header = reinterpret_cast<::eldorado::s_strings_file_header*>(string_ids_file_info.file_view_begin);
 		// byteswap_inplace(_cache_file_tags_header);
 		strings_file_header = *_strings_file_header;
 

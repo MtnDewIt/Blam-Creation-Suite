@@ -11,7 +11,7 @@ public:
 
 	BCS_SHARED virtual BCS_RESULT get_build_info(s_cache_file_build_info& build_info) const override final;
 	BCS_SHARED virtual BCS_RESULT get_debug_info(s_cache_file_debug_info& debug_info) const override final;
-	BCS_SHARED BCS_RESULT get_section_buffer(gen3::e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const;
+	BCS_SHARED BCS_RESULT get_section_buffer(e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const;
 	BCS_SHARED virtual BCS_RESULT get_buffer(e_cache_file_buffer_index buffer_index, s_cache_file_buffer_info& buffer_info) const override final;
 	BCS_SHARED virtual BCS_RESULT get_buffers(s_cache_file_buffers_info& buffers_info) const override final;
 	BCS_SHARED virtual BCS_RESULT associate_cache_cluster(c_cache_cluster& cache_cluster) override final;
@@ -29,14 +29,14 @@ public:
 	c_halo3_cache_cluster* cache_cluster;
 
 	BCS_SHARED BCS_RESULT get_tags_header_relative_offset(int32_t& tags_header_relative_offset) const;
-	BCS_SHARED BCS_RESULT get_file_count(int32_t& file_count) const;
-	BCS_SHARED BCS_RESULT get_string_id_index_buffer_count(int32_t& string_id_index_buffer_count) const;
-	BCS_SHARED BCS_RESULT get_string_id_index_buffer_offset(int32_t& string_id_index_buffer_offset) const;
-	BCS_SHARED BCS_RESULT get_string_id_string_storage_offset(int32_t& string_id_string_storage_offset) const;
-	BCS_SHARED BCS_RESULT get_string_id_string_storage_size(int32_t& string_id_string_storage_size) const;
-	BCS_SHARED BCS_RESULT get_file_table_indices_offset(int32_t& file_table_indices_offset) const;
-	BCS_SHARED BCS_RESULT get_file_table_offset(int32_t& file_table_offset) const;
-	BCS_SHARED BCS_RESULT get_file_table_length(int32_t& file_table_length) const;
+	BCS_SHARED BCS_RESULT get_string_id_count(int32_t& string_id_count) const;
+	BCS_SHARED BCS_RESULT get_string_id_index_offset(int32_t& string_id_index_offset) const;
+	BCS_SHARED BCS_RESULT get_string_id_data_offset(int32_t& string_id_data_offset) const;
+	BCS_SHARED BCS_RESULT get_string_id_data_count(int32_t& string_id_data_count) const;
+	BCS_SHARED BCS_RESULT get_debug_tag_name_count(int32_t& debug_tag_name_count) const;
+	BCS_SHARED BCS_RESULT get_debug_tag_name_index_offset(int32_t& debug_tag_name_index_offset) const;
+	BCS_SHARED BCS_RESULT get_debug_tag_name_data_offset(int32_t& debug_tag_name_data_offset) const;
+	BCS_SHARED BCS_RESULT get_debug_tag_name_data_size(int32_t& debug_tag_name_data_size) const;
 
 	template<typename t_element>
 	void byteswap_inplace(t_element& value)

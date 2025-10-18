@@ -14,7 +14,7 @@ public:
 	BCS_RESULT get_string_buffer_fixup_offset_hack(uint32_t& string_buffer_fixup_offset_hack) const;
 	virtual BCS_RESULT get_build_info(s_cache_file_build_info& build_info) const;
 	virtual BCS_RESULT get_debug_info(s_cache_file_debug_info& debug_info) const;
-	BCS_RESULT get_section_buffer(gen3::e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const;
+	BCS_RESULT get_section_buffer(e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const;
 	virtual BCS_RESULT get_buffer(e_cache_file_buffer_index buffer_index, s_cache_file_buffer_info& buffer_info) const;
 	virtual BCS_RESULT get_buffers(s_cache_file_buffers_info& buffers_info) const;
 	virtual BCS_RESULT associate_cache_cluster(c_cache_cluster& cache_cluster);

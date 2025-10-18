@@ -8,7 +8,7 @@ c_eldorado_tag_instance::c_eldorado_tag_instance(
 	c_eldorado_tag_group& _tag_group,
 	uint32_t _cache_file_tag_index,
 	const char* _instance_name,
-	const blofeld::eldorado::s_cache_file_tag_instance& _tag_header,
+	const eldorado::s_cache_file_tag_instance& _tag_header,
 	const void* _tag_data_start,
 	const void* _tag_data_end) :
 	cache_cluster(_cache_cluster),

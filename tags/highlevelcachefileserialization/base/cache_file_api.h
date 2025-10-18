@@ -63,6 +63,15 @@ struct s_cache_file_buffer_info
 	int32_t offset_mask;
 };
 
+enum e_cache_file_section 
+{
+	_cache_file_debug_section,
+	_cache_file_resource_section,
+	_cache_file_tag_section,
+	_cache_file_language_pack_section,
+	k_number_of_cache_file_sections [[maybe_unused]]
+};
+
 enum e_cache_file_buffer_index
 {
 	_cache_file_buffer,

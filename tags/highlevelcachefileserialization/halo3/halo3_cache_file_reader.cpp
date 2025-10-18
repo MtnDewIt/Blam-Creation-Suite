@@ -49,9 +49,9 @@ c_halo3_cache_file_reader::~c_halo3_cache_file_reader()
 
 BCS_RESULT c_halo3_cache_file_reader::get_build_info(s_cache_file_build_info& build_info) const
 {
-	build_info.version = cache_file_header.file_version;
-	build_info.size = cache_file_header.file_length;
-	build_info.compressed_file_padding = cache_file_header.file_compressed_length;
+	build_info.version = cache_file_header.version;
+	build_info.size = cache_file_header.size;
+	build_info.compressed_file_padding = cache_file_header.compressed_file_padding;
 
 	BCS_RESULT rs = BCS_S_OK;
 
@@ -61,15 +61,15 @@ BCS_RESULT c_halo3_cache_file_reader::get_build_info(s_cache_file_build_info& bu
 	{
 		build_info.path = pc_cache_file_header.path;
 		build_info.build_number = pc_cache_file_header.build_number;
-		if (BCS_FAILED(rs = gen3::gen3_scenario_type_to_base_scenario_type(pc_cache_file_header.scenario_type, build_info.scenario_type)))
+		if (BCS_FAILED(rs = halo3::halo3_scenario_type_to_base_scenario_type(pc_cache_file_header.scenario_type, build_info.scenario_type)))
 		{
 			return rs;
 		}
-		if (BCS_FAILED(rs = gen3::gen3_cache_file_shared_file_type_to_base_cache_file_shared_file_type(pc_cache_file_header.shared_cache_file_type, build_info.shared_cache_file_type)))
+		if (BCS_FAILED(rs = halo3::halo3_cache_file_shared_file_type_to_base_cache_file_shared_file_type(pc_cache_file_header.shared_cache_file_type, build_info.shared_cache_file_type)))
 		{
 			return rs;
 		}
-		if (BCS_FAILED(rs = gen3::gen3_cache_file_header_flags_to_base_cache_file_header_flags(pc_cache_file_header.header_flags, build_info.header_flags)))
+		if (BCS_FAILED(rs = halo3::halo3_cache_file_header_flags_to_base_cache_file_header_flags(pc_cache_file_header.header_flags, build_info.header_flags)))
 		{
 			return rs;
 		}
@@ -89,19 +89,19 @@ BCS_RESULT c_halo3_cache_file_reader::get_build_info(s_cache_file_build_info& bu
 	{
 		build_info.path = xbox360_cache_file_header.path;
 		build_info.build_number = xbox360_cache_file_header.build_number;
-		if (BCS_FAILED(rs = gen3::gen3_scenario_type_to_base_scenario_type(xbox360_cache_file_header.scenario_type, build_info.scenario_type)))
+		if (BCS_FAILED(rs = halo3::halo3_scenario_type_to_base_scenario_type(xbox360_cache_file_header.scenario_type, build_info.scenario_type)))
 		{
 			return rs;
 		}
-		if (BCS_FAILED(rs = gen3::gen3_cache_file_shared_file_type_to_base_cache_file_shared_file_type(xbox360_cache_file_header.shared_cache_file_type, build_info.shared_cache_file_type)))
+		if (BCS_FAILED(rs = halo3::halo3_cache_file_shared_file_type_to_base_cache_file_shared_file_type(xbox360_cache_file_header.shared_cache_file_type, build_info.shared_cache_file_type)))
 		{
 			return rs;
 		}
-		if (BCS_FAILED(rs = gen3::gen3_cache_file_header_flags_to_base_cache_file_header_flags(xbox360_cache_file_header.header_flags, build_info.header_flags)))
+		if (BCS_FAILED(rs = halo3::halo3_cache_file_header_flags_to_base_cache_file_header_flags(xbox360_cache_file_header.header_flags, build_info.header_flags)))
 		{
 			return rs;
 		}
-		if (BCS_FAILED(rs = gen3::gen3_cache_file_shared_file_flags_to_base_cache_file_shared_file_flags(xbox360_cache_file_header.shared_map_usage, build_info.shared_map_usage)))
+		if (BCS_FAILED(rs = halo3::halo3_cache_file_shared_file_flags_to_base_cache_file_shared_file_flags(xbox360_cache_file_header.shared_map_usage, build_info.shared_map_usage)))
 		{
 			return rs;
 		}
@@ -120,16 +120,16 @@ BCS_RESULT c_halo3_cache_file_reader::get_build_info(s_cache_file_build_info& bu
 	{
 		build_info.path = xboxone_cache_file_header.path;
 		build_info.build_number = xboxone_cache_file_header.build_number;
-		if (BCS_FAILED(rs = gen3::gen3_scenario_type_to_base_scenario_type(xboxone_cache_file_header.scenario_type, build_info.scenario_type)))
+		if (BCS_FAILED(rs = halo3::halo3_scenario_type_to_base_scenario_type(xboxone_cache_file_header.scenario_type, build_info.scenario_type)))
 		{
 			return rs;
 		}
-		if (BCS_FAILED(rs = gen3::gen3_cache_file_shared_file_type_to_base_cache_file_shared_file_type(xboxone_cache_file_header.shared_cache_file_type, build_info.shared_cache_file_type)))
+		if (BCS_FAILED(rs = halo3::halo3_cache_file_shared_file_type_to_base_cache_file_shared_file_type(xboxone_cache_file_header.shared_cache_file_type, build_info.shared_cache_file_type)))
 		{
 			return rs;
 		}
 		build_info.header_flags.clear(); // #TODO: handle build info header_flags
-		if (BCS_FAILED(rs = gen3::gen3_cache_file_shared_file_flags_to_base_cache_file_shared_file_flags(xboxone_cache_file_header.shared_map_usage, build_info.shared_map_usage)))
+		if (BCS_FAILED(rs = halo3::halo3_cache_file_shared_file_flags_to_base_cache_file_shared_file_flags(xboxone_cache_file_header.shared_map_usage, build_info.shared_map_usage)))
 		{
 			return rs;
 		}
@@ -144,7 +144,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_build_info(s_cache_file_build_info& bu
 		build_info.rsa_signature = xboxone_cache_file_header.rsa_signature;
 	}
 	break;
-	default: throw BCS_E_UNSUPPORTED;
+	default: return BCS_E_UNSUPPORTED;
 	}
 
 	return BCS_S_OK;
@@ -156,7 +156,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_debug_info(s_cache_file_debug_info& de
 	return BCS_S_OK;
 }
 
-BCS_RESULT c_halo3_cache_file_reader::get_section_buffer(gen3::e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const
+BCS_RESULT c_halo3_cache_file_reader::get_section_buffer(e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const
 {
 	int32_t section_size = 0;
 	int32_t section_offset_mask = 0;
@@ -185,7 +185,7 @@ BCS_RESULT c_halo3_cache_file_reader::get_section_buffer(gen3::e_cache_file_sect
 		section_offset = xboxone_cache_file_header.original_section_bounds[section_index].offset;
 	}
 	break;
-	default: throw BCS_E_UNSUPPORTED;
+	default: return BCS_E_UNSUPPORTED;
 	}
 
 	if (section_size == 0)
@@ -215,13 +215,13 @@ BCS_RESULT c_halo3_cache_file_reader::get_buffer(e_cache_file_buffer_index buffe
 		buffer_info.size = static_cast<unsigned long>(file_info.file_size);
 		return BCS_S_OK;
 	case _debug_section_buffer:
-		return get_section_buffer(gen3::_cache_file_debug_section, buffer_info);
+		return get_section_buffer(_cache_file_debug_section, buffer_info);
 	case _resources_section_buffer:
-		return get_section_buffer(gen3::_cache_file_resource_section, buffer_info);
+		return get_section_buffer(_cache_file_resource_section, buffer_info);
 	case _tag_section_buffer:
-		return get_section_buffer(gen3::_cache_file_tag_section, buffer_info);
+		return get_section_buffer(_cache_file_tag_section, buffer_info);
 	case _localization_section_buffer:
-		return get_section_buffer(gen3::_cache_file_language_pack_section, buffer_info);
+		return get_section_buffer(_cache_file_language_pack_section, buffer_info);
 	case _tag_post_link_buffer:
 		buffer_info = {};
 		break;
@@ -240,8 +240,8 @@ BCS_RESULT c_halo3_cache_file_reader::get_buffer(e_cache_file_buffer_index buffe
 	case _tag_language_neutral_read_only_buffer:
 		buffer_info = {};
 		break;
+	default: return BCS_E_UNSUPPORTED;
 	}
-	return BCS_E_UNSUPPORTED;
 }
 
 BCS_RESULT c_halo3_cache_file_reader::get_buffers(s_cache_file_buffers_info& buffers_info) const
@@ -283,16 +283,20 @@ BCS_RESULT c_halo3_cache_file_reader::virtual_address_to_relative_offset(int64_t
 		relative_offset = static_cast<long>(virtual_address - pc_cache_file_header.expected_base_address);
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_360:
 	{
 		relative_offset = static_cast<long>(virtual_address - xbox360_cache_file_header.expected_base_address);
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_one: 
 	{
 		relative_offset = static_cast<long>(virtual_address - xboxone_cache_file_header.expected_base_address);
 		return BCS_S_OK;
 	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
 	}
 
 	return BCS_E_UNSUPPORTED;
@@ -320,202 +324,229 @@ BCS_RESULT c_halo3_cache_file_reader::get_tags_header_relative_offset(int32_t& t
 		BCS_FAIL_RETURN(virtual_address_to_relative_offset(pc_cache_file_header.tags_header_when_loaded, tags_header_relative_offset));
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_360: 
 	{
 		BCS_FAIL_RETURN(virtual_address_to_relative_offset(xbox360_cache_file_header.tags_header_when_loaded, tags_header_relative_offset));
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_one: 
 	{
 		BCS_FAIL_RETURN(virtual_address_to_relative_offset(xboxone_cache_file_header.tags_header_when_loaded, tags_header_relative_offset));
 		return BCS_S_OK;
 	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
 	}
-	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_cache_file_reader::get_file_count(int32_t& file_count) const
+BCS_RESULT c_halo3_cache_file_reader::get_string_id_count(int32_t& string_id_count) const
 {
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_pc_64bit:
 	{
-		file_count = pc_cache_file_header.debug_tag_name_count;
+		string_id_count = pc_cache_file_header.string_id_count;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_360: 
 	{
-		file_count = xbox360_cache_file_header.debug_tag_name_count;
+		string_id_count = xbox360_cache_file_header.string_id_count;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_one:
 	{
-		file_count = xboxone_cache_file_header.debug_tag_name_count;
+		string_id_count = xboxone_cache_file_header.string_id_count;
 		return BCS_S_OK;
 	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
 	}
-	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_cache_file_reader::get_string_id_index_buffer_count(int32_t& string_id_index_buffer_count) const
+BCS_RESULT c_halo3_cache_file_reader::get_string_id_index_offset(int32_t& string_id_index_offset) const
 {
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_pc_64bit:
 	{
-		string_id_index_buffer_count = pc_cache_file_header.string_id_count;
+		string_id_index_offset = pc_cache_file_header.string_id_index_offset;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_360: 
 	{
-		string_id_index_buffer_count = xbox360_cache_file_header.string_id_count;
+		string_id_index_offset = xbox360_cache_file_header.string_id_index_offset;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_one:
 	{
-		string_id_index_buffer_count = xboxone_cache_file_header.string_id_count;
+		string_id_index_offset = xboxone_cache_file_header.string_id_index_offset;
 		return BCS_S_OK;
 	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
 	}
-	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_cache_file_reader::get_string_id_index_buffer_offset(int32_t& string_id_index_buffer_offset) const
+BCS_RESULT c_halo3_cache_file_reader::get_string_id_data_offset(int32_t& string_id_data_offset) const
 {
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_pc_64bit:
 	{
-		string_id_index_buffer_offset = pc_cache_file_header.string_id_index_offset;
+		string_id_data_offset = pc_cache_file_header.string_id_data_offset;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_360: 
 	{
-		string_id_index_buffer_offset = xbox360_cache_file_header.string_id_index_offset;
+		string_id_data_offset = xbox360_cache_file_header.string_id_data_offset;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_one:
 	{
-		string_id_index_buffer_offset = xboxone_cache_file_header.string_id_index_offset;
+		string_id_data_offset = xboxone_cache_file_header.string_id_data_offset;
 		return BCS_S_OK;
 	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
 	}
-	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_cache_file_reader::get_string_id_string_storage_offset(int32_t& string_id_string_storage_offset) const
+BCS_RESULT c_halo3_cache_file_reader::get_string_id_data_count(int32_t& string_id_data_count) const
 {
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_pc_64bit:
 	{
-		string_id_string_storage_offset = pc_cache_file_header.string_id_data_offset;
+		string_id_data_count = pc_cache_file_header.string_id_data_count;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_360: 
 	{
-		string_id_string_storage_offset = xbox360_cache_file_header.string_id_data_offset;
+		string_id_data_count = xbox360_cache_file_header.string_id_data_count;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_one:
 	{
-		string_id_string_storage_offset = xboxone_cache_file_header.string_id_data_offset;
+		string_id_data_count = xboxone_cache_file_header.string_id_data_count;
 		return BCS_S_OK;
 	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
 	}
-	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_cache_file_reader::get_string_id_string_storage_size(int32_t& string_id_string_storage_size) const
+BCS_RESULT c_halo3_cache_file_reader::get_debug_tag_name_count(int32_t& debug_tag_name_count) const
 {
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_pc_64bit:
 	{
-		string_id_string_storage_size = pc_cache_file_header.string_id_data_count;
+		debug_tag_name_count = pc_cache_file_header.debug_tag_name_count;
 		return BCS_S_OK;
 	}
-	case _platform_type_xbox_360: 
+	break;
+	case _platform_type_xbox_360:
 	{
-		string_id_string_storage_size = xbox360_cache_file_header.string_id_data_count;
+		debug_tag_name_count = xbox360_cache_file_header.debug_tag_name_count;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_one:
 	{
-		string_id_string_storage_size = xboxone_cache_file_header.string_id_data_count;
+		debug_tag_name_count = xboxone_cache_file_header.debug_tag_name_count;
 		return BCS_S_OK;
 	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
 	}
-	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_cache_file_reader::get_file_table_indices_offset(int32_t& file_table_indices_offset) const
+BCS_RESULT c_halo3_cache_file_reader::get_debug_tag_name_index_offset(int32_t& debug_tag_name_index_offset) const
 {
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_pc_64bit:
 	{
-		file_table_indices_offset = pc_cache_file_header.debug_tag_name_index_offset;
+		debug_tag_name_index_offset = pc_cache_file_header.debug_tag_name_index_offset;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_360: 
 	{
-		file_table_indices_offset = xbox360_cache_file_header.debug_tag_name_index_offset;
+		debug_tag_name_index_offset = xbox360_cache_file_header.debug_tag_name_index_offset;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_one:
 	{
-		file_table_indices_offset = xboxone_cache_file_header.debug_tag_name_index_offset;
+		debug_tag_name_index_offset = xboxone_cache_file_header.debug_tag_name_index_offset;
 		return BCS_S_OK;
 	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
 	}
-	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_cache_file_reader::get_file_table_offset(int32_t& file_table_offset) const
+BCS_RESULT c_halo3_cache_file_reader::get_debug_tag_name_data_offset(int32_t& debug_tag_name_data_offset) const
 {
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_pc_64bit:
 	{
-		file_table_offset = pc_cache_file_header.debug_tag_name_data_offset;
+		debug_tag_name_data_offset = pc_cache_file_header.debug_tag_name_data_offset;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_360: 
 	{
-		file_table_offset = xbox360_cache_file_header.debug_tag_name_data_offset;
+		debug_tag_name_data_offset = xbox360_cache_file_header.debug_tag_name_data_offset;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_one:
 	{
-		file_table_offset = xboxone_cache_file_header.debug_tag_name_data_offset;
+		debug_tag_name_data_offset = xboxone_cache_file_header.debug_tag_name_data_offset;
 		return BCS_S_OK;
 	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
 	}
-	return BCS_E_UNSUPPORTED;
 }
 
-BCS_RESULT c_halo3_cache_file_reader::get_file_table_length(int32_t& file_table_length) const
+BCS_RESULT c_halo3_cache_file_reader::get_debug_tag_name_data_size(int32_t& debug_tag_name_data_size) const
 {
 	switch (engine_platform_build.platform_type)
 	{
 	case _platform_type_pc_64bit:
 	{
-		file_table_length = pc_cache_file_header.debug_tag_name_data_size;
+		debug_tag_name_data_size = pc_cache_file_header.debug_tag_name_data_size;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_360: 
 	{
-		file_table_length = xbox360_cache_file_header.debug_tag_name_data_size;
+		debug_tag_name_data_size = xbox360_cache_file_header.debug_tag_name_data_size;
 		return BCS_S_OK;
 	}
+	break;
 	case _platform_type_xbox_one:
 	{
-		file_table_length = xboxone_cache_file_header.debug_tag_name_data_size;
+		debug_tag_name_data_size = xboxone_cache_file_header.debug_tag_name_data_size;
 		return BCS_S_OK;
 	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
 	}
-	return BCS_E_UNSUPPORTED;
 }
 
 #endif // BCS_BUILD_HIGH_LEVEL_HALO3

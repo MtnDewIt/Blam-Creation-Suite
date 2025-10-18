@@ -14,7 +14,7 @@ public:
 		c_eldorado_tag_group& tag_group,
 		uint32_t cache_file_tag_index,
 		const char* instance_name,
-		const blofeld::eldorado::s_cache_file_tag_instance& tag_header,
+		const eldorado::s_cache_file_tag_instance& tag_header,
 		const void* tag_data_start,
 		const void* tag_data_end
 	);
@@ -32,7 +32,7 @@ private:
 	c_cache_cluster& cache_cluster;
 	c_eldorado_tag_reader& tag_reader;
 	c_eldorado_tag_group& tag_group;
-	blofeld::eldorado::s_cache_file_tag_instance tag_header;
+	eldorado::s_cache_file_tag_instance tag_header;
 	uint32_t const cache_file_tag_index;
 	const char* const instance_name;
 	const void* const tag_data_start;

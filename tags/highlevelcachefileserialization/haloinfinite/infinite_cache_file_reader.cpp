@@ -116,7 +116,7 @@ BCS_RESULT c_infinite_module_file_reader::get_debug_info(s_cache_file_debug_info
 	return BCS_E_NOT_IMPLEMENTED;
 }
 
-BCS_RESULT c_infinite_module_file_reader::get_section_buffer(gen3::e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const
+BCS_RESULT c_infinite_module_file_reader::get_section_buffer(e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const
 {
 	// #TODO: remove this by adding a function that determines if the cache file supports these features
 
@@ -197,13 +197,13 @@ BCS_RESULT c_infinite_module_file_reader::get_buffer(e_cache_file_buffer_index b
 		return rs;
 	}
 	case _debug_section_buffer:
-		return get_section_buffer(gen3::_cache_file_debug_section, buffer_info);
+		return get_section_buffer(_cache_file_debug_section, buffer_info);
 	case _tag_section_buffer:
-		return get_section_buffer(gen3::_cache_file_tag_section, buffer_info);
+		return get_section_buffer(_cache_file_tag_section, buffer_info);
 	case _resources_section_buffer:
-		return get_section_buffer(gen3::_cache_file_resource_section, buffer_info);
+		return get_section_buffer(_cache_file_resource_section, buffer_info);
 	case _localization_section_buffer:
-		return get_section_buffer(gen3::_cache_file_language_pack_section, buffer_info);
+		return get_section_buffer(_cache_file_language_pack_section, buffer_info);
 	default:
 		rs = BCS_E_UNSUPPORTED;
 	}

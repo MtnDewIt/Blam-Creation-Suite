@@ -8,40 +8,49 @@
 
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO1
 #include "halo1\halo1_cache_file_header.h"
+#include "halo1\halo1_demo_cache_file_header.h"
+#include "halo1\halo1_pc32_cache_file_header.h"
+#include "halo1\halo1_pc64_cache_file_header.h"
 #endif
-#ifdef BCS_BUILD_HIGH_LEVEL_HALO1
-#endif
-#if \
-defined(BCS_BUILD_HIGH_LEVEL_HALO3) || \
-defined(BCS_BUILD_HIGH_LEVEL_HALO3ODST) || \
-defined(BCS_BUILD_HIGH_LEVEL_ELDORADO) || \
-defined(BCS_BUILD_HIGH_LEVEL_HALOREACH) || \
-defined(BCS_BUILD_HIGH_LEVEL_HALO4) || \
-defined(BCS_BUILD_HIGH_LEVEL_GROUNDHOG)
-#include "gen3\gen3_cache_file_header.h"
-#include "gen4\gen4_cache_file_header.h"
+#ifdef BCS_BUILD_HIGH_LEVEL_HALO2
+#include "halo2\halo2_cache_file_header.h"
+#include "halo2\halo2_alpha_xbox_cache_file_header.h"
+#include "halo2\halo2_xbox_cache_file_header.h"
+#include "halo2\halo2_pc32_cache_file_header.h"
+#include "halo2\halo2_pc64_cache_file_header.h"
 #endif
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO3
 #include "halo3\halo3_cache_file_header.h"
+#include "halo3\halo3_beta_xbox360_cache_file_header.h"
+#include "halo3\halo3_xbox360_cache_file_header.h"
+#include "halo3\halo3_xboxone_cache_file_header.h"
+#include "halo3\halo3_pc_cache_file_header.h"
 #endif
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO3ODST
+#include "halo3odst\halo3odst_cache_file_header.h"
+#include "halo3odst\halo3odst_xbox360_cache_file_header.h"
+#include "halo3odst\halo3odst_pc_cache_file_header.h"
 #endif
 #ifdef BCS_BUILD_HIGH_LEVEL_ELDORADO
-#include "eldorado/cache_file_tag_instance.h"
-#include "eldorado/cache_file_tags_header.h"
-#include "eldorado/strings_file_header.h"
+#include "eldorado\eldorado_cache_file_header.h"
 #endif
 #ifdef BCS_BUILD_HIGH_LEVEL_HALOREACH
+#include "haloreach\haloreach_cache_file_header.h"
+#include "haloreach\haloreach_alpha_xbox360_cache_file_header.h"
+#include "haloreach\haloreach_xbox360_cache_file_header.h"
+#include "haloreach\haloreach_pc_cache_file_header.h"
 #endif
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO4
-#include "halo4/halo4_cache_file_header.h"
+#include "halo4\halo4_cache_file_header.h"
+#include "halo4\halo4_xbox360_cache_file_header.h"
+#include "halo4\halo4_pc_cache_file_header.h"
 #endif
 #ifdef BCS_BUILD_HIGH_LEVEL_GROUNDHOG
+#include "halo4\halo4_cache_file_header.h"
+#include "halo4\halo4_pc_cache_file_header.h"
 #endif
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO5
 #endif
 #ifdef BCS_BUILD_HIGH_LEVEL_HALOINFINITE
 #include "haloinfinite\haloinfinite_cache_file_header.h"
-#endif
-#ifdef BCS_BUILD_HIGH_LEVEL_STUBBS
 #endif

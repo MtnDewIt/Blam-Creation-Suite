@@ -15,3 +15,5 @@ BCS_SHARED void* memmem(const void* haystack, size_t haystack_length, const void
 BCS_SHARED char* ltrim(char* string);
 BCS_SHARED char* rtrim(char* string);
 BCS_SHARED char* trim(char* string);
+BCS_SHARED const char* remove(const char* string, const char* sub_string);
+BCS_SHARED const wchar_t* wremove(const wchar_t* string, const wchar_t* sub_string);

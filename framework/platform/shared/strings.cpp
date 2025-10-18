@@ -107,3 +107,17 @@ char* trim(char* const string)
 	rtrim(string);
 	return string;
 }
+
+const char* remove(const char* string, const char* sub_string) 
+{
+	char* buffer = _strdup(string);
+	*strstr(buffer, sub_string) = '\0';
+	return buffer;
+}
+
+const wchar_t* wremove(const wchar_t* string, const wchar_t* sub_string) 
+{
+	wchar_t* buffer = _wcsdup(string);
+	*wcsstr(buffer, sub_string) = L'\0'; 
+	return buffer;
+}

@@ -6,7 +6,7 @@ using namespace blofeld;
 using namespace blofeld::eldorado::pc32;
 
 c_eldorado_cache_file_reader::c_eldorado_cache_file_reader(const wchar_t* _directory, s_engine_platform_build _engine_platform_build) :
-	directory(_wcsdup(_directory)),
+	directory(_directory),
 	engine_platform_build(_engine_platform_build),
 	memory_mapped_files(),
 	memory_mapped_file_infos(),
@@ -39,6 +39,7 @@ c_eldorado_cache_file_reader::c_eldorado_cache_file_reader(const wchar_t* _direc
 			case _eldorado_file_type_video_resources:
 			case _eldorado_file_type_string_ids:
 			case _eldorado_file_type_tags_cache:
+			case _eldorado_file_type_tags_list:
 				throw(rs);
 			}
 		}
@@ -58,8 +59,8 @@ c_eldorado_cache_file_reader::c_eldorado_cache_file_reader(const wchar_t* _direc
 			case _eldorado_file_type_audio_resources:
 			case _eldorado_file_type_video_resources:
 			case _eldorado_file_type_string_ids:
-			case _eldorado_file_type_tags_list:
 			case _eldorado_file_type_tags_cache:
+			case _eldorado_file_type_tags_list:
 				break;
 			}
 		}
@@ -82,11 +83,19 @@ c_eldorado_cache_file_reader::~c_eldorado_cache_file_reader()
 	}
 }
 
-BCS_RESULT c_eldorado_cache_file_reader::get_section_buffer(gen3::e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const
+BCS_RESULT c_eldorado_cache_file_reader::get_build_info(s_cache_file_build_info& build_info) const
+{
+	// #TODO: Handle this somehow (Maybe pull from a map file????)
+	build_info.build_number = "JUST TO MAKE SURE THIS WORKS";
+
+	return BCS_S_OK;
+}
+
+BCS_RESULT c_eldorado_cache_file_reader::get_section_buffer(e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const
 {
 	switch (section_index)
 	{
-	case gen3::_cache_file_tag_section:
+	case _cache_file_tag_section:
 		if (t_memory_mapped_file* tags_cache_file = memory_mapped_files[_eldorado_file_type_tags_cache])
 		{
 			s_memory_mapped_file_info const& memory_mapped_file_info = memory_mapped_file_infos[_eldorado_file_type_tags_cache];
@@ -127,12 +136,12 @@ BCS_RESULT c_eldorado_cache_file_reader::get_resource_absolute_file_offset(e_eld
 {
 	s_memory_mapped_file_info const& tags_cache_file = memory_mapped_file_infos[resource_file_index];
 
-	if (tags_cache_file.file_size < sizeof(eldorado::s_cache_file_section_header))
+	if (tags_cache_file.file_size < sizeof(::eldorado::s_cache_file_section_header))
 	{
 		return BCS_E_OUT_OF_RANGE;
 	}
 
-	eldorado::s_cache_file_section_header* cache_file_section_header = reinterpret_cast<eldorado::s_cache_file_section_header*>(tags_cache_file.file_view_begin);
+	::eldorado::s_cache_file_section_header* cache_file_section_header = reinterpret_cast<::eldorado::s_cache_file_section_header*>(tags_cache_file.file_view_begin);
 
 	unsigned int* file_offsets = reinterpret_cast<unsigned int*>(tags_cache_file.file_view_begin + cache_file_section_header->file_offsets);
 

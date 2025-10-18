@@ -37,7 +37,6 @@ struct s_cache_file_build_info
 	c_static_string<32> build_number;
 	e_scenario_type scenario_type;
 	e_cache_file_shared_file_type shared_cache_file_type;
-	bool tracked;
 	c_flags_no_init<e_cache_file_header_bit, unsigned char, k_num_cache_file_header_bits> header_flags;
 	c_flags_no_init<e_cache_file_shared_file_type, unsigned char, k_number_of_shared_file_types> shared_map_usage;
 	s_file_last_modification_date creation_date;

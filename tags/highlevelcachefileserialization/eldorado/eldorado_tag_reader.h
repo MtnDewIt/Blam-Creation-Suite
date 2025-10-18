@@ -33,9 +33,12 @@ private:
 	BCS_RESULT read_groups();
 	BCS_RESULT read_instances();
 
+	BCS_RESULT get_tag_instance_name(unsigned int cache_file_tag_index, char* buffer, size_t buffer_size);
+
 	c_eldorado_cache_cluster& cache_cluster;
 	c_eldorado_cache_file_reader& cache_reader;
-	blofeld::eldorado::s_cache_file_section_header cache_file_section_header;
+	::eldorado::s_cache_file_section_header cache_file_section_header;
+
 	unsigned int* tag_cache_offsets;
 
 	using t_tag_groups = std::vector<c_eldorado_tag_group*>;

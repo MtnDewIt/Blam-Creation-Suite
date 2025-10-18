@@ -166,10 +166,10 @@ public:
 	size_t context_event_index;
 	void* context_event_pointer;
 
-	blofeld::eldorado::s_cache_file_section_header* cache_file_section_header;
+	eldorado::s_cache_file_section_header* cache_file_section_header;
 	unsigned int* tag_cache_offsets;
 
-	blofeld::eldorado::s_strings_file_header* strings_file_header;
+	eldorado::s_strings_file_header* strings_file_header;
 
 	template<typename t_runtime_definition>
 	bool selcted_type_assignment(e_definition_type definition_type, const char* variable_name, t_runtime_definition*& variable);

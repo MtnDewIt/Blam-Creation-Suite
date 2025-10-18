@@ -2,11 +2,14 @@
 
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO4
 
-#define _byteswap_inplace(...) if(cache_reader.engine_platform_build.platform_type == _platform_type_xbox_360) byteswap_inplace(__VA_ARGS__)
+using namespace blofeld;
+using namespace blofeld::halo4::pc64;
 
-c_halo4_tag_reader::c_halo4_tag_reader(c_halo4_cache_cluster& cache_cluster, c_halo4_cache_file_reader& cache_reader) :
-	cache_cluster(cache_cluster),
-	cache_reader(cache_reader),
+c_halo4_tag_reader::c_halo4_tag_reader(c_halo4_cache_cluster& _cache_cluster, c_halo4_cache_file_reader& _cache_reader) :
+	c_tag_reader(_cache_cluster, _cache_reader),
+	cache_cluster(_cache_cluster),
+	cache_reader(_cache_reader),
+	pc_tags_header(),
 	tag_groups(),
 	tag_instances(),
 	tag_instances_by_index(),
@@ -14,14 +17,19 @@ c_halo4_tag_reader::c_halo4_tag_reader(c_halo4_cache_cluster& cache_cluster, c_h
 	tag_instance_infos(),
 	tag_global_instance_infos(),
 	//t_tag_interop_infos tag_interop_infos(),
-	_resource_type_index_to_halo4_resource_type(nullptr),
 	_interop_type_index_to_halo4_interop_type(nullptr),
 	interop_containers(nullptr),
 	_shared_file_index_to_cache_file_reader(nullptr),
-	_shared_file_count(0)
+	_shared_file_count(0),
+	high_level_resources(nullptr),
+	num_high_level_resources(0)
 {
 	BCS_RESULT rs;
 
+	if (BCS_FAILED(rs = read_tags_header()))
+	{
+		throw(rs);
+	}
 	if (BCS_FAILED(rs = read_tag_groups()))
 	{
 		throw(rs);
@@ -59,10 +67,136 @@ c_halo4_tag_reader::c_halo4_tag_reader(c_halo4_cache_cluster& cache_cluster, c_h
 
 c_halo4_tag_reader::~c_halo4_tag_reader()
 {
-	delete _resource_type_index_to_halo4_resource_type;
 	delete _interop_type_index_to_halo4_interop_type;
 	delete interop_containers;
 	delete _shared_file_index_to_cache_file_reader;
+}
+
+BCS_RESULT c_halo4_tag_reader::read_tags_header() 
+{
+	BCS_RESULT rs = BCS_S_OK;
+
+	s_cache_file_buffer_info tag_section_buffer;
+	if (BCS_FAILED(rs = cache_reader.get_buffer(_tag_section_buffer, tag_section_buffer)))
+	{
+		return rs;
+	}
+
+	int32_t tags_header_relative_offset;
+	if (BCS_FAILED(rs = cache_reader.get_tags_header_relative_offset(tags_header_relative_offset)))
+	{
+		return rs;
+	}
+
+	switch (cache_cluster.engine_platform_build.platform_type) 
+	{
+	case _platform_type_pc_64bit:
+		pc_tags_header = *reinterpret_cast<const ::halo4::pc::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
+		if (pc_tags_header.signature != 'tags')
+		{
+			return BCS_E_FAIL;
+		}
+	break;
+	case _platform_type_xbox_360:
+		xbox360_tags_header = *reinterpret_cast<const ::halo4::xbox360::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
+		byteswap_inplace(xbox360_tags_header);
+		if (xbox360_tags_header.signature != 'tags')
+		{
+			return BCS_E_FAIL;
+		}
+	break;
+	default: return BCS_E_UNSUPPORTED;
+	}
+
+	return rs;
+}
+
+BCS_RESULT c_halo4_tag_reader::get_tag_groups_section(s_halo4_section& tag_groups) 
+{
+	switch (cache_cluster.engine_platform_build.platform_type)
+	{
+	case _platform_type_pc_64bit:
+	{
+		tag_groups.count = pc_tags_header.tag_groups.count;
+		tag_groups.address = pc_tags_header.tag_groups.address;
+		return BCS_S_OK;
+	}
+	break;
+	case _platform_type_xbox_360:
+	{
+		tag_groups.count = xbox360_tags_header.tag_groups.count;
+		tag_groups.address = xbox360_tags_header.tag_groups.address;
+		return BCS_S_OK;
+	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
+	}
+}
+
+BCS_RESULT c_halo4_tag_reader::get_tag_instances_section(s_halo4_section& tag_instances) 
+{
+	switch (cache_cluster.engine_platform_build.platform_type)
+	{
+	case _platform_type_pc_64bit:
+	{
+		tag_instances.count = pc_tags_header.tag_instances.count;
+		tag_instances.address = pc_tags_header.tag_instances.address;
+		return BCS_S_OK;
+	}
+	break;
+	case _platform_type_xbox_360:
+	{
+		tag_instances.count = xbox360_tags_header.tag_instances.count;
+		tag_instances.address = xbox360_tags_header.tag_instances.address;
+		return BCS_S_OK;
+	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
+	}
+}
+
+BCS_RESULT c_halo4_tag_reader::get_global_tag_instances_section(s_halo4_section& global_tag_instances) 
+{
+	switch (cache_cluster.engine_platform_build.platform_type)
+	{
+	case _platform_type_pc_64bit:
+	{
+		global_tag_instances.count = pc_tags_header.global_tag_indices.count;
+		global_tag_instances.address = pc_tags_header.global_tag_indices.address;
+		return BCS_S_OK;
+	}
+	break;
+	case _platform_type_xbox_360:
+	{
+		global_tag_instances.count = xbox360_tags_header.global_tag_indices.count;
+		global_tag_instances.address = xbox360_tags_header.global_tag_indices.address;
+		return BCS_S_OK;
+	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
+	}
+}
+
+BCS_RESULT c_halo4_tag_reader::get_tag_interop_table_section(s_halo4_section& tag_interop_table) 
+{
+	switch (cache_cluster.engine_platform_build.platform_type)
+	{
+	case _platform_type_pc_64bit:
+	{
+		tag_interop_table.count = pc_tags_header.tag_interop_fixups.count;
+		tag_interop_table.address = pc_tags_header.tag_interop_fixups.address;
+		return BCS_S_OK;
+	}
+	break;
+	case _platform_type_xbox_360:
+	{
+		tag_interop_table.count = xbox360_tags_header.tag_interop_fixups.count;
+		tag_interop_table.address = xbox360_tags_header.tag_interop_fixups.address;
+		return BCS_S_OK;
+	}
+	break;
+	default: return BCS_E_UNSUPPORTED;
+	}
 }
 
 BCS_RESULT c_halo4_tag_reader::read_tag_groups()
@@ -81,47 +215,49 @@ BCS_RESULT c_halo4_tag_reader::read_tag_groups()
 		return rs;
 	}
 
-	halo4::xbox360::s_cache_file_header& cache_file_header = cache_reader.cache_file_header;
-
-	int32_t tags_header_relative_offset;
-	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(cache_file_header.tags_header_address, tags_header_relative_offset)))
+	s_halo4_section tag_groups_section;
+	if (BCS_FAILED(rs = get_tag_groups_section(tag_groups_section)))
 	{
 		return rs;
-	}
-
-	halo4::xbox360::s_cache_file_tags_header tags_header = *reinterpret_cast<const halo4::xbox360::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
-	byteswap_inplace(tags_header);
-
-	if (tags_header.tags_signature != 'tags')
-	{
-		return BCS_E_FAIL;
 	}
 
 	int32_t tag_groups_relative_offset;
-	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(tags_header.tag_groups.address, tag_groups_relative_offset)))
+	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(tag_groups_section.address, tag_groups_relative_offset)))
 	{
 		return rs;
 	}
 
-	tag_group_infos.resize(tags_header.tag_groups.count);
-	const halo4::xbox360::s_cache_file_tag_group* tag_groups_read_pointer = reinterpret_cast<const halo4::xbox360::s_cache_file_tag_group*>(tag_section_buffer.begin + tag_groups_relative_offset);
-	for (uint32_t group_index = 0; group_index < tags_header.tag_groups.count; group_index++)
+	tag_group_infos.resize(tag_groups_section.count);
+	const ::halo4::s_cache_file_tag_group* tag_groups_read_pointer = reinterpret_cast<const ::halo4::s_cache_file_tag_group*>(tag_section_buffer.begin + tag_groups_relative_offset);
+	for (uint32_t group_index = 0; group_index < tag_groups_section.count; group_index++)
 	{
 		s_halo4_tag_group_info& tag_group_info = tag_group_infos[group_index];
-		halo4::xbox360::s_cache_file_tag_group& tag_group = tag_group_info.group = tag_groups_read_pointer[group_index];
-		byteswap_inplace(tag_group);
+		::halo4::s_cache_file_tag_group& tag_group = tag_group_info.group = tag_groups_read_pointer[group_index];
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(tag_group);
 
-		const blofeld::s_tag_group* blofeld_tag_group = blofeld::get_tag_group_by_group_tag(cache_reader.engine_platform_build.engine_type, tag_group_info.group.group_tags[0]);
-		ASSERT(blofeld_tag_group != nullptr);
-		tag_group_info.blofeld_tag_group = blofeld_tag_group;
-		tag_group_info.tag_group = nullptr; // deferred : init_tag_groups
+		tag group_tag = tag_group_info.group.group_tag;
+		// #TODO: Add Halo 4 tag definitions
+		//if (group_tag == CACHE_FILE_SOUND_TAG)
+		//{
+		//
+		//}
 
-		if (BCS_FAILED(rs = debug_reader->string_id_to_string(tag_group.name, tag_group_info.group_name)))
+		s_tag_group const* blofeld_tag_group;
+		if (BCS_FAILED(rs = blofeld::tag_definition_registry_get_tag_group_by_engine_platform_build(cache_reader.engine_platform_build, group_tag, blofeld_tag_group)))
 		{
 			return rs;
 		}
 
-		
+		tag_group_info.blofeld_tag_group = blofeld_tag_group;
+		tag_group_info.tag_group = nullptr; // deferred : init_tag_groups
+
+		// #TODO: Fix string id handling
+		tag_group_info.group_name = blofeld_tag_group->pretty_name;
+		//if (BCS_FAILED(rs = debug_reader->string_id_to_string(tag_group.name, tag_group_info.group_name)))
+		//{
+		//	return rs;
+		//}
 	}
 
 	return rs;
@@ -143,54 +279,58 @@ BCS_RESULT c_halo4_tag_reader::read_tag_instances()
 		return rs;
 	}
 
-	halo4::xbox360::s_cache_file_header& cache_file_header = cache_reader.cache_file_header;
-
-	int32_t tags_header_relative_offset;
-	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(cache_file_header.tags_header_address, tags_header_relative_offset)))
+	s_halo4_section tag_instances_section;
+	if (BCS_FAILED(rs = get_tag_instances_section(tag_instances_section)))
 	{
 		return rs;
-	}
-
-	halo4::xbox360::s_cache_file_tags_header tags_header = *reinterpret_cast<const halo4::xbox360::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
-	byteswap_inplace(tags_header);
-
-	if (tags_header.tags_signature != 'tags')
-	{
-		return BCS_E_FAIL;
 	}
 
 	int32_t tag_instances_relative_offset;
-	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(tags_header.tag_instances.address, tag_instances_relative_offset)))
+	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(tag_instances_section.address, tag_instances_relative_offset)))
 	{
 		return rs;
 	}
 
-	tag_instance_infos.resize(tags_header.tag_instances.count);
-	const halo4::xbox360::s_cache_file_tag_instance* tag_instances_read_pointer = reinterpret_cast<const halo4::xbox360::s_cache_file_tag_instance*>(tag_section_buffer.begin + tag_instances_relative_offset);
-	for (uint32_t tag_index = 0; tag_index < tags_header.tag_instances.count; tag_index++)
+	tag_instance_infos.resize(tag_instances_section.count);
+	const ::halo4::s_cache_file_tag_instance* tag_instances_read_pointer = reinterpret_cast<const ::halo4::s_cache_file_tag_instance*>(tag_section_buffer.begin + tag_instances_relative_offset);
+	for (uint32_t tag_index = 0; tag_index < tag_instances_section.count; tag_index++)
 	{
 		s_halo4_tag_instance_info& tag_instance_info = tag_instance_infos[tag_index];
-		halo4::xbox360::s_cache_file_tag_instance& tag_instance = tag_instance_info.instance = tag_instances_read_pointer[tag_index];
-		byteswap_inplace(tag_instance);
+		::halo4::s_cache_file_tag_instance& tag_instance = tag_instance_info.instance = tag_instances_read_pointer[tag_index];
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(tag_instance);
 
-		tag_instance_info.group_info = &tag_group_infos[tag_instance.group_index];
-		tag_instance_info.index = tag_index;
+		tag_instance_info.absolute_index = tag_index;
+		tag_instance_info.identifier = tag_instance.tag_index_datum_header;
 		tag_instance_info.tag_instance = nullptr; // deferred : init_tag_instances
-
-		if (BCS_FAILED(rs = debug_reader->get_tag_filepath(tag_index, tag_instance_info.instance_name)))
+		if (tag_instance.tag_index_datum_header != USHRT_MAX)
 		{
-			return rs;
-		}
+			tag_instance_info.group_info = &tag_group_infos[tag_instance.group_index];
 
-		const void* instance_data;
-		if (BCS_FAILED(rs = page_offset_to_pointer(tag_instance_info.instance.address, instance_data)))
+			// #TODO: Add Halo 4 tag definitions
+			//if (tag_instance_info.group_info->group.group_tag == SOUND_TAG)
+			//{
+			//	ASSERT(BCS_SUCCEEDED(rs = get_tag_group_info_by_group_tag(CACHE_FILE_SOUND_TAG, tag_instance_info.group_info)));
+			//}
+
+			if (BCS_FAILED(rs = debug_reader->get_tag_filepath(tag_index, tag_instance_info.instance_name)))
+			{
+				return rs;
+			}
+
+			const void* instance_data;
+			if (BCS_FAILED(rs = page_offset_to_pointer(tag_instance_info.instance.base_address, instance_data)))
+			{
+				return rs;
+			}
+
+			tag_instance_info.instance_data = instance_data;
+		}
+		else
 		{
-			return rs;
+			tag_instance_info.group_info = nullptr;
+			tag_instance_info.instance_data = nullptr;
 		}
-
-		tag_instance_info.instance_data = instance_data;
-
-		
 	}
 
 	return rs;
@@ -212,41 +352,30 @@ BCS_RESULT c_halo4_tag_reader::read_tag_global_instances()
 		return rs;
 	}
 
-	halo4::xbox360::s_cache_file_header& cache_file_header = cache_reader.cache_file_header;
-
-	int32_t tags_header_relative_offset;
-	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(cache_file_header.tags_header_address, tags_header_relative_offset)))
+	s_halo4_section global_tag_instances_section;
+	if (BCS_FAILED(rs = get_global_tag_instances_section(global_tag_instances_section)))
 	{
 		return rs;
-	}
-
-	halo4::xbox360::s_cache_file_tags_header tags_header = *reinterpret_cast<const halo4::xbox360::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
-	byteswap_inplace(tags_header);
-
-	if (tags_header.tags_signature != 'tags')
-	{
-		return BCS_E_FAIL;
 	}
 
 	int32_t tag_global_instances_relative_offset;
-	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(tags_header.global_tag_instances.address, tag_global_instances_relative_offset)))
+	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(global_tag_instances_section.address, tag_global_instances_relative_offset)))
 	{
 		return rs;
 	}
 
-	tag_global_instance_infos.resize(tags_header.global_tag_instances.count);
-	const halo4::xbox360::s_cache_file_tag_global_instance* global_tag_instances_read_pointer = reinterpret_cast<const halo4::xbox360::s_cache_file_tag_global_instance*>(tag_section_buffer.begin + tag_global_instances_relative_offset);
-	for (uint32_t global_tag_index = 0; global_tag_index < tags_header.global_tag_instances.count; global_tag_index++)
+	tag_global_instance_infos.resize(global_tag_instances_section.count);
+	const ::halo4::s_cache_file_global_tag_index* global_tag_instances_read_pointer = reinterpret_cast<const ::halo4::s_cache_file_global_tag_index*>(tag_section_buffer.begin + tag_global_instances_relative_offset);
+	for (uint32_t global_tag_index = 0; global_tag_index < global_tag_instances_section.count; global_tag_index++)
 	{
 		s_halo4_tag_global_instance_info& global_instance_info = tag_global_instance_infos[global_tag_index];
-		halo4::xbox360::s_cache_file_tag_global_instance& global_tag_instance = global_instance_info.global_instance = global_tag_instances_read_pointer[global_tag_index];
-		byteswap_inplace(global_tag_instance);
+		::halo4::s_cache_file_global_tag_index& global_tag_instance = global_instance_info.global_instance = global_tag_instances_read_pointer[global_tag_index];
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(global_tag_instance);
 
-		uint32_t tag_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(global_tag_instance.datum_index);
+		uint32_t tag_index = DATUM_INDEX_TO_ABSOLUTE_INDEX(global_tag_instance.tag_index);
 
 		global_instance_info.instance_info = &tag_instance_infos[tag_index];
-
-		
 	}
 
 	return rs;
@@ -268,36 +397,25 @@ BCS_RESULT c_halo4_tag_reader::read_tag_interops()
 		return rs;
 	}
 
-	halo4::xbox360::s_cache_file_header& cache_file_header = cache_reader.cache_file_header;
-
-	int32_t tags_header_relative_offset;
-	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(cache_file_header.tags_header_address, tags_header_relative_offset)))
+	s_halo4_section tag_interop_table_section;
+	if (BCS_FAILED(rs = get_tag_interop_table_section(tag_interop_table_section)))
 	{
 		return rs;
-	}
-
-	halo4::xbox360::s_cache_file_tags_header tags_header = *reinterpret_cast<const halo4::xbox360::s_cache_file_tags_header*>(tag_section_buffer.begin + tags_header_relative_offset);
-	byteswap_inplace(tags_header);
-
-	if (tags_header.tags_signature != 'tags')
-	{
-		return BCS_E_FAIL;
 	}
 
 	int32_t tag_interops_relative_offset;
-	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(tags_header.tag_interop_table.address, tag_interops_relative_offset)))
+	if (BCS_FAILED(rs = cache_reader.virtual_address_to_relative_offset(tag_interop_table_section.address, tag_interops_relative_offset)))
 	{
 		return rs;
 	}
 
-	tag_interop_infos.resize(tags_header.tag_interop_table.count);
-	const halo4::xbox360::s_cache_file_tag_interop* tag_interops_read_pointer = reinterpret_cast<const halo4::xbox360::s_cache_file_tag_interop*>(tag_section_buffer.begin + tag_interops_relative_offset);
-	for (uint32_t interop_index = 0; interop_index < tags_header.tag_interop_table.count; interop_index++)
+	tag_interop_infos.resize(tag_interop_table_section.count);
+	const s_halo4_tag_interop_type_fixup* tag_interops_read_pointer = reinterpret_cast<const s_halo4_tag_interop_type_fixup*>(tag_section_buffer.begin + tag_interops_relative_offset);
+	for (uint32_t interop_index = 0; interop_index < tag_interop_table_section.count; interop_index++)
 	{
-		halo4::xbox360::s_cache_file_tag_interop& tag_interop = tag_interop_infos[interop_index] = tag_interops_read_pointer[interop_index];
-		byteswap_inplace(tag_interop);
-
-		
+		s_halo4_tag_interop_type_fixup& tag_interop = tag_interop_infos[interop_index] = tag_interops_read_pointer[interop_index];
+		// #TODO: Handle big endian 
+		//cache_reader.byteswap_inplace(tag_interop); #TODO: Handle this :/
 	}
 
 	return rs;
@@ -307,14 +425,14 @@ BCS_RESULT c_halo4_tag_reader::init_tag_groups()
 {
 	BCS_RESULT rs = BCS_S_OK;
 
-	const blofeld::s_tag_group** blofeld_tag_groups;
+	t_tag_group_collection blofeld_tag_groups;
 	if (BCS_FAILED(rs = cache_cluster.get_blofeld_tag_groups(blofeld_tag_groups)))
 	{
 		return rs;
 	}
 
 	uint32_t tag_group_count = 0; // #TODO: create a function for this
-	for (const blofeld::s_tag_group** tag_group_iterator = blofeld_tag_groups; *tag_group_iterator; tag_group_iterator++)
+	for (t_tag_group_collection tag_group_iterator = blofeld_tag_groups; *tag_group_iterator; tag_group_iterator++)
 	{
 		tag_group_count++;
 	}
@@ -323,7 +441,7 @@ BCS_RESULT c_halo4_tag_reader::init_tag_groups()
 	do
 	{
 		added_tag_group = false;
-		for (const blofeld::s_tag_group** tag_group_iterator = blofeld_tag_groups; *tag_group_iterator; tag_group_iterator++)
+		for (t_tag_group_collection tag_group_iterator = blofeld_tag_groups; *tag_group_iterator; tag_group_iterator++)
 		{
 			const blofeld::s_tag_group& blofeld_tag_group = **tag_group_iterator;
 
@@ -336,7 +454,7 @@ BCS_RESULT c_halo4_tag_reader::init_tag_groups()
 			c_halo4_tag_group* parent_tag_group = nullptr;
 			if (blofeld_tag_group.parent_tag_group)
 			{
-				if (BCS_FAILED(get_tag_group_by_group_tag(blofeld_tag_group.parent_group_tag, parent_tag_group)))
+				if (BCS_FAILED(get_tag_group_by_group_tag(blofeld_tag_group.parent_tag_group->group_tag, parent_tag_group)))
 				{
 					continue;
 				}
@@ -345,20 +463,19 @@ BCS_RESULT c_halo4_tag_reader::init_tag_groups()
 			tag_group = new() c_halo4_tag_group(cache_cluster, blofeld_tag_group, parent_tag_group);
 			tag_groups.push_back(tag_group);
 
-			s_halo4_tag_group_info* tag_group_info;
-			if (BCS_FAILED(rs = get_tag_group_info_by_blofeld_tag_group(blofeld_tag_group, tag_group_info)))
+			s_halo4_tag_group_info* tag_group_info = nullptr;
+			if (BCS_SUCCEEDED(get_tag_group_info_by_blofeld_tag_group(blofeld_tag_group, tag_group_info)))
 			{
-				// #NOTE: fatal error?
-				return rs;
+				tag_group_info->tag_group = tag_group;
 			}
-			tag_group_info->tag_group = tag_group;
+			else
+			{
 
+			}
 			added_tag_group = true;
 		}
 	} while (added_tag_group);
 	ASSERT(tag_groups.size() >= tag_group_count);
-
-
 
 	return rs;
 }
@@ -369,18 +486,29 @@ BCS_RESULT c_halo4_tag_reader::init_tag_instances()
 
 	for (s_halo4_tag_instance_info& tag_instance_info : tag_instance_infos)
 	{
-		ASSERT(tag_instance_info.group_info != nullptr);
-		ASSERT(tag_instance_info.group_info->tag_group != nullptr);
+		if (tag_instance_info.identifier != USHRT_MAX) 
+		{
+			if (
+				cache_cluster.engine_platform_build.platform_type != _platform_type_xbox_360 /*||
+				tag_instance_info.group_info->group.group_tag == SOUND_TAG ||
+				tag_instance_info.group_info->group.group_tag == CACHE_FILE_SOUND_TAG ||
+				tag_instance_info.group_info->group.group_tag == SOUND_CACHE_FILE_GESTALT_TAG */) // #TODO: only sound tags for now from 360, tag definitions need fixing
+			{
+				ASSERT(tag_instance_info.group_info != nullptr);
+				ASSERT(tag_instance_info.group_info->tag_group != nullptr);
 
-		c_halo4_tag_instance* tag_instance = new() c_halo4_tag_instance(
-			cache_cluster,
-			*tag_instance_info.group_info->tag_group,
-			tag_instance_info.index,
-			tag_instance_info.instance_name,
-			tag_instance_info.instance_data
-		);
+				c_halo4_tag_instance* tag_instance = new() c_halo4_tag_instance(
+					cache_cluster,
+					*this,
+					*tag_instance_info.group_info->tag_group,
+					tag_instance_info.absolute_index,
+					tag_instance_info.instance_name,
+					tag_instance_info.instance_data,
+					nullptr);
 
-		tag_instances.push_back(tag_instance);
+				tag_instances.push_back(tag_instance);
+			}
+		}
 	}
 
 	return rs;
@@ -402,7 +530,7 @@ BCS_RESULT c_halo4_tag_reader::get_tag_group_by_group_tag(tag in_group_tag, c_ha
 	return BCS_E_NOT_FOUND;
 }
 
-BCS_RESULT c_halo4_tag_reader::get_tag_group_by_blofeld_tag_group(const blofeld::s_tag_group& in_blofeld_tag_group, c_halo4_tag_group*& out_tag_group) const
+BCS_RESULT c_halo4_tag_reader::get_tag_group_by_blofeld_tag_group(const s_tag_group& in_blofeld_tag_group, c_halo4_tag_group*& out_tag_group) const
 {
 	for (c_halo4_tag_group* tag_group : tag_groups)
 	{
@@ -423,7 +551,7 @@ BCS_RESULT c_halo4_tag_reader::get_tag_group_info_by_group_tag(tag group_tag, s_
 {
 	for (s_halo4_tag_group_info& tag_group_info : tag_group_infos)
 	{
-		if (tag_group_info.group.group_tags[0] == group_tag)
+		if (tag_group_info.group.group_tag == group_tag)
 		{
 			out_tag_group_info = &tag_group_info;
 			return BCS_S_OK;
@@ -433,7 +561,7 @@ BCS_RESULT c_halo4_tag_reader::get_tag_group_info_by_group_tag(tag group_tag, s_
 	return BCS_E_NOT_FOUND;
 }
 
-BCS_RESULT c_halo4_tag_reader::get_tag_group_info_by_blofeld_tag_group(const blofeld::s_tag_group& blofeld_tag_group, s_halo4_tag_group_info*& out_tag_group_info)
+BCS_RESULT c_halo4_tag_reader::get_tag_group_info_by_blofeld_tag_group(const s_tag_group& blofeld_tag_group, s_halo4_tag_group_info*& out_tag_group_info)
 {
 	for (s_halo4_tag_group_info& tag_group_info : tag_group_infos)
 	{
@@ -577,6 +705,8 @@ BCS_RESULT c_halo4_tag_reader::init_interop_table()
 {
 	BCS_RESULT rs = BCS_S_OK;
 
+	// #TODO: Implement once we have tag definitions
+	/*
 	const s_halo4_tag_global_instance_info* global_instance_info;
 	if (BCS_FAILED(rs = get_global_instance_info(blofeld::CACHE_FILE_RESOURCE_GESTALT_TAG, global_instance_info)))
 	{
@@ -629,6 +759,7 @@ BCS_RESULT c_halo4_tag_reader::init_interop_table()
 
 		
 	}
+	*/
 
 	return rs;
 }
@@ -637,6 +768,8 @@ BCS_RESULT c_halo4_tag_reader::init_interops()
 {
 	BCS_RESULT rs = BCS_S_OK;
 
+	// #TODO: Implement once we have tag definitions
+	/*
 	const s_halo4_tag_global_instance_info* global_instance_info;
 	if (BCS_FAILED(rs = get_global_instance_info(blofeld::CACHE_FILE_RESOURCE_GESTALT_TAG, global_instance_info)))
 	{
@@ -721,6 +854,7 @@ BCS_RESULT c_halo4_tag_reader::init_interops()
 
 		
 	}
+	*/
 
 	return rs;
 }
@@ -731,6 +865,8 @@ BCS_RESULT c_halo4_tag_reader::interop_type_index_to_halo4_interop_type(int32_t 
 
 	BCS_RESULT rs = BCS_S_OK;
 
+	// #TODO: Implement once we have tag definitions
+	/*
 	const s_halo4_tag_global_instance_info* global_instance_info;
 	if (BCS_FAILED(rs = get_global_instance_info(blofeld::CACHE_FILE_RESOURCE_GESTALT_TAG, global_instance_info)))
 	{
@@ -748,6 +884,7 @@ BCS_RESULT c_halo4_tag_reader::interop_type_index_to_halo4_interop_type(int32_t 
 	}
 
 	interop_type = _interop_type_index_to_halo4_interop_type[type_index];
+	*/
 
 	return BCS_S_OK;
 }
@@ -756,6 +893,8 @@ BCS_RESULT c_halo4_tag_reader::init_resource_table()
 {
 	BCS_RESULT rs = BCS_S_OK;
 
+	// #TODO: Implement once we have tag definitions
+	/*
 	const s_halo4_tag_global_instance_info* global_instance_info;
 	if (BCS_FAILED(rs = get_global_instance_info(blofeld::CACHE_FILE_RESOURCE_GESTALT_TAG, global_instance_info)))
 	{
@@ -808,16 +947,17 @@ BCS_RESULT c_halo4_tag_reader::init_resource_table()
 
 		
 	}
+	*/
 
 	return rs;
 }
 
 BCS_RESULT c_halo4_tag_reader::init_resources()
 {
-	using namespace blofeld::xbox360_gen3;
-
 	BCS_RESULT rs = BCS_S_OK;
 
+	// #TODO: Implement once we have tag definitions
+	/*
 	const s_halo4_tag_global_instance_info* resource_gestalt_global_instance_info;
 	if (BCS_FAILED(rs = get_global_instance_info(blofeld::CACHE_FILE_RESOURCE_GESTALT_TAG, resource_gestalt_global_instance_info)))
 	{
@@ -954,12 +1094,10 @@ BCS_RESULT c_halo4_tag_reader::init_resources()
 				resource_priority_data.page_data_pointer = page_data_pointer;
 				resource_priority_data.compression_codec = compression_codec;
 
-				/*
-				#NOTE
-				Resource priority data is pooled inside of the cache cluster removing duplicate resources
-				and decompressing pages to extract multiple resource entries at once.
-				See c_halo4_cache_cluster for initialization of c_halo4_resource_entry_reader
-				*/
+				// #NOTE
+				// Resource priority data is pooled inside of the cache cluster removing duplicate resources
+				// and decompressing pages to extract multiple resource entries at once.
+				// See c_halo4_cache_cluster for initialization of c_halo4_resource_entry_reader
 			}
 			resource_priority_datas.make_id();
 
@@ -1064,149 +1202,17 @@ BCS_RESULT c_halo4_tag_reader::init_resources()
 	//e_tag_resource_fixup_type root_fixup_type = resource.root_fixup.get_type();
 	//dword root_fixup_value = resource.root_fixup.get_fixup_value();
 
-	
+	*/
 
 	return rs;
-}
-
-BCS_RESULT c_halo4_tag_reader::export_resources()
-{
-	using namespace blofeld::xbox360_gen3;
-
-	BCS_RESULT rs = BCS_S_OK;
-
-	c_halo4_cache_cluster::t_resource_container_cache_reader_map::iterator resource_container_search = cache_cluster.resource_containers_by_cache_reader.find(&cache_reader);
-	if (resource_container_search == cache_cluster.resource_containers_by_cache_reader.end())
-	{
-		return rs; // no work to do here		
-	}
-
-	std::vector<c_halo4_resource_container*> const& resource_containers = resource_container_search->second;
-
-	c_typed_tag_block<s_cache_file_resource_page_struct> file_pages_block;
-	const s_cache_file_resource_page_struct* file_pages;
-	s_cache_file_buffer_info buffer_info;
-	{
-		const s_halo4_tag_global_instance_info* resource_gestalt_global_instance_info;
-		if (BCS_FAILED(rs = get_global_instance_info(blofeld::CACHE_FILE_RESOURCE_GESTALT_TAG, resource_gestalt_global_instance_info)))
-		{
-			return rs;
-		}
-		s_cache_file_resource_gestalt_block_struct_definition resource_gestalt = *static_cast<const s_cache_file_resource_gestalt_block_struct_definition*>(resource_gestalt_global_instance_info->instance_info->instance_data);
-		byteswap_inplace(resource_gestalt);
-
-		const s_halo4_tag_global_instance_info* resource_layout_table_global_instance_info;
-		if (BCS_FAILED(rs = get_global_instance_info(blofeld::CACHE_FILE_RESOURCE_LAYOUT_TABLE_TAG, resource_layout_table_global_instance_info)))
-		{
-			return rs;
-		}
-
-		if (resource_layout_table_global_instance_info->instance_info->instance_data)
-		{
-			s_cache_file_resource_layout_table_block_struct_definition resource_layout_table = *static_cast<const s_cache_file_resource_layout_table_block_struct_definition*>(resource_layout_table_global_instance_info->instance_info->instance_data);
-			byteswap_inplace(resource_layout_table);
-
-			file_pages_block = resource_layout_table.file_pages_block;
-
-			if (BCS_FAILED(rs = cache_reader.get_section_buffer(gen3::_cache_file_section_index_resource, buffer_info)))
-			{
-				return rs;
-			}
-		}
-		else
-		{
-			file_pages_block = resource_gestalt.file_pages_block;
-
-			if (BCS_FAILED(rs = cache_reader.get_buffer(_cache_file_buffer, buffer_info)))
-			{
-				return rs;
-			}
-		}
-
-		if (BCS_FAILED(rs = page_offset_to_pointer(file_pages_block.address, *reinterpret_cast<const void**>(&file_pages))))
-		{
-			return rs;
-		}
-	}
-
-
-	const s_cache_file_resource_page_struct* const file_pages_end = file_pages + file_pages_block.count;
-	for (const s_cache_file_resource_page_struct* _current_file_page = file_pages; _current_file_page < file_pages_end; _current_file_page++)
-	{
-		s_cache_file_resource_page_struct file_page = *_current_file_page;
-		byteswap_inplace(file_page);
-
-		if (file_page.shared_file != -1) continue; // #TODO: traverse external files
-
-		char* page_data = new() char[__max(0x8000, file_page.size)];
-		const char* page_file_data = buffer_info.begin + file_page.file_offset;
-
-		e_halo4_compression_codec compression_codec = _halo4_compression_uncompressed;
-		if (BCS_FAILED(rs = get_compression_codec_by_index(file_page.codec, compression_codec)))
-		{
-			return rs;
-		}
-
-		switch (compression_codec)
-		{
-		case _halo4_compression_uncompressed:
-			ASSERT(file_page.size == file_page.file_size);
-			memcpy(page_data, page_file_data, file_page.size);
-			break;
-		case _halo4_compression_xdkcompress:
-			h4_codec_inflate_lzx_xbox360(page_file_data, file_page.file_size, page_data, file_page.size);
-			break;
-		default:
-			return BCS_E_NOT_IMPLEMENTED; // unknown compression codec
-		}
-
-		//console_write_line("start");
-		for (c_halo4_resource_container* resource_container : resource_containers)
-		{
-			uint32_t page_index = static_cast<unsigned long>(_current_file_page - file_pages);
-
-			//console_write_line("begin %s", resource_container->tag_instance.instance_name);
-			resource_container->digest_page(cache_reader, page_index, page_data);
-		}
-		//console_write_line("end");
-
-		delete page_data;
-	}
-
-	return rs;
-}
-
-BCS_RESULT c_halo4_tag_reader::resource_type_index_to_halo4_resource_type(int32_t type_index, e_halo4_resource_type& resource_type)
-{
-	BCS_VALIDATE_ARGUMENT(type_index >= 0);
-
-	BCS_RESULT rs = BCS_S_OK;
-
-	const s_halo4_tag_global_instance_info* global_instance_info;
-	if (BCS_FAILED(rs = get_global_instance_info(blofeld::CACHE_FILE_RESOURCE_GESTALT_TAG, global_instance_info)))
-	{
-		return rs;
-	}
-
-	using namespace blofeld::xbox360_gen3;
-
-	s_cache_file_resource_gestalt_block_struct_definition resource_gestalt = *static_cast<const s_cache_file_resource_gestalt_block_struct_definition*>(global_instance_info->instance_info->instance_data);
-	byteswap_inplace(resource_gestalt);
-
-	if (static_cast<unsigned long>(type_index) >= resource_gestalt.resource_type_identifiers_block.count)
-	{
-		return BCS_E_FAIL;
-	}
-
-	resource_type = _resource_type_index_to_halo4_resource_type[type_index];
-
-	return BCS_S_OK;
 }
 
 BCS_RESULT c_halo4_tag_reader::init_shared_files_table()
 {
-	using namespace blofeld::xbox360_gen3;
 	BCS_RESULT rs = BCS_S_OK;
+
+	// #TODO: Implement once we have tag definitions
+	/*
 
 	const s_halo4_tag_global_instance_info* resource_gestalt_global_instance_info;
 	if (BCS_FAILED(rs = get_global_instance_info(blofeld::CACHE_FILE_RESOURCE_GESTALT_TAG, resource_gestalt_global_instance_info)))
@@ -1263,6 +1269,7 @@ BCS_RESULT c_halo4_tag_reader::init_shared_files_table()
 
 		
 	}
+	*/
 
 	return rs;
 }
@@ -1306,9 +1313,12 @@ BCS_RESULT c_halo4_tag_reader::get_compression_codec_by_index(int32_t codec_inde
 {
 	BCS_RESULT rs = BCS_S_OK;
 
-	using namespace blofeld::xbox360_gen3;
+	// #TODO: Implement once we have tag definitions
+	/*
+
+	using namespace blofeld::halo4::pc64;
 	const s_halo4_tag_global_instance_info* resource_layout_table_global_instance_info;
-	if (BCS_FAILED(rs = get_global_instance_info(blofeld::CACHE_FILE_RESOURCE_LAYOUT_TABLE_TAG, resource_layout_table_global_instance_info)))
+	if (BCS_FAILED(rs = get_global_instance_info(CACHE_FILE_RESOURCE_LAYOUT_TABLE_TAG, resource_layout_table_global_instance_info)))
 	{
 		return rs;
 	}
@@ -1362,6 +1372,8 @@ BCS_RESULT c_halo4_tag_reader::get_compression_codec_by_index(int32_t codec_inde
 			return BCS_E_UNSUPPORTED; // unsupported codec
 		}
 	}
+
+	*/
 
 	return rs;
 }

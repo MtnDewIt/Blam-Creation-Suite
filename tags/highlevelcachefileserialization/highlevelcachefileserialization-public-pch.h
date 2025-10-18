@@ -15,8 +15,7 @@
 #include "base/postprocessing_fixup.h"
 #include "base/type_iteration_helpers.h"
 
-#ifdef BCS_BUILD_HIGH_LEVEL_HALO1
-#include "halo1/halo1_tag_group_hierarchy.h"
+#if defined(BCS_BUILD_HIGH_LEVEL_STUBBS) || defined(BCS_BUILD_HIGH_LEVEL_HALO1)
 #include "halo1/halo1_cache_file_reader.h"
 #include "halo1/halo1_cache_cluster.h"
 #include "halo1/halo1_debug_reader.h"
@@ -25,6 +24,17 @@
 #include "halo1/halo1_tag_reader.h"
 #include "halo1/halo1_tag_group.h"
 #include "halo1/halo1_tag_instance.h"
+#endif
+
+#ifdef BCS_BUILD_HIGH_LEVEL_HALO2
+#include "halo2/halo2_cache_file_reader.h"
+#include "halo2/halo2_cache_cluster.h"
+#include "halo2/halo2_debug_reader.h"
+#include "halo2/halo2_localization_reader.h"
+#include "halo2/halo2_resource_reader.h"
+#include "halo2/halo2_tag_reader.h"
+#include "halo2/halo2_tag_group.h"
+#include "halo2/halo2_tag_instance.h"
 #endif
 
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO3
@@ -40,6 +50,19 @@
 #include "halo3/halo3_tag_instance.h"
 #endif
 
+#ifdef BCS_BUILD_HIGH_LEVEL_HALO3ODST
+#include "halo3odst/halo3odst_codec.h"
+#include "halo3odst/halo3odst_api_interop.h"
+#include "halo3odst/halo3odst_cache_file_reader.h"
+#include "halo3odst/halo3odst_cache_cluster.h"
+#include "halo3odst/halo3odst_debug_reader.h"
+#include "halo3odst/halo3odst_localization_reader.h"
+#include "halo3odst/halo3odst_resource_reader.h"
+#include "halo3odst/halo3odst_tag_reader.h"
+#include "halo3odst/halo3odst_tag_group.h"
+#include "halo3odst/halo3odst_tag_instance.h"
+#endif
+
 #ifdef BCS_BUILD_HIGH_LEVEL_ELDORADO
 #include "eldorado/eldorado_api_interop.h"
 #include "eldorado/eldorado_cache_file_reader.h"
@@ -53,13 +76,22 @@
 #include "eldorado/eldorado_tag_instance.h"
 #endif
 
+#ifdef BCS_BUILD_HIGH_LEVEL_HALOREACH
+#include "haloreach/haloreach_codec.h"
+#include "haloreach/haloreach_api_interop.h"
+#include "haloreach/haloreach_cache_file_reader.h"
+#include "haloreach/haloreach_cache_cluster.h"
+#include "haloreach/haloreach_debug_reader.h"
+#include "haloreach/haloreach_localization_reader.h"
+#include "haloreach/haloreach_resource_reader.h"
+#include "haloreach/haloreach_tag_reader.h"
+#include "haloreach/haloreach_tag_group.h"
+#include "haloreach/haloreach_tag_instance.h"
+#endif
+
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO4
-/*
 #include "halo4/halo4_codec.h"
-#include "halo4/halo4_resource_container.h"
 #include "halo4/halo4_api_interop.h"
-#include "halo4/halo4_tag_group_hierarchy.h"
-#include "halo4/halo4_cache_file_header.h"
 #include "halo4/halo4_cache_file_reader.h"
 #include "halo4/halo4_cache_cluster.h"
 #include "halo4/halo4_debug_reader.h"
@@ -68,7 +100,19 @@
 #include "halo4/halo4_tag_reader.h"
 #include "halo4/halo4_tag_group.h"
 #include "halo4/halo4_tag_instance.h"
-*/
+#endif
+
+#ifdef BCS_BUILD_HIGH_LEVEL_GROUNDHOG
+#include "groundhog/groundhog_codec.h"
+#include "groundhog/groundhog_api_interop.h"
+#include "groundhog/groundhog_cache_file_reader.h"
+#include "groundhog/groundhog_cache_cluster.h"
+#include "groundhog/groundhog_debug_reader.h"
+#include "groundhog/groundhog_localization_reader.h"
+#include "groundhog/groundhog_resource_reader.h"
+#include "groundhog/groundhog_tag_reader.h"
+#include "groundhog/groundhog_tag_group.h"
+#include "groundhog/groundhog_tag_instance.h"
 #endif
 
 #ifdef BCS_BUILD_HIGH_LEVEL_HALOINFINITE

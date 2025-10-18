@@ -181,8 +181,10 @@ BCS_RESULT c_eldorado_cache_cluster::get_postprocessing_fixups(c_postprocessing_
 {
 	if (engine_platform_build == s_engine_platform_build{ _engine_type_eldorado, _platform_type_pc_32bit, _build_eldorado_1_106708_cert_ms23 })
 	{
-		out_fixups = eldorado_1_106708_cert_ms23::postprocessing_fixups;
-		fixup_count = eldorado_1_106708_cert_ms23::num_postprocessing_fixups;
+		//out_fixups = eldorado_1_106708_cert_ms23::postprocessing_fixups;
+		//fixup_count = eldorado_1_106708_cert_ms23::num_postprocessing_fixups;
+		out_fixups = nullptr;
+		fixup_count = 0;
 	}
 	else
 	{

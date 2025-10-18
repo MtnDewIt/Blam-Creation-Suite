@@ -22,13 +22,13 @@ private:
 	c_halo4_cache_cluster& cache_cluster;
 	c_halo4_cache_file_reader& cache_reader;
 
-	char* file_table_buffer;
+	char* debug_tag_name_buffer;
 	//uint32_t* string_id_index_buffer;
 	char* string_id_buffer;
 
 	const uint32_t* string_id_index_buffer;
 	const char* encrypted_string_id_buffer;
-	const uint32_t* file_table_index_buffer;
+	const uint32_t* debug_tag_name_index_buffer;
 	const char* encrypted_file_table_buffer;
 	// string ids
 

@@ -26,16 +26,17 @@ public:
 private:
 	struct s_halo4_tag_group_info
 	{
-		halo4::xbox360::s_cache_file_tag_group group;
+		::halo4::s_cache_file_tag_group group;
 		const char* group_name;
-		const blofeld::s_tag_group* blofeld_tag_group;
+		blofeld::s_tag_group const* blofeld_tag_group;
 		c_halo4_tag_group* tag_group;
 	};
 
 	struct s_halo4_tag_instance_info
 	{
-		halo4::xbox360::s_cache_file_tag_instance instance;
-		int32_t index;
+		::halo4::s_cache_file_tag_instance instance;
+		uint32_t absolute_index;
+		uint32_t identifier;
 		const char* instance_name;
 		const void* instance_data;
 		s_halo4_tag_group_info* group_info;
@@ -44,12 +45,30 @@ private:
 
 	struct s_halo4_tag_global_instance_info
 	{
-		halo4::xbox360::s_cache_file_tag_global_instance global_instance;
+		::halo4::s_cache_file_global_tag_index global_instance;
 		s_halo4_tag_instance_info* instance_info;
+	};
+
+	struct s_halo4_tag_interop_type_fixup
+	{
+		qword interop_address;
+		int32_t cache_file_interop_type;
+	};
+
+	struct s_halo4_section
+	{
+		uint32_t count = 0;
+		int64_t address = 0;
 	};
 
 	c_halo4_cache_cluster& cache_cluster;
 	c_halo4_cache_file_reader& cache_reader;
+
+	union
+	{
+		::halo4::pc::s_cache_file_tags_header pc_tags_header;
+		::halo4::xbox360::s_cache_file_tags_header xbox360_tags_header;
+	};
 
 	using t_tag_groups = std::vector<c_halo4_tag_group*>;
 	using t_tag_instances = std::vector<c_halo4_tag_instance*>;
@@ -62,7 +81,7 @@ private:
 	using t_tag_group_infos = std::vector<s_halo4_tag_group_info>;
 	using t_tag_instance_infos = std::vector<s_halo4_tag_instance_info>;
 	using t_tag_global_instance_infos = std::vector<s_halo4_tag_global_instance_info>;
-	using t_tag_interop_infos = std::vector<halo4::xbox360::s_cache_file_tag_interop>;
+	using t_tag_interop_infos = std::vector<s_halo4_tag_interop_type_fixup>;
 	using t_tag_instance_infos_by_index = std::unordered_map<uint32_t, s_halo4_tag_global_instance_info*>;
 
 	t_tag_group_infos tag_group_infos;
@@ -70,12 +89,15 @@ private:
 	t_tag_global_instance_infos tag_global_instance_infos;
 	t_tag_interop_infos tag_interop_infos;
 
-	e_halo4_resource_type* _resource_type_index_to_halo4_resource_type;
 	e_halo4_interop_type* _interop_type_index_to_halo4_interop_type;
 	c_halo4_interop_container** interop_containers;
 	c_halo4_cache_file_reader** _shared_file_index_to_cache_file_reader;
 	uint32_t _shared_file_count;
 
+	h_resource** high_level_resources;
+	uint32_t num_high_level_resources;
+
+	BCS_RESULT read_tags_header();
 	BCS_RESULT read_tag_groups();
 	BCS_RESULT read_tag_instances();
 	BCS_RESULT read_tag_global_instances();
@@ -84,9 +106,9 @@ private:
 	BCS_RESULT init_tag_instances();
 
 	BCS_RESULT get_tag_group_by_group_tag(tag group_tag, c_halo4_tag_group*& tag_group) const;
-	BCS_RESULT get_tag_group_by_blofeld_tag_group(const blofeld::s_tag_group& blofeld_tag_group, c_halo4_tag_group*& tag_group) const;
+	BCS_RESULT get_tag_group_by_blofeld_tag_group(blofeld::s_tag_group const& blofeld_tag_group, c_halo4_tag_group*& tag_group) const;
 	BCS_RESULT get_tag_group_info_by_group_tag(tag group_tag, s_halo4_tag_group_info*& tag_group_info);
-	BCS_RESULT get_tag_group_info_by_blofeld_tag_group(const blofeld::s_tag_group& blofeld_tag_group, s_halo4_tag_group_info*& tag_group_info);
+	BCS_RESULT get_tag_group_info_by_blofeld_tag_group(blofeld::s_tag_group const& blofeld_tag_group, s_halo4_tag_group_info*& tag_group_info);
 
 	BCS_RESULT init_interop_table();
 	BCS_RESULT init_interops();
@@ -94,8 +116,6 @@ private:
 
 	BCS_RESULT init_resource_table();
 	BCS_RESULT init_resources();
-	BCS_RESULT export_resources();
-	BCS_RESULT resource_type_index_to_halo4_resource_type(int32_t type_index, e_halo4_resource_type& resource_type);
 
 	BCS_RESULT init_shared_files_table();
 	BCS_RESULT shared_file_index_to_cache_file_reader(int32_t shared_file_index, c_halo4_cache_file_reader*& cache_file_reader);
@@ -108,4 +128,9 @@ private:
 	BCS_RESULT get_instance_info_by_tag_index(uint32_t tag_index, const s_halo4_tag_instance_info*& instance_info);
 	BCS_RESULT get_tag_instance_info_by_tag_index(uint32_t tag_index, c_halo4_tag_instance*& instance_info);
 
+protected:
+	BCS_RESULT get_tag_groups_section(s_halo4_section& tag_groups);
+	BCS_RESULT get_tag_instances_section(s_halo4_section& tag_instances);
+	BCS_RESULT get_global_tag_instances_section(s_halo4_section& global_tag_instances);
+	BCS_RESULT get_tag_interop_table_section(s_halo4_section& tag_interop_table);
 };

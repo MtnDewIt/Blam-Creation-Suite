@@ -231,7 +231,7 @@ void c_definition_tweaker::init()
 
 void c_definition_tweaker::init_string_id_manager()
 {
-	strings_file_header = static_cast<blofeld::eldorado::s_strings_file_header*>(binary_data[_binary_string_ids]);
+	strings_file_header = static_cast<eldorado::s_strings_file_header*>(binary_data[_binary_string_ids]);
 
 	unsigned int* strings_offsets = next_contiguous_pointer(unsigned int, strings_file_header);
 	const char* strings = reinterpret_cast<const char*>(strings_offsets + strings_file_header->string_count);
@@ -419,7 +419,7 @@ void c_definition_tweaker::parse_binary(tag specific_group)
 		}
 		group_serialization_contexts.clear();
 
-		cache_file_section_header = static_cast<blofeld::eldorado::s_cache_file_section_header*>(binary_data[_binary_tags]);
+		cache_file_section_header = static_cast<eldorado::s_cache_file_section_header*>(binary_data[_binary_tags]);
 		tag_cache_offsets = reinterpret_cast<unsigned int*>(static_cast<char*>(binary_data[_binary_tags]) + cache_file_section_header->file_offsets);
 
 		for (c_runtime_tag_group_definition* tag_group : runtime_tag_definitions->tag_group_definitions)
@@ -452,7 +452,7 @@ void c_definition_tweaker::parse_binary(tag specific_group)
 			}
 
 			const char* tag_data_start = static_cast<char*>(binary_data[_binary_tags]) + tag_cache_offset;
-			const blofeld::eldorado::s_cache_file_tag_instance* tag_header = reinterpret_cast<const blofeld::eldorado::s_cache_file_tag_instance*>(tag_data_start);
+			const eldorado::s_cache_file_tag_instance* tag_header = reinterpret_cast<const eldorado::s_cache_file_tag_instance*>(tag_data_start);
 
 			c_group_serialization_context* group_serialization_context = nullptr;
 			for (c_group_serialization_context* current_group_serialization_context : group_serialization_contexts)

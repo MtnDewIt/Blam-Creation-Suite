@@ -22,14 +22,32 @@ c_halo1_cache_file_reader::c_halo1_cache_file_reader(const wchar_t* filepath, s_
 		throw(rs);
 	}
 
-	if (engine_platform_build.build == _build_halo1_demo)
+	if (engine_platform_build.platform_type == _platform_type_pc_32bit) 
 	{
-		halo1::demo::s_cache_file_header& demo_cache_file_header = *reinterpret_cast<halo1::demo::s_cache_file_header*>(file_info.file_view_begin);
-		cache_file_header = new() c_halo1_header_wrapper(demo_cache_file_header);
+		if (engine_platform_build.build == _build_halo1_demo)
+		{
+			halo1::demo::s_cache_file_header& demo_cache_file_header = *reinterpret_cast<halo1::demo::s_cache_file_header*>(file_info.file_view_begin);
+			cache_file_header = new() c_halo1_header_wrapper(demo_cache_file_header);
+		}
+		else
+		{
+			halo1::pc32::s_cache_file_header& pc_cache_file_header = *reinterpret_cast<halo1::pc32::s_cache_file_header*>(file_info.file_view_begin);
+
+			if (pc_cache_file_header.header_signature == k_cache_header_signature)
+			{
+				cache_file_header = new() c_halo1_header_wrapper(pc_cache_file_header);
+			}
+			else
+			{
+				cache_file_resource_header = reinterpret_cast<halo1::s_cache_file_resource_header*>(file_info.file_view_begin);
+				is_resource_file = true;
+			}
+		}
 	}
-	else
+
+	if (engine_platform_build.platform_type == _platform_type_pc_64bit) 
 	{
-		halo1::pc::s_cache_file_header& pc_cache_file_header = *reinterpret_cast<halo1::pc::s_cache_file_header*>(file_info.file_view_begin);
+		halo1::pc64::s_cache_file_header& pc_cache_file_header = *reinterpret_cast<halo1::pc64::s_cache_file_header*>(file_info.file_view_begin);
 
 		if (pc_cache_file_header.header_signature == k_cache_header_signature)
 		{
@@ -102,11 +120,11 @@ BCS_RESULT c_halo1_cache_file_reader::get_debug_info(s_cache_file_debug_info& de
 	return BCS_E_NOT_IMPLEMENTED;
 }
 
-BCS_RESULT c_halo1_cache_file_reader::get_section_buffer(gen3::e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const
+BCS_RESULT c_halo1_cache_file_reader::get_section_buffer(e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const
 {
 	if (is_resource_file)
 	{
-		if (section_index == gen3::_cache_file_debug_section)
+		if (section_index == _cache_file_debug_section)
 		{
 			buffer_info.begin = file_info.file_view_begin + cache_file_resource_header->tag_names_offset;
 			buffer_info.end = nullptr;
@@ -116,7 +134,7 @@ BCS_RESULT c_halo1_cache_file_reader::get_section_buffer(gen3::e_cache_file_sect
 
 			return BCS_S_OK;
 		}
-		if (section_index == gen3::_cache_file_tag_section)
+		if (section_index == _cache_file_tag_section)
 		{
 			buffer_info.begin = file_info.file_view_begin + cache_file_resource_header->tag_data_offset;
 			buffer_info.end = nullptr;
@@ -129,7 +147,7 @@ BCS_RESULT c_halo1_cache_file_reader::get_section_buffer(gen3::e_cache_file_sect
 	}
 	else
 	{
-		if (section_index == gen3::_cache_file_tag_section || section_index == gen3::_cache_file_debug_section)
+		if (section_index == _cache_file_tag_section || section_index == _cache_file_debug_section)
 		{
 			buffer_info.begin = file_info.file_view_begin + cache_file_header->tags_offset;
 			buffer_info.end = buffer_info.begin + cache_file_header->tags_size;
@@ -153,11 +171,11 @@ BCS_RESULT c_halo1_cache_file_reader::get_buffer(e_cache_file_buffer_index buffe
 		buffer_info.size = static_cast<unsigned long>(file_info.file_size);
 		return BCS_S_OK;
 	case _debug_section_buffer:
-		return get_section_buffer(gen3::_cache_file_debug_section, buffer_info);
+		return get_section_buffer(_cache_file_debug_section, buffer_info);
 	case _tag_section_buffer:
-		return get_section_buffer(gen3::_cache_file_tag_section, buffer_info);
+		return get_section_buffer(_cache_file_tag_section, buffer_info);
 	case _resources_section_buffer:
-		return get_section_buffer(gen3::_cache_file_resource_section, buffer_info);
+		return get_section_buffer(_cache_file_resource_section, buffer_info);
 	default:
 		return BCS_E_UNSUPPORTED;
 	}

@@ -11,8 +11,8 @@ enum e_eldorado_file_index
 	_eldorado_file_type_video_resources,
 	k_num_eldorado_resource_files,
 	_eldorado_file_type_string_ids = k_num_eldorado_resource_files,
-	_eldorado_file_type_tags_list,
 	_eldorado_file_type_tags_cache,
+	_eldorado_file_type_tags_list,
 	k_eldorado_num_files
 };
 
@@ -23,12 +23,13 @@ public:
 	BCS_SHARED c_eldorado_cache_file_reader(const wchar_t* filepath, s_engine_platform_build engine_platform_build);
 	BCS_SHARED ~c_eldorado_cache_file_reader();
 
+	BCS_SHARED virtual BCS_RESULT get_build_info(s_cache_file_build_info& build_info) const override final;
 	BCS_SHARED virtual BCS_RESULT associate_cache_cluster(c_cache_cluster& cache_cluster) override final;
 	BCS_SHARED virtual BCS_RESULT get_blofeld_tag_groups(blofeld::t_tag_group_collection& tag_groups) const override final;
 	BCS_SHARED virtual BCS_RESULT virtual_address_to_relative_offset(int64_t virtual_address, int32_t& relative_offset) const override final;
 	BCS_SHARED virtual BCS_RESULT page_offset_to_virtual_address(uint32_t page_offset, int64_t& virtual_address) const override final;
 
-	BCS_SHARED BCS_RESULT get_section_buffer(gen3::e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const;
+	BCS_SHARED BCS_RESULT get_section_buffer(e_cache_file_section section_index, s_cache_file_buffer_info& buffer_info) const;
 	BCS_SHARED BCS_RESULT associate_cache_cluster(c_eldorado_cache_cluster& cache_cluster);
 
 	virtual BCS_RESULT get_resource_absolute_file_offset(e_eldorado_file_index resource_file_index, unsigned int file_index, unsigned int& absolute_file_offset) const;
@@ -44,8 +45,8 @@ public:
 		"maps\\audio.dat",
 		"maps\\video.dat",
 		"maps\\string_ids.dat",
-		"maps\\tags_list.csv",
 		"maps\\tags.dat",
+		"maps\\tag_list.csv",
 	};
 
 	t_memory_mapped_file* memory_mapped_files[k_eldorado_num_files];

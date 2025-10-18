@@ -3,7 +3,7 @@
 #ifdef BCS_BUILD_HIGH_LEVEL_HALO1
 
 using namespace blofeld;
-using namespace blofeld::taggroups;
+using namespace blofeld::halo1::pc64;
 
 c_halo1_tag_reader::c_halo1_tag_reader(c_halo1_cache_cluster& _cache_cluster, c_halo1_cache_file_reader& _cache_reader) :
 	c_tag_reader(_cache_cluster, _cache_reader),
@@ -56,7 +56,7 @@ BCS_RESULT c_halo1_tag_reader::read_tag_instances()
 
 	c_halo1_header_wrapper& cache_file_header = *cache_reader.cache_file_header;
 
-	halo1::s_cache_file_tags_header tags_header = *reinterpret_cast<const halo1::s_cache_file_tags_header*>(tag_section_buffer.begin);
+	::halo1::s_cache_file_tags_header tags_header = *reinterpret_cast<const ::halo1::s_cache_file_tags_header*>(tag_section_buffer.begin);
 
 	if (tags_header.signature != 'tags')
 	{
@@ -70,11 +70,11 @@ BCS_RESULT c_halo1_tag_reader::read_tag_instances()
 	}
 
 	tag_instance_infos.resize(tags_header.tag_count);
-	const halo1::s_cache_file_tag_instance* tag_instances_read_pointer = reinterpret_cast<const halo1::s_cache_file_tag_instance*>(tag_section_buffer.begin + tag_instances_relative_offset);
+	const ::halo1::s_cache_file_tag_instance * tag_instances_read_pointer = reinterpret_cast<const ::halo1::s_cache_file_tag_instance*>(tag_section_buffer.begin + tag_instances_relative_offset);
 	for (uint32_t tag_index = 0; tag_index < tags_header.tag_count; tag_index++)
 	{
 		s_halo1_tag_instance_info& tag_instance_info = tag_instance_infos[tag_index];
-		halo1::s_cache_file_tag_instance& tag_instance = tag_instance_info.instance = tag_instances_read_pointer[tag_index];
+		::halo1::s_cache_file_tag_instance& tag_instance = tag_instance_info.instance = tag_instances_read_pointer[tag_index];
 
 		tag group_tag = tag_instance.group_tag;
 		s_tag_group const* tag_group;

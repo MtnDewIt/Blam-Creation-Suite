@@ -37,6 +37,12 @@ c_tag_project_configurator_tab::c_tag_project_configurator_tab(const wchar_t* di
 	c_fixed_wide_path deploy_directory = directory;
 	deploy_directory += L"deploy\\";
 
+	c_fixed_wide_path eldorado_filepath = directory;
+	eldorado_filepath += L"eldorado.exe";
+
+	c_fixed_wide_path halo_online_filepath = directory;
+	halo_online_filepath += L"halo_online.exe";
+
 	if (BCS_SUCCEEDED(filesystem_directory_exists(tag_cache_directory)))
 	{
 		is_monolithic_tag_file_directory = true;
@@ -92,6 +98,18 @@ c_tag_project_configurator_tab::c_tag_project_configurator_tab(const wchar_t* di
 			this);
 		is_cache_file_directory = true;
 		debug_point;
+	}
+	else if (BCS_SUCCEEDED(filesystem_filepath_exists(eldorado_filepath)) || BCS_SUCCEEDED(filesystem_filepath_exists(halo_online_filepath)))
+	{
+		filesystem_traverse_directory_files(
+			directory,
+			L"maps\\tags.dat",
+			[](void* userdata, const wchar_t* path, const wchar_t* relative_path)
+			{
+				return static_cast<c_tag_project_configurator_tab*>(userdata)->process_directory(path, relative_path);
+			},
+			this);
+		is_cache_file_directory = true;
 	}
 	else
 	{
@@ -394,7 +412,7 @@ void c_tag_project_configurator_tab::render_display_tags()
 			for (unsigned int tag_instance_index = 0; tag_instance_index < num_tag_instances; tag_instance_index++)
 			{
 				h_tag_instance* tag = tag_instances[tag_instance_index];
-				ImGui::Text("%s.%s", tag->get_file_path(), tag->tag_group.blofeld_tag_group.name);
+				ImGui::Text("0x%08X - %s.%s", tag_instance_index, tag->get_file_path_without_extension(), tag->tag_group.blofeld_tag_group.name);
 			}
 		}
 	}
@@ -441,12 +459,10 @@ void c_tag_project_configurator_tab::create_cache_cluster()
 			throw rs;
 		}
 
-		// #TODO: This need to be run in order for the tag context to be populated 
-		// #TODO: Handle when tags fail to allocate correctly, due to bad definitions
-		//if (BCS_FAILED(rs = high_level_transplant_context_execute_v2(*cache_cluster_transplant_context)))
-		//{
-		//	throw rs;
-		//}
+		if (BCS_FAILED(rs = high_level_transplant_context_execute_v2(*cache_cluster_transplant_context)))
+		{
+			throw rs;
+		}
 
 		debug_point;
 	}

@@ -1,7 +1,60 @@
 #pragma once
 
+/* ---------- types */
+
 namespace halo4
 {
+	enum e_scenario_type
+	{
+		_scenario_type_solo,
+		_scenario_type_multiplayer,
+		_scenario_type_main_menu,
+		_scenario_type_multiplayer_shared,
+		_scenario_type_single_player_shared,
+		_scenario_type_sounds_shared,
+		k_scenario_type_count [[maybe_unused]],
+		_scenario_type_invalid = NONE
+	};
+
+	enum e_cache_file_shared_file_type
+	{
+		_shared_file_mainmenu,
+		_shared_file_multiplayer,
+		_shared_file_campaign,
+		k_number_of_shared_file_types [[maybe_unused]],
+		k_invalid_shared_file_type = NONE,
+	};
+
+	enum e_cache_file_header_bit
+	{
+		_cache_file_header_bit_use_absolute_addressing, // #NOTE: Appears to be related to loading maps off of a hard drive
+		_cache_file_header_bit_unknown,
+		k_num_cache_file_header_bits [[maybe_unused]],
+	};
+
+	enum e_map_file_index
+	{
+		k_total_tracked_cached_map_files_count = 9,
+		k_no_cached_map_file_index = -1
+	};
+
+	enum e_cache_file_section
+	{
+		_cache_file_debug_section,
+		_cache_file_resource_section,
+		_cache_file_tag_section,
+		_cache_file_language_pack_section,
+		k_number_of_cache_file_sections [[maybe_unused]]
+	};
+
+	enum e_cache_file_content_hash
+	{
+		_cache_file_content_hash_header = 0,
+		_cache_file_content_hash_tags_language_dependent = 1,
+		_cache_file_content_hash_tags_language_neutral = 2,
+		k_cache_file_content_hash_count = 3
+	};
+
 	struct s_cache_file_tag_group
 	{
 		tag group_tag;
@@ -39,184 +92,96 @@ namespace halo4
 	};
 	static_assert(sizeof(s_section) == 0x8);
 
-	namespace pc
+	struct s_cache_file_section_file_bounds
 	{
-#pragma pack(push, 4)
-		struct s_cache_file_header
-		{
-			tag header_signature;
-			int32_t version;
-			int32_t size;
-			int32_t compressed_file_padding;
-			int32_t tags_offset;
-			int32_t total_tags_size;
-			c_enum_no_init<gen4::e_scenario_type, short> scenario_type;
-			c_enum_no_init<gen4::e_cache_file_shared_file_type, short> shared_cache_file_type;
-			bool uncompressed;
-			bool tracked;
-			bool valid_shared_resource_usage;
-			c_flags_no_init<gen4::e_cache_file_header_bit, unsigned char, gen4::k_num_cache_file_header_bits> header_flags;
-			int32_t debug_tag_name_count;
-			int32_t debug_tag_name_data_offset;
-			int32_t debug_tag_name_data_size;
-			int32_t debug_tag_name_index_offset;
-			int32_t string_id_count;
-			int32_t string_id_data_count;
-			int32_t string_id_index_offset;
-			int32_t string_id_data_offset;
-			int32_t string_id_namespace_count;
-			int32_t string_id_namespace_offset;
-			s_file_last_modification_date shared_creation_date[4]; // k_shared_resource_database_type_count
-			int8_t unknown1[16];
-			c_static_string<32> creator_name;
-			c_static_string<32> build_number;
-			c_static_string<32> name;
-			c_static_string<256> tag_path;
-			c_static_string<256> path;
-			uintptr64_t expected_base_address;
-			uintptr64_t tags_header_when_loaded;
-			int8_t unknown2[16];
-			c_basic_buffer64<void> tag_post_link_buffer;
-			c_basic_buffer64<void> tag_language_dependent_read_only_buffer;
-			c_basic_buffer64<void> tag_language_dependent_read_write_buffer;
-			c_basic_buffer64<void> tag_language_neutral_read_write_buffer;
-			c_basic_buffer64<void> tag_language_neutral_write_combined_buffer;
-			c_basic_buffer64<void> tag_language_neutral_read_only_buffer;
-			int32_t realtime_checksum;
-			int32_t content_hash_mask;
-			int64_t signature_marker;
-			s_network_http_request_hash content_hashes[3];
-			int8_t rsa_key_blob_hash[32]; // your guess is as good as mine
-			s_rsa_signature rsa_signature;
-			s_static_array<int32_t, gen4::k_number_of_cache_file_sections> section_offsets;
-			s_static_array<gen4::s_cache_file_section_file_bounds, gen4::k_number_of_cache_file_sections> original_section_bounds;
-			gen4::s_cache_file_shared_resource_usage shared_resource_usage;
-			int8_t unknown1D728[16];
-			uint32_t late_binding_tag_reference_fixup_info_count;
-			uint32_t late_binding_tag_reference_fixup_info_address;
-			uint32_t cache_file_fixups_count;
-			uint32_t cache_file_fixups_address;
-			int8_t unknown1D738[16];
-			uint32_t unknown1D73C;
-			uint32_t unknown1D740;
-			uint32_t unknown1D744;
-			uint32_t unknown1D748;
-			int8_t unknown1D74C[28];
-			uint32_t unknown1D768;
-			uint32_t unknown1D76C;
-			int8_t padding[2088];
-			tag footer_signature;
-		};
-#pragma pack(pop)
-		static constexpr size_t k_pc_cache_file_header = sizeof(s_cache_file_header);
-		static_assert(k_pc_cache_file_header == 0x1E000);
+		int32_t offset;
+		int32_t size;
+	};
+	static_assert(sizeof(s_cache_file_section_file_bounds) == 0x8);
 
-		struct s_cache_file_tags_header
-		{
-			s_section tag_groups; // s_cache_file_tag_group (should be a 64 bit pointer)
-			s_section tag_instances; // s_cache_file_tag_instance (should be a 64 bit pointer)
-			s_section global_tag_indices; // s_cache_file_global_tag_index (should be a 64 bit pointer)
-			s_section tag_interop_fixups; // s_cache_file_tag_interop_type_fixup (should be a 64 bit pointer)
-			int32_t unknown20;
-			dword tags_checksum;
-			uint32_t signature;
-		};
-		static constexpr size_t k_pc_cache_file_tags_header = sizeof(s_cache_file_tags_header);
-		static_assert(k_pc_cache_file_tags_header == 0x2C);
+	struct s_cache_file_local_resource_location
+	{
+		// #TODO: Handle byteswapping bitfields
+		//int32_t flags : 2;
+		//int32_t file_size : 30;
+
+		int32_t flags_and_file_size;
+		int32_t memory_size;
+		s_network_http_request_hash entire_checksum;
+	};
+	static_assert(sizeof(s_cache_file_local_resource_location) == 0x1C);
+
+	struct s_cache_file_insertion_point_resource_usage
+	{
+		int8_t initial_zone_set_index;
+		int8_t pad[3];
+		int8_t unknown04[8];
+		int32_t shared_required_locations[256]; // c_static_flags<8192>
+		int32_t local_required_locations[128]; // c_static_flags<4096>
+	};
+	static_assert(sizeof(s_cache_file_insertion_point_resource_usage) == 0x60C);
+
+	struct s_cache_file_shared_resource_usage
+	{
+		uint32_t shared_layout_identifier[4]; // s_tag_persistent_identifier
+		int16_t shared_location_count;
+		int16_t local_location_count;
+		int32_t first_file_offset;
+		uint32_t codec_identifier[4]; // s_tag_persistent_identifier
+		s_static_array<s_cache_file_local_resource_location, 3600> local_locations;
+		int8_t insertion_point_usage_count;
+		int8_t pad[3];
+		s_static_array<s_cache_file_insertion_point_resource_usage, 12> insertion_point_usages;
+	};
+	static_assert(sizeof(s_cache_file_shared_resource_usage) == 0x1D27C);
+
+	BCS_SHARED extern BCS_RESULT halo4_scenario_type_to_base_scenario_type(e_scenario_type halo4_scenario_type, ::e_scenario_type& base_scenario_type);
+	BCS_SHARED extern BCS_RESULT base_scenario_type_to_halo4_scenario_type(::e_scenario_type base_scenario_type, e_scenario_type& halo4_scenario_type);
+
+	BCS_SHARED extern BCS_RESULT halo4_cache_file_shared_file_type_to_base_cache_file_shared_file_type(e_cache_file_shared_file_type halo4_cache_file_shared_file_type, ::e_cache_file_shared_file_type& base_cache_file_shared_file_type);
+	BCS_SHARED extern BCS_RESULT base_cache_file_shared_file_type_to_halo4_cache_file_shared_file_type(::e_cache_file_shared_file_type base_cache_file_shared_file_type, e_cache_file_shared_file_type& halo4_cache_file_shared_file_type);
+
+	template<typename t_halo4_storage, typename t_base_storage>
+	inline BCS_RESULT halo4_cache_file_shared_file_flags_to_base_cache_file_shared_file_flags(
+		c_flags_no_init<halo4::e_cache_file_shared_file_type, t_halo4_storage, k_number_of_shared_file_types> const& halo4_cache_file_shared_file_flags,
+		c_flags_no_init<::e_cache_file_shared_file_type, t_base_storage, ::k_number_of_shared_file_types>& base_cache_file_shared_file_flags)
+	{
+		base_cache_file_shared_file_flags.clear();
+		base_cache_file_shared_file_flags.set(::_shared_file_mainmenu, halo4_cache_file_shared_file_flags.test(_shared_file_mainmenu));
+		base_cache_file_shared_file_flags.set(::_shared_file_multiplayer, halo4_cache_file_shared_file_flags.test(_shared_file_multiplayer));
+		base_cache_file_shared_file_flags.set(::_shared_file_campaign, halo4_cache_file_shared_file_flags.test(_shared_file_campaign));
+		return BCS_S_OK;
 	}
-	namespace xbox360
+	template<typename t_halo4_storage, typename t_base_storage>
+	inline BCS_RESULT base_cache_file_shared_file_flags_to_halo4_cache_file_shared_file_flags(
+		c_flags_no_init<::e_cache_file_shared_file_type, t_base_storage, ::k_number_of_shared_file_types> const& base_cache_file_shared_file_flags,
+		c_flags_no_init<halo4::e_cache_file_shared_file_type, t_halo4_storage, k_number_of_shared_file_types>& halo4_cache_file_shared_file_flags)
 	{
-#pragma pack(push, 4)
-		struct s_cache_file_header
-		{
-			tag header_signature;
-			int32_t version;
-			int32_t size;
-			int32_t compressed_file_padding;
-			uintptr32_t tags_header_when_loaded;
-			int32_t tags_offset;
-			int32_t total_tags_size;
-			c_static_string<256> path;
-			c_static_string<32> build_number;
-			c_enum_no_init<gen4::e_scenario_type, short> scenario_type;
-			c_enum_no_init<gen4::e_cache_file_shared_file_type, short> shared_cache_file_type;
-			bool uncompressed;
-			bool tracked;
-			bool valid_shared_resource_usage;
-			c_flags_no_init<gen4::e_cache_file_header_bit, unsigned char, gen4::k_num_cache_file_header_bits> header_flags;
-			s_file_last_modification_date slot_modification_date;
-			int32_t low_detail_texture_number;
-			int32_t low_detail_texture_offset;
-			int32_t low_detail_texture_byte_count;
-			int32_t string_id_count;
-			int32_t string_id_data_count;
-			int32_t string_id_index_offset;
-			int32_t string_id_data_offset;
-			c_flags_no_init<gen4::e_cache_file_shared_file_type, unsigned char, gen4::k_number_of_shared_file_types> shared_map_usage;
-			s_file_last_modification_date creation_date;
-			s_file_last_modification_date shared_creation_date[3]; // k_shared_resource_database_type_count
-			c_static_string<32> name;
-			int32_t language;
-			c_static_string<256> tag_path;
-			int32_t minor_version_number;
-			int32_t debug_tag_name_count;
-			int32_t debug_tag_name_data_offset;
-			int32_t debug_tag_name_data_size;
-			int32_t debug_tag_name_index_offset;
-			uint32_t tag_remap_count; // c_wrapped_array tag_remap_info
-			uint32_t tag_remap_address;
-			uint32_t dlc_tag_remap_count; // c_wrapped_array dlc_tag_remap_info
-			uint32_t dlc_tag_remap_address;
-			int32_t realtime_checksum;
-			c_static_string<32> creator_name;
-			uintptr32_t expected_base_address;
-			uint32_t xdk_version;
-			c_basic_buffer32<void> tag_post_link_buffer;
-			c_basic_buffer32<void> tag_language_dependent_read_only_buffer;
-			c_basic_buffer32<void> tag_language_dependent_read_write_buffer;
-			c_basic_buffer32<void> tag_language_neutral_read_write_buffer;
-			c_basic_buffer32<void> tag_language_neutral_write_combined_buffer;
-			c_basic_buffer32<void> tag_language_neutral_read_only_buffer;
-			int32_t content_hash_mask;
-			int32_t pad2[1];
-			int64_t signature_marker;
-			s_network_http_request_hash content_hashes[3];
-			s_rsa_signature rsa_signature;
-			s_static_array<int32_t, gen4::k_number_of_cache_file_sections> section_offsets;
-			s_static_array<gen4::s_cache_file_section_file_bounds, gen4::k_number_of_cache_file_sections> original_section_bounds;
-			gen4::s_cache_file_shared_resource_usage shared_resource_usage;
-			int8_t unknown1D728[16];
-			uint32_t late_binding_tag_reference_fixup_info_count;
-			uint32_t late_binding_tag_reference_fixup_info_address;
-			uint32_t cache_file_fixups_count;
-			uint32_t cache_file_fixups_address;
-			int8_t unknown1D738[16];
-			uint32_t unknown1D73C;
-			uint32_t unknown1D740;
-			uint32_t unknown1D744;
-			uint32_t unknown1D748;
-			int8_t unknown1D74C[28];
-			uint32_t unknown1D768; 
-			uint32_t unknown1D76C;
-			int8_t padding[2160];
-			tag footer_signature;
-		};
-#pragma pack(pop)
-		static constexpr size_t k_xbox360_cache_file_header = sizeof(s_cache_file_header);
-		static_assert(k_xbox360_cache_file_header == 0x1E000);
+		halo4_cache_file_shared_file_flags.clear();
+		halo4_cache_file_shared_file_flags.set(::_shared_file_mainmenu, base_cache_file_shared_file_flags.test(_shared_file_mainmenu));
+		halo4_cache_file_shared_file_flags.set(::_shared_file_multiplayer, base_cache_file_shared_file_flags.test(_shared_file_multiplayer));
+		halo4_cache_file_shared_file_flags.set(::_shared_file_campaign, base_cache_file_shared_file_flags.test(_shared_file_campaign));
+		return BCS_S_OK;
+	}
 
-		struct s_cache_file_tags_header
-		{
-			s_section tag_groups; // s_cache_file_tag_group
-			s_section tag_instances; // s_cache_file_tag_instance
-			s_section global_tag_indices; // s_cache_file_global_tag_index
-			s_section tag_interop_fixups; // s_cache_file_tag_interop_type_fixup
-			dword tags_checksum;
-			uint32_t signature;
-		};
-		static constexpr size_t k_cache_file_tags_header = sizeof(s_cache_file_tags_header);
-		static_assert(k_cache_file_tags_header == 0x28);
-
-		bool cache_file_header_verify(s_cache_file_header& header);
+	template<typename t_halo4_storage, typename t_base_storage>
+	inline BCS_RESULT halo4_cache_file_header_flags_to_base_cache_file_header_flags(
+		c_flags_no_init<halo4::e_cache_file_header_bit, t_halo4_storage, k_num_cache_file_header_bits> const& halo4_cache_file_header_flags,
+		c_flags_no_init<::e_cache_file_header_bit, t_base_storage, ::k_num_cache_file_header_bits>& base_cache_file_header_flags)
+	{
+		base_cache_file_header_flags.clear();
+		base_cache_file_header_flags.set(::_cache_file_header_bit_use_absolute_addressing, halo4_cache_file_header_flags.test(_cache_file_header_bit_use_absolute_addressing));
+		base_cache_file_header_flags.set(::_cache_file_header_bit_unknown, halo4_cache_file_header_flags.test(_cache_file_header_bit_unknown));
+		return BCS_S_OK;
+	}
+	template<typename t_halo4_storage, typename t_base_storage>
+	inline BCS_RESULT base_cache_file_header_flags_to_halo4_cache_file_header_flags(
+		c_flags_no_init<::e_cache_file_header_bit, t_base_storage, ::k_num_cache_file_header_bits> const& base_cache_file_header_flags,
+		c_flags_no_init<halo4::e_cache_file_header_bit, t_halo4_storage, k_num_cache_file_header_bits>& halo4_cache_file_header_flags)
+	{
+		halo4_cache_file_header_flags.clear();
+		halo4_cache_file_header_flags.set(::_cache_file_header_bit_use_absolute_addressing, base_cache_file_header_flags.test(_cache_file_header_bit_use_absolute_addressing));
+		halo4_cache_file_header_flags.set(::_cache_file_header_bit_unknown, base_cache_file_header_flags.test(_cache_file_header_bit_unknown));
+		return BCS_S_OK;
 	}
 }

@@ -7,71 +7,69 @@ c_halo3_debug_reader::c_halo3_debug_reader(c_halo3_cache_cluster& cache_cluster,
 	cache_reader(cache_reader),
 	string_id_buffer(),
 	//string_id_index_buffer(),
-	file_table_buffer(),
+	debug_tag_name_buffer(),
 	string_id_index_buffer(),
 	encrypted_string_id_buffer(),
 	encrypted_file_table_buffer(),
-	file_table_index_buffer()
+	debug_tag_name_index_buffer()
 {
 	s_cache_file_buffers_info buffers_info;
 	BCS_FAIL_THROW(cache_reader.get_buffers(buffers_info));
 
-	int32_t string_id_index_buffer_offset;
-	BCS_FAIL_THROW(cache_reader.get_string_id_index_buffer_offset(string_id_index_buffer_offset));
+	int32_t string_id_index_offset;
+	BCS_FAIL_THROW(cache_reader.get_string_id_index_offset(string_id_index_offset));
 
-	int32_t string_id_string_storage_offset;
-	BCS_FAIL_THROW(cache_reader.get_string_id_string_storage_offset(string_id_string_storage_offset));
+	int32_t string_id_data_offset;
+	BCS_FAIL_THROW(cache_reader.get_string_id_data_offset(string_id_data_offset));
 
-	int32_t string_id_string_storage_size;
-	BCS_FAIL_THROW(cache_reader.get_string_id_string_storage_size(string_id_string_storage_size));
+	int32_t string_id_data_count;
+	BCS_FAIL_THROW(cache_reader.get_string_id_data_count(string_id_data_count));
 
-	int32_t file_table_indices_offset;
-	BCS_FAIL_THROW(cache_reader.get_file_table_indices_offset(file_table_indices_offset));
+	int32_t debug_tag_name_index_offset;
+	BCS_FAIL_THROW(cache_reader.get_debug_tag_name_index_offset(debug_tag_name_index_offset));
 
-	int32_t file_table_offset;
-	BCS_FAIL_THROW(cache_reader.get_file_table_offset(file_table_offset));
+	int32_t debug_tag_name_data_offset;
+	BCS_FAIL_THROW(cache_reader.get_debug_tag_name_data_offset(debug_tag_name_data_offset));
 
-	int32_t file_table_length;
-	BCS_FAIL_THROW(cache_reader.get_file_table_length(file_table_length));
+	int32_t debug_tag_name_data_size;
+	BCS_FAIL_THROW(cache_reader.get_debug_tag_name_data_size(debug_tag_name_data_size));
 
-	int32_t string_id_index_buffer_relative_offset = string_id_index_buffer_offset - buffers_info.debug_section_buffer.offset;
+	int32_t string_id_index_buffer_relative_offset = string_id_index_offset - buffers_info.debug_section_buffer.offset;
 	string_id_index_buffer = reinterpret_cast<const uint32_t*>(buffers_info.debug_section_buffer.begin + string_id_index_buffer_relative_offset);
 
-	int32_t string_id_buffer_relative_offset = string_id_string_storage_offset - buffers_info.debug_section_buffer.offset;
+	int32_t string_id_buffer_relative_offset = string_id_data_offset - buffers_info.debug_section_buffer.offset;
 	const char* encrypted_string_id_buffer = reinterpret_cast<const char*>(buffers_info.debug_section_buffer.begin + string_id_buffer_relative_offset);
 
 	// #TODO: Fix (tracked_aligned_malloc fails, either we're reading the wrong value for the storage size or the data itself isn't aligned properly)
-	//string_id_buffer = static_cast<char*>(tracked_aligned_malloc(string_id_string_storage_size, 16));
+	//string_id_buffer = static_cast<char*>(tracked_aligned_malloc(string_id_data_count, 16));
 	//if (string_id_buffer == nullptr)
 	//{
 	//	throw(BCS_E_FAIL);
 	//}
-	//memcpy(string_id_buffer, encrypted_string_id_buffer, string_id_string_storage_size);
-	//aes128_decrypt(encrypted_string_id_buffer, string_id_buffer, cache_file_header.string_id_string_storage_size, c_halo3_cache_file_reader::k_string_id_encryption_key);
+	//memcpy(string_id_buffer, encrypted_string_id_buffer, string_id_data_count);
+	//aes128_decrypt(encrypted_string_id_buffer, string_id_buffer, string_id_data_count, c_halo3_cache_file_reader::k_string_id_encryption_key);
 
-	int32_t file_table_index_buffer_relative_offset = file_table_indices_offset - buffers_info.debug_section_buffer.offset;
-	file_table_index_buffer = reinterpret_cast<const uint32_t*>(buffers_info.debug_section_buffer.begin + file_table_index_buffer_relative_offset);
+	int32_t debug_tag_name_index_buffer_relative_offset = debug_tag_name_index_offset - buffers_info.debug_section_buffer.offset;
+	debug_tag_name_index_buffer = reinterpret_cast<const uint32_t*>(buffers_info.debug_section_buffer.begin + debug_tag_name_index_buffer_relative_offset);
 
-	int32_t file_table_buffer_relative_offset = file_table_offset - buffers_info.debug_section_buffer.offset;
-	const char* encrypted_file_table_buffer = reinterpret_cast<const char*>(buffers_info.debug_section_buffer.begin + file_table_buffer_relative_offset);
+	int32_t debug_tag_name_data_relative_offset = debug_tag_name_data_offset - buffers_info.debug_section_buffer.offset;
+	const char* encrypted_file_table_buffer = reinterpret_cast<const char*>(buffers_info.debug_section_buffer.begin + debug_tag_name_data_relative_offset);
 
 	// #TODO: Fix (tracked_aligned_malloc fails, either we're reading the wrong value for the table length or the data itself isn't aligned properly)
-	//file_table_buffer = static_cast<char*>(tracked_aligned_malloc(file_table_length, 16));
-	//if (file_table_buffer == nullptr)
+	//debug_tag_name_buffer = static_cast<char*>(tracked_aligned_malloc(debug_tag_name_data_size, 16));
+	//if (debug_tag_name_buffer == nullptr)
 	//{
 	//	throw(BCS_E_FAIL);
 	//}
-	//memcpy(file_table_buffer, encrypted_file_table_buffer, file_table_length);
-	//aes128_decrypt(encrypted_file_table_buffer, file_table_buffer, cache_file_header.file_table_length, c_halo3_cache_file_reader::k_file_name_encryption_key);
-
-	
+	//memcpy(debug_tag_name_buffer, encrypted_file_table_buffer, debug_tag_name_data_size);
+	//aes128_decrypt(encrypted_file_table_buffer, debug_tag_name_buffer, debug_tag_name_data_size, c_halo3_cache_file_reader::k_file_name_encryption_key);
 }
 
 c_halo3_debug_reader::~c_halo3_debug_reader()
 {
 	tracked_aligned_free(string_id_buffer);
 	//tracked_aligned_free(string_id_index_buffer);
-	tracked_aligned_free(file_table_buffer);
+	tracked_aligned_free(debug_tag_name_buffer);
 }
 
 BCS_RESULT c_halo3_debug_reader::string_id_to_string(string_id stringid, const char*& string)
@@ -107,7 +105,7 @@ BCS_RESULT c_halo3_debug_reader::get_tag_filepath(uint32_t tag_index, const char
 	BCS_RESULT rs = BCS_S_OK;
 
 	int32_t file_count;
-	if (BCS_FAILED(rs = cache_reader.get_file_count(file_count)))
+	if (BCS_FAILED(rs = cache_reader.get_debug_tag_name_count(file_count)))
 	{
 		return rs;
 	}
@@ -119,8 +117,8 @@ BCS_RESULT c_halo3_debug_reader::get_tag_filepath(uint32_t tag_index, const char
 
 	// #TODO: Handle big endian 
 	//uint32_t file_buffer_offset = _byteswap_ulong(file_table_index_buffer[tag_index]);
-	uint32_t file_buffer_offset = file_table_index_buffer[tag_index];
-	filepath = file_table_buffer + file_buffer_offset;
+	uint32_t file_buffer_offset = debug_tag_name_index_buffer[tag_index];
+	filepath = debug_tag_name_buffer + file_buffer_offset;
 
 	return rs;
 }
@@ -148,7 +146,7 @@ BCS_RESULT c_halo3_debug_reader::string_id_to_index(uint32_t string_id_index, ui
 {
 	int32_t string_id_index_buffer_count;
 	BCS_RESULT rs = BCS_S_OK;
-	if (BCS_FAILED(rs = cache_reader.get_string_id_index_buffer_count(string_id_index_buffer_count)))
+	if (BCS_FAILED(rs = cache_reader.get_string_id_count(string_id_index_buffer_count)))
 	{
 		return rs;
 	}

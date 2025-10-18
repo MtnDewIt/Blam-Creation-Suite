@@ -88,10 +88,6 @@ c_halo4_cache_cluster::c_halo4_cache_cluster(c_halo4_cache_file_reader** cache_r
 			{
 				throw(rs);
 			}
-			if (BCS_FAILED(rs = tag_reader->export_resources()))
-			{
-				throw(rs);
-			}
 		}
 	}
 }
@@ -160,108 +156,16 @@ BCS_RESULT c_halo4_cache_cluster::get_localization_reader(c_halo4_cache_file_rea
 	return BCS_S_OK;
 }
 
-BCS_RESULT c_halo4_cache_cluster::get_resource_container(s_resource_priority_datas const& resource_priority_datas, c_halo4_resource_container*& resource_container)
+BCS_RESULT c_halo4_cache_cluster::get_blofeld_tag_groups(blofeld::t_tag_group_collection& tag_groups) const
 {
-	t_resource_container_by_id_map::iterator it = resource_containers_by_id.find(resource_priority_datas.id);
-	if (it == resource_containers_by_id.end())
+	BCS_RESULT rs = BCS_S_OK;
+
+	if (BCS_FAILED(rs = blofeld::tag_definition_registry_get_tag_groups_by_engine_platform_build(engine_platform_build, tag_groups)))
 	{
-		return BCS_E_NOT_FOUND;
-	}
-	else
-	{
-		resource_container = it->second;
-		return BCS_S_OK;
+		return rs;
 	}
 
-//	// #TODO: check if the resource container already exists
-//
-//	const s_resource_priority_data(&a)[3] = resource_priority_datas.data;
-//
-//	const std::vector<c_halo4_resource_container*>& cache_file_resource_containers = resource_containers_by_cache_file[a[0].resource_cache_file][a[1].resource_cache_file][a[2].resource_cache_file];
-//	for (c_halo4_resource_container* current_resource_container : cache_file_resource_containers)
-//	{
-//		const s_resource_priority_data(&b)[3] = current_resource_container->resource_priority_datas.data;
-//
-//		//#NOTE: this is all done because its absolutely
-//		// fucking!!!
-//		// terrible performance in debug
-//
-//#define compare_part1(index)																		\
-//		if (a[index].resource_cache_file != b[index].resource_cache_file) continue;					\
-//		if (a[index].resource_page_offset != b[index].resource_page_offset) continue;			
-//
-//#define compare_part2(index)																		\
-//		if (a[index].page_index != b[index].page_index) continue;									\
-//		if (a[index].page_file_offset != b[index].page_file_offset) continue;						\
-//		if (a[index].page_file_size != b[index].page_file_size) continue;							\
-//		if (a[index].page_size != b[index].page_size) continue;										
-//
-//		compare_part1(0);
-//		compare_part1(1);
-//		compare_part1(2);
-//
-//		compare_part2(0);
-//		compare_part2(1);
-//		compare_part2(2);
-//
-//		resource_container = current_resource_container;
-//		return BCS_S_OK;
-//	}
-//
-//	return BCS_E_NOT_FOUND;
-}
-
-BCS_RESULT c_halo4_cache_cluster::add_resource_container(c_halo4_resource_container& resource_container, bool force)
-{
-	if (!force)
-	{
-		t_resource_container_by_id_map::iterator it = resource_containers_by_id.find(resource_container.resource_priority_datas.id);
-		if(it != resource_containers_by_id.end())
-		{
-			ASSERT(it->second == &resource_container); // make sure that we don't have a hash collision!!!
-
-			return BCS_E_FAIL; // duplicate entry
-		}
-	}
-
-	resource_containers_by_id[resource_container.resource_priority_datas.id] = &resource_container;
-	resource_containers_by_cache_reader[resource_container.resource_priority_datas.data[0].resource_cache_file].push_back(&resource_container);
-	resource_containers_by_cache_reader[resource_container.resource_priority_datas.data[1].resource_cache_file].push_back(&resource_container);
-	resource_containers_by_cache_reader[resource_container.resource_priority_datas.data[2].resource_cache_file].push_back(&resource_container);
-	resource_containers.push_back(&resource_container);
-
-	return BCS_S_OK;
-
-
-//	std::vector<c_halo4_resource_container*>& cache_file_resource_containers = resource_containers_by_cache_file[a[0].resource_cache_file][a[1].resource_cache_file][a[2].resource_cache_file];
-//#ifdef _DEBUG
-//
-//	for (c_halo4_resource_container* current_resource_container : cache_file_resource_containers)
-//	{
-//		if (current_resource_container == &resource_container)
-//		{
-//			return BCS_E_FAIL; // duplicate entry
-//		}
-//	}
-//
-//	c_halo4_resource_container* existing_resource_container;
-//	if (BCS_SUCCEEDED(get_resource_container(resource_container.resource_priority_datas, existing_resource_container)))
-//	{
-//		return BCS_E_FAIL; // duplicate entry, exists via search from priority data
-//	}
-//#endif
-//
-//	cache_file_resource_containers.push_back(&resource_container);
-//	resource_containers.push_back(&resource_container);
-//
-//	return BCS_S_OK;
-}
-
-BCS_RESULT c_halo4_cache_cluster::get_blofeld_tag_groups(const blofeld::s_tag_group**& tag_groups) const
-{
-	tag_groups = blofeld::tag_groups[engine_platform_build.engine_type];
-
-	return BCS_S_OK;
+	return rs;
 }
 
 BCS_RESULT c_halo4_cache_cluster::get_engine_platform_build(s_engine_platform_build& engine_platform_build) const
@@ -281,6 +185,13 @@ BCS_RESULT c_halo4_cache_cluster::get_cache_readers(c_halo4_cache_file_reader* c
 {
 	cache_readers = this->cache_readers.data();
 	cache_reader_count = static_cast<unsigned long>(this->cache_readers.size());
+	return BCS_S_OK;
+}
+
+BCS_RESULT c_halo4_cache_cluster::get_postprocessing_fixups(c_postprocessing_fixup const* const*& fixups, uint32_t& fixup_count) const
+{
+	fixups = nullptr;
+	fixup_count = 0;
 	return BCS_S_OK;
 }
 

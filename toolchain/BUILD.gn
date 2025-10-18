@@ -59,7 +59,7 @@ config("compiler_defaults") {
   cflags_c = [ "-std=c17" ]
   cflags_cc = [ "-std=c++20" ]
   defines = [ "__clang__" ]
-  ldflags = [ ]
+  ldflags = [ "/STACK:8388608" ]
   include_dirs = [ ]
   system_include_dirs = [ ]
 

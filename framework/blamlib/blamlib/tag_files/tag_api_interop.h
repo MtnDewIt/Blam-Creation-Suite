@@ -1,7 +1,6 @@
 #pragma once
 
 #include <blamlib/cseries/cseries.h>
-#include <blamlib/cache/cache_files.h>
 #include <blamlib/memory/allocation_interface.h>
 #include <blamlib/memory/wrapped_arrays.h>
 
