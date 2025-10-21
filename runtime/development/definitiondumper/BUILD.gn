@@ -6,6 +6,8 @@ bcs_executable("definitiondumper")
   include_dirs = [ ]
   sources = [
     "main.cpp",
+    "definition_dumper.cpp",
+    "definition_dumper.h",
     "definitiondumper-private-pch.h" ]
   libs = [ ]
   deps = [
@@ -13,6 +15,8 @@ bcs_executable("definitiondumper")
     "//framework/platform:platform_entry_point",
     "//framework/templatelibrary",
     "//framework/blamlib",
+    "//tags/tagframework",
+    "//tags/tagdefinitions",
     "//tags/runtimedefinitions",
     "//tags/tagfileserialization",
     "//tags/blamtoozle", ]

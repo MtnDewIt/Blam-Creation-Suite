@@ -1,9 +1,12 @@
 #pragma once
 
-#include <Platform\platform-public-pch.h>
-#include <TemplateLibrary\templatelibrary-public-pch.h>
-#include <Shared\shared-public-pch.h>
-#include <TagFramework\tagframework-private-pch.h>
-#include <TagFileSerialization\tagfileserialization-public-pch.h>
-#include <Blamtoozle\blamtoozle-public-pch.h>
-#include <RuntimeDefinitions\runtimedefinitions-public-pch.h>
+#include <platform/platform-public-pch.h>
+#include <templatelibrary/templatelibrary-public-pch.h>
+#include <shared/shared-public-pch.h>
+#include <tagframework/tagframework-public-pch.h>
+#include <tagdefinitions/tagdefinitions-public-pch.h>
+#include <tagfileserialization/tagfileserialization-public-pch.h>
+#include <blamtoozle/blamtoozle-public-pch.h>
+#include <runtimedefinitions/runtimedefinitions-public-pch.h>
+
+#include "definition_dumper.h"
