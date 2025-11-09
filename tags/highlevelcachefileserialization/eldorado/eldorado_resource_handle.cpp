@@ -34,11 +34,7 @@ c_eldorado_resource_handle::c_eldorado_resource_handle(
 	//h_prototype_field<int32_t, h_cache_file_resource_location_struct, 5> file_size;
 	//h_prototype_field<int32_t, h_cache_file_resource_location_struct, 6> size;
 	//h_resource_checksum_struct checksum;
-	//h_prototype_field<short, h_cache_file_resource_location_struct, 8> resource_reference_count;
-	//h_prototype_field<short, h_cache_file_resource_location_struct, 9> streaming_sublocation_table;
-	//h_prototype_field<int32_t, h_cache_file_resource_location_struct, 10> value;
-	//h_prototype_field<int32_t, h_cache_file_resource_location_struct, 11> value$2;
-	//h_prototype_field<int32_t, h_cache_file_resource_location_struct, 12> value$3;
+	//h_cache_file_resource_streaming_sublocation_table_block streaming_sublocation_table;
 
 
 	short header_salt_at_runtime = resource_location.header_salt_at_runtime;
@@ -48,7 +44,7 @@ c_eldorado_resource_handle::c_eldorado_resource_handle(
 	short shared_file_location_index = resource_location.shared_file_location_index;
 	int32_t file_size = resource_location.file_size;
 	int32_t size = resource_location.size;
-	short resource_reference_count = resource_location.resource_reference_count;
+	h_cache_file_resource_streaming_sublocation_table_block streaming_sublocation_table = resource_location.streaming_sublocation_table;
 
 	if (shared_file >= 0)
 	{

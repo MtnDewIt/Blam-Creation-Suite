@@ -241,7 +241,6 @@ s_build_and_id builds_and_ids[] =
 	{ _build_eldorado_1_177150_cert_ms23, MAKE_PRODUCT_VERSION(0,1, 177150)}, // #TODO: If these are required for boot we must find a way to accurately find the version from the binary
 	{ _build_eldorado_1_235640_cert_ms25, MAKE_PRODUCT_VERSION(0,1, 235640)}, // #TODO: If these are required for boot we must find a way to accurately find the version from the binary
 	{ _build_eldorado_1_301003_cert_MS26_new, MAKE_PRODUCT_VERSION(0,1, 301003)},
-	{ _build_eldorado_1_327043_cert_ms26, MAKE_PRODUCT_VERSION(0,1, 327043)},
 	{ _build_eldorado_1_332089_Live, MAKE_PRODUCT_VERSION(4,1, 332089)},
 	{ _build_eldorado_1_373869_Live, MAKE_PRODUCT_VERSION(8,1, 373869)},
 	{ _build_eldorado_1_416138_Live, MAKE_PRODUCT_VERSION(9,1, 416138)},
@@ -415,7 +414,6 @@ static BCS_RESULT get_build_string_impl(e_build build, bool pretty_name, const c
 		build_string_pair(_build_eldorado_1_177150_cert_ms23, "Eldorado 1.177150 cert_ms23");
 		build_string_pair(_build_eldorado_1_235640_cert_ms25, "Eldorado 1.235640 cert_ms25");
 		build_string_pair(_build_eldorado_1_301003_cert_MS26_new, "Eldorado 1.301003 cert_MS26_new");
-		build_string_pair(_build_eldorado_1_327043_cert_ms26, "Eldorado 1.327043 cert_ms26");
 		build_string_pair(_build_eldorado_1_332089_Live, "Eldorado 1.332089 Live");
 		build_string_pair(_build_eldorado_1_373869_Live, "Eldorado 1.373869 Live");
 		build_string_pair(_build_eldorado_1_416138_Live, "Eldorado 1.416138 Live");
