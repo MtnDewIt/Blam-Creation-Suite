@@ -51,6 +51,23 @@ struct s_monolithic_resource_xsync_state_v2
 static constexpr size_t k_monolithic_resource_xsync_state_v2_size = sizeof(s_monolithic_resource_xsync_state_v2);
 static_assert(k_monolithic_resource_xsync_state_v2_size == 0x24);
 
+struct s_monolithic_resource_xsync_state_v3
+{
+	int32_t unknown_1; 
+	int32_t unknown_2;
+	int32_t cache_location_offset;
+	int32_t cache_location_size;
+	int32_t optional_location_offset;
+	int32_t optional_location_size;
+	int32_t control_align_bits;
+	int32_t control_data_size;
+	int32_t control_fixup_count;
+	int32_t interop_usage_count;
+	c_tag_resource_fixup root_address;
+};
+static constexpr size_t k_monolithic_resource_xsync_state_v3_size = sizeof(s_monolithic_resource_xsync_state_v3);
+static_assert(k_monolithic_resource_xsync_state_v3_size == 0x2C);
+
 class c_tag_resource_xsynced_chunk : public c_typed_chunk<'tgxc', false>
 {
 public:
@@ -64,4 +81,5 @@ public:
 	static void convert_paged_v0_to_monolithic_xsync_state_v2(const s_monolithic_resource_xsync_state_v0& v0, s_monolithic_resource_xsync_state_v2& v2);
 	static void convert_streaming_v0_to_monolithic_xsync_state_v2(const s_monolithic_resource_xsync_state_v0& v0, s_monolithic_resource_xsync_state_v2& v2);
 	static void convert_paged_v1_to_current_monolithic_xsync_state(const s_monolithic_resource_xsync_state_v1& v1, s_monolithic_resource_xsync_state_v2& v2);
+	static void convert_paged_v3_to_current_monolithic_xsync_state(const s_monolithic_resource_xsync_state_v3& v3, s_monolithic_resource_xsync_state_v2& v2);
 };

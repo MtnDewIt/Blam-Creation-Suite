@@ -124,6 +124,7 @@ public:
 
 	BCS_SHARED c_runtime_tag_block_definition& enqueue_tag_block_definition(c_tag_file_reader& tag_file_reader, s_tag_persist_block_definition const& tag_persist_block_definition);
 	BCS_SHARED c_runtime_tag_struct_definition& enqueue_tag_struct_definition(c_tag_file_reader& tag_file_reader, s_tag_persist_struct_definition const& tag_persist_struct_definition);
+	BCS_SHARED c_runtime_tag_struct_definition& enqueue_tag_struct_definition_v4(c_tag_file_reader& tag_file_reader, s_tag_persist_struct_definition_v4 const& tag_persist_struct_definition);
 	BCS_SHARED c_runtime_tag_array_definition& enqueue_tag_array_definition(c_tag_file_reader& tag_file_reader, s_tag_persist_array_definition const& tag_persist_array_definition);
 	BCS_SHARED c_runtime_string_list_definition& enqueue_string_list_definition(c_tag_file_reader& tag_file_reader, s_tag_persist_string_list const& tag_persist_string_list);
 	BCS_SHARED c_runtime_tag_reference_definition& enqueue_tag_reference_definition(c_tag_file_reader& tag_file_reader);

@@ -59,6 +59,7 @@ BCS_RESULT c_tag_group_layout_chunk::read_chunk(void* userdata, const void* data
 	}
 	break;
 	case _tag_persist_layout_version_v3:
+	case _tag_persist_layout_version_v4:
 	{
 		const s_tag_persist_layout_header_v3* src_layout_header_v3 = next_contiguous_pointer(s_tag_persist_layout_header_v3, src_tag_group_layout_header);
 		layout_header_v3_data = chunk_byteswap(*src_layout_header_v3);

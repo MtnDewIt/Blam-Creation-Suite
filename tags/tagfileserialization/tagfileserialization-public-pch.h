@@ -24,6 +24,7 @@
 #include "layoutchunks\resource_definitions_chunk.h"
 #include "layoutchunks\interop_definitions_chunk.h"
 #include "layoutchunks\structure_definitions_chunk.h"
+#include "layoutchunks\structure_definitions_chunk_v4.h"
 #include "layoutchunks\tag_layout_prechunk_chunk.h"
 #include "layoutchunks\tag_layout_preinterop_chunk.h"
 #include "layoutchunks\tag_layout_v3_chunk.h"

@@ -421,6 +421,7 @@ BCS_RESULT c_chunk::read_child_chunks(void* userdata, bool use_read_only, const 
 					CHUNK_CTOR_EX(_tag_persist_layout_version_prechunk, c_tag_layout_prechunk_chunk, *this);
 					CHUNK_CTOR_EX(_tag_persist_layout_version_preinterop, c_tag_layout_preinterop_chunk, *this);
 					CHUNK_CTOR_EX(_tag_persist_layout_version_v3, c_tag_layout_v3_chunk, *this);
+					CHUNK_CTOR_EX(_tag_persist_layout_version_v4, c_tag_layout_v3_chunk, *this);
 				}
 			}
 			else switch (next_signature)
@@ -444,6 +445,7 @@ BCS_RESULT c_chunk::read_child_chunks(void* userdata, bool use_read_only, const 
 				CHUNK_CTOR(c_resource_definitions_chunk, *this);
 				CHUNK_CTOR(c_interop_definitions_chunk, *this);
 				CHUNK_CTOR(c_structure_definitions_chunk, *this);
+				CHUNK_CTOR(c_structure_definitions_chunk_v4, *this);
 				CHUNK_CTOR(c_binary_data_chunk, *this);
 				CHUNK_CTOR(c_tag_resource_exploded_chunk, *this);
 				CHUNK_CTOR(c_tag_resource_data_chunk, *this);

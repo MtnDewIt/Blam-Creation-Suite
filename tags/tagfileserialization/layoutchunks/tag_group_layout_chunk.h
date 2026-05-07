@@ -5,6 +5,7 @@ enum s_tag_group_layout_header_version
 	_tag_persist_layout_version_prechunk = 1,
 	_tag_persist_layout_version_preinterop,
 	_tag_persist_layout_version_v3,
+	_tag_persist_layout_version_v4,
 };
 
 struct s_tag_group_layout_header

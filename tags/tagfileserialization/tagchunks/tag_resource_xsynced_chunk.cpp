@@ -48,6 +48,12 @@ BCS_RESULT c_tag_resource_xsynced_chunk::read_chunk(void* userdata, const void* 
 		resource_xsync_state_v2 = chunk_byteswap(*reinterpret_cast<const s_monolithic_resource_xsync_state_v2*>(get_chunk_data_start()));
 		break;
 	}
+	case 3: 
+	{
+		s_monolithic_resource_xsync_state_v3 resource_xsync_state_v3 = chunk_byteswap(*reinterpret_cast<const s_monolithic_resource_xsync_state_v3*>(get_chunk_data_start()));
+		convert_paged_v3_to_current_monolithic_xsync_state(resource_xsync_state_v3, resource_xsync_state_v2);
+		break;
+	}
 	default: FATAL_ERROR("Unsupported xsync version %lu", xsync_version);
 	}
 
@@ -132,6 +138,19 @@ void c_tag_resource_xsynced_chunk::convert_paged_v1_to_current_monolithic_xsync_
 	v2.root_address = v1.root_address;
 }
 
+void c_tag_resource_xsynced_chunk::convert_paged_v3_to_current_monolithic_xsync_state(const s_monolithic_resource_xsync_state_v3& v3, s_monolithic_resource_xsync_state_v2& v2)
+{
+	v2.cache_location_offset = v3.cache_location_offset;
+	v2.cache_location_size = v3.cache_location_size;
+	v2.optional_location_offset = v3.optional_location_offset;
+	v2.optional_location_size = v3.optional_location_size;
+	v2.control_align_bits = v3.control_align_bits;
+	v2.control_data_size = v3.control_data_size;
+	v2.control_fixup_count = v3.control_fixup_count;
+	v2.interop_usage_count = v3.interop_usage_count;
+	v2.root_address = v3.root_address;
+}
+
 template<> void byteswap_inplace<c_tag_resource_fixup_v0>(c_tag_resource_fixup_v0& value)
 {
 	static_assert(sizeof(c_tag_resource_fixup_v0) == sizeof(unsigned long));
@@ -164,6 +183,21 @@ template<> void byteswap_inplace(s_monolithic_resource_xsync_state_v1& value)
 
 template<> void byteswap_inplace(s_monolithic_resource_xsync_state_v2& value)
 {
+	byteswap_inplace(value.cache_location_offset);
+	byteswap_inplace(value.cache_location_size);
+	byteswap_inplace(value.optional_location_offset);
+	byteswap_inplace(value.optional_location_size);
+	byteswap_inplace(value.control_align_bits);
+	byteswap_inplace(value.control_data_size);
+	byteswap_inplace(value.control_fixup_count);
+	byteswap_inplace(value.interop_usage_count);
+	byteswap_inplace(value.root_address);
+}
+
+template<> void byteswap_inplace(s_monolithic_resource_xsync_state_v3& value)
+{
+	byteswap_inplace(value.unknown_1);
+	byteswap_inplace(value.unknown_2);
 	byteswap_inplace(value.cache_location_offset);
 	byteswap_inplace(value.cache_location_size);
 	byteswap_inplace(value.optional_location_offset);

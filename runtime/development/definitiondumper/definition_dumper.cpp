@@ -108,12 +108,37 @@ BCS_RESULT c_definition_dumper::dump_definitions()
 
 			s_tag_file_header* tag_file_header = static_cast<s_tag_file_header*>(tag_file_data);
 
+			if (engine_platform_build.platform_type == _platform_type_xbox_360) 
+			{
+				byteswap_inplace(tag_file_header->unknown0);
+				byteswap_inplace(tag_file_header->unknown4);
+				byteswap_inplace(tag_file_header->unknown8);
+				byteswap_inplace(tag_file_header->unknownC);
+				byteswap_inplace(tag_file_header->unknown10);
+				byteswap_inplace(tag_file_header->unknown14);
+				byteswap_inplace(tag_file_header->unknown18);
+				byteswap_inplace(tag_file_header->unknown1C);
+				byteswap_inplace(tag_file_header->unknown20);
+				byteswap_inplace(tag_file_header->unknown24);
+				byteswap_inplace(tag_file_header->unknown28);
+				byteswap_inplace(tag_file_header->unknown2C);
+				byteswap_inplace(tag_file_header->group_tag);
+				byteswap_inplace(tag_file_header->group_version);
+				byteswap_inplace(tag_file_header->crc32);
+				byteswap_inplace(tag_file_header->blam);
+			}
+
 			if (tag_file_header->blam != 'BLAM')
 			{
 				return BCS_E_FAIL;
 			}
 
 			c_tag_file_reader* tag_file_reader = new() c_tag_file_reader(tag_file_data);
+
+			if (engine_platform_build.platform_type == _platform_type_xbox_360)
+			{
+				tag_file_reader->is_big_endian = true;
+			}
 
 			unsigned int struct_definition_count = tag_file_reader->get_struct_definition_count();
 			for (unsigned int struct_definition_index = 0; struct_definition_index < struct_definition_count; struct_definition_index++)
